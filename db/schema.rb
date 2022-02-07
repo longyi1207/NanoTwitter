@@ -10,10 +10,17 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2022_02_07_022029) do
+ActiveRecord::Schema.define(version: 2022_02_07_192117) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
+
+  create_table "mentions", force: :cascade do |t|
+    t.integer "user_id"
+    t.integer "tweet_id"
+    t.integer "tweet_user_id"
+    t.datetime "create_time", precision: 6
+  end
 
   create_table "tag_tweets", force: :cascade do |t|
     t.integer "tag_id"
