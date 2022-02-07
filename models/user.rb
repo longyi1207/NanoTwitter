@@ -14,4 +14,7 @@ class User < ActiveRecord::Base
 
     has_many :retweets
     has_many :retweet_tweets, through: :retweets, source: :tweet
+
+    has_many :replies
+    has_many :reply_tweets, through: :replies, source: :tweet
 end

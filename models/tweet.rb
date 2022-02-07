@@ -12,4 +12,12 @@ class Tweet < ActiveRecord::Base
 
     has_many :retweets
     has_many :retweet_tweets, through: :retweets, source: :tweet
+
+    has_many :replies
+    has_many :reply_tweets, through: :replies, source: :tweet
+
+    has_many :tweet_replies
+    has_many :replies, through: :tweet_replies
+    has_many :inverse_tweet_replies, class_name: :"TweetReply", foreign_key: :"reply_user_id"
+    has_many :inverse_replies, through: :inverse_tweet_replies, source: :tweet
 end
