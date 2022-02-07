@@ -1,3 +1,3 @@
 class User < ActiveRecord::Base
-    has_many :tweet
+    has_many :tweets
 end
