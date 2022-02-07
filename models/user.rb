@@ -8,4 +8,10 @@ class User < ActiveRecord::Base
 
     has_many :mentions
     has_many :mention_tweets, through: :mentions, source: :tweet
+
+    has_many :likes
+    has_many :like_tweets, through: :likes, source: :tweet
+
+    has_many :retweets
+    has_many :retweet_tweets, through: :retweets, source: :tweet
 end

@@ -4,6 +4,8 @@ class CreateTweets < ActiveRecord::Migration[7.0]
       t.string :text
       t.datetime :create_time
       t.integer :user_id
+      t.integer :likes
+      t.integer :retweets
     end
   end
 end

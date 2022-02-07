@@ -6,4 +6,10 @@ class Tweet < ActiveRecord::Base
 
     has_many :mentions
     has_many :mention_users, through: :mentions, source: :user
+
+    has_many :likes
+    has_many :like_users, through: :likes, source: :user
+
+    has_many :retweets
+    has_many :retweet_tweets, through: :retweets, source: :tweet
 end
