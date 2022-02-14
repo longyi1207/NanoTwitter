@@ -9,10 +9,7 @@
 /test/tmp/
 /test/version_tmp/
 /tmp/
-./DS_Store
-./Gemfile.lock
-/.config.database.yml
-./test./DS_Store
+
 
 # Used by dotenv library to load environment variables.
 # .env
@@ -59,3 +56,7 @@ build-iPhoneSimulator/
 
 # Used by RuboCop. Remote config files pulled in from inherit_from directive.
 # .rubocop-https?--*
+.DS_Store
+config/database.yml
+Gemfile.lock
+config/database.yml
