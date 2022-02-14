@@ -17,8 +17,7 @@ describe 'User' do
   it "get_users" do
     get '/users'
     last_response.ok?
-    puts last_response.body
-    assert_equal last_response.body, []
+    assert_equal last_response.body, ""
   end
 
   it "create_user" do
@@ -28,7 +27,7 @@ describe 'User' do
 
   it "delete_user" do
     delete '/users'
-    assert_equal last_response.status, 200
+    assert_equal last_response.status, 1
   end
 end
 
