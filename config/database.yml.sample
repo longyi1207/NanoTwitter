@@ -1,26 +1,26 @@
 test:
   adapter: postgresql
   database: nt_project_test
-  host: 172.18.192.1
+  host: 0.0.0.0
   port: 5432
   username: postgres
-  password: 123456
+  password: postgres
   pool: 2
 
 development:
   adapter: postgresql
   database: nt_project_dev
-  host: 172.18.192.1
+  host: 0.0.0.0
   port: 5432
   username: postgres
-  password: 123456
+  password: postgres
   pool: 2
 
 production:
   adapter: postgresql
   database: nt_project_prod
-  host: 172.18.192.1
+  host: 0.0.0.0
   port: 5432
   username: postgres
-  password: 123456
+  password: postgres
   pool: 2

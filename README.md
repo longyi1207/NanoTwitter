@@ -22,4 +22,7 @@ Things you may want to cover:
 
 * Deployment instructions
 
-* ...
+* Change History
+NT-0.1 : xxx (Zhendan), xxx (Lisandro), xxx (Long)
+  
+  

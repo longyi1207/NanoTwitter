@@ -10,10 +10,31 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2022_02_07_022029) do
+ActiveRecord::Schema.define(version: 2022_02_07_225814) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
+
+  create_table "likes", force: :cascade do |t|
+    t.integer "user_id"
+    t.integer "tweet_id"
+    t.integer "tweet_user_id"
+    t.datetime "create_time", precision: 6
+  end
+
+  create_table "mentions", force: :cascade do |t|
+    t.integer "user_id"
+    t.integer "tweet_id"
+    t.integer "tweet_user_id"
+    t.datetime "create_time", precision: 6
+  end
+
+  create_table "retweets", force: :cascade do |t|
+    t.integer "user_id"
+    t.integer "tweet_id"
+    t.integer "tweet_user_id"
+    t.datetime "create_time", precision: 6
+  end
 
   create_table "tag_tweets", force: :cascade do |t|
     t.integer "tag_id"
@@ -25,10 +46,22 @@ ActiveRecord::Schema.define(version: 2022_02_07_022029) do
     t.string "name"
   end
 
+  create_table "tweet_replies", force: :cascade do |t|
+    t.integer "tweet_id"
+    t.integer "user_id"
+    t.integer "reply_id"
+    t.integer "reply_user_id"
+    t.datetime "create_time", precision: 6
+  end
+
   create_table "tweets", force: :cascade do |t|
     t.string "text"
     t.datetime "create_time", precision: 6
     t.integer "user_id"
+    t.integer "likes"
+    t.integer "retweets"
+    t.integer "parent_tweet_id"
+    t.integer "original_tweet_id"
   end
 
   create_table "user_followers", force: :cascade do |t|

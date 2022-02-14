@@ -59,4 +59,3 @@ build-iPhoneSimulator/
 .DS_Store
 config/database.yml
 Gemfile.lock
-config/database.yml
