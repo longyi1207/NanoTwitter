@@ -1,8 +1,13 @@
 test:
   adapter: postgresql
   database: nt_project_test
+<<<<<<< Updated upstream:config/database.yml.sample
   host: 0.0.0.0
   port: 5432
+=======
+  # host: 172.18.192.1
+  # port: 5432
+>>>>>>> Stashed changes:config/database.yml
   username: postgres
   password: postgres
   pool: 2
@@ -10,8 +15,13 @@ test:
 development:
   adapter: postgresql
   database: nt_project_dev
+<<<<<<< Updated upstream:config/database.yml.sample
   host: 0.0.0.0
   port: 5432
+=======
+  # host: 172.18.192.1
+  # port: 5432
+>>>>>>> Stashed changes:config/database.yml
   username: postgres
   password: postgres
   pool: 2
@@ -19,8 +29,13 @@ development:
 production:
   adapter: postgresql
   database: nt_project_prod
+<<<<<<< Updated upstream:config/database.yml.sample
   host: 0.0.0.0
   port: 5432
+=======
+  # host: 172.18.192.1
+  # port: 5432
+>>>>>>> Stashed changes:config/database.yml
   username: postgres
   password: postgres
   pool: 2
