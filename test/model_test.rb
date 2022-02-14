@@ -14,38 +14,36 @@ end
 
 
 describe 'User' do
-  it "get_users" do
-    get '/users'
-    last_response.ok?
-    assert_equal last_response.body, ""
-  end
-
   it "create_user" do
     post '/newUser'
-    assert_equal last_response.status, 200
+    last_response.ok?
+    get '/userCount'
+    assert_equal "1", last_response.body
   end
 
   it "delete_user" do
     delete '/users'
-    assert_equal last_response.status, 1
+    last_response.ok?
+    get '/userCount'
+    assert_equal "0", last_response.body
   end
 end
 
-# describe 'Tweet' do
-#   it "get_tweets" do
-#     get '/tweets'
-#       last_response.ok?
-#       puts last_response.body
-#       assert_equal last_response.body, []
-#   end
+describe 'Tweet' do
+  it "create_tweet" do
+    post '/newTweet'
+    last_response.ok?
+    get '/tweetCount'
+    assert_equal "1", last_response.body
+  end
 
-#   it "create_tweet" do
-#     post '/tweet'
-#       last_response.ok?
-#       puts last_response.body
-#       assert_equal last_response.body, []
-#   end
-# end
+  it "delete_tweet" do
+    delete '/tweets'
+    last_response.ok?
+    get '/tweetCount'
+    assert_equal "0", last_response.body
+  end
+end
 
 # describe 'Tag' do
 #   it "get_tags" do

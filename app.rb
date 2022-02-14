@@ -22,6 +22,10 @@ get '/users' do
 	@user = User.all
 end
 
+get '/userCount' do
+    User.all.count.to_s
+end
+
 post '/newUser' do
     @user = User.create(name:Faker::Name.name,
         password:Faker::Number.decimal_part, 
@@ -37,9 +41,13 @@ get '/tweets' do
 	@tweet = Tweet.all
 end
 
+get '/tweetCount' do
+    Tweet.all.count.to_s
+end
+
 post '/newTweet' do
     @tweet= Tweet.create(text:"hi", user_id:1,
-        likes:0, retweets:0, parent_tweet_id:1, 
+        likes_counter:0, retweets_counter:0, parent_tweet_id:1, 
         original_tweet_id:1, create_time:Time.now())
 end
 
