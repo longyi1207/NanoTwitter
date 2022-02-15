@@ -9,14 +9,14 @@ def app
   Sinatra::Application
 end
 
-describe "userFollower" do
-
-end
-
-describe "Mention" do
-
-end
-
-describe "tagTweet" do
-
+describe "test_relation" do
+  it "generate_rows" do
+    get '/testing'
+      last_response.ok?
+      # for user in User.all do
+      #   puts user.name
+      # end
+      
+    # delete '/testing'
+  end
 end

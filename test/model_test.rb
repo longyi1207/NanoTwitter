@@ -26,8 +26,10 @@ describe 'User' do
     last_response.ok?
     get '/userCount'
     assert_equal "0", last_response.body
+    puts "User test running successfully"
   end
 end
+
 
 describe 'Tweet' do
   it "create_tweet" do
@@ -42,21 +44,60 @@ describe 'Tweet' do
     last_response.ok?
     get '/tweetCount'
     assert_equal "0", last_response.body
+    puts "Tweet test running successfully"
   end
 end
 
-# describe 'Tag' do
-#   it "get_tags" do
-#     get '/tags'
-#       last_response.ok?
-#       puts last_response.body
-#       assert_equal last_response.body, []
-#   end
 
-#   it "post_tag" do
-#     post '/tag'
-#       last_response.ok?
-#       puts last_response.body
-#       assert_equal last_response.body, []
-#   end
-# end
+describe 'Tag' do
+  it "create_tags" do
+    post '/newTag'
+    last_response.ok?
+    get '/tagCount'
+    assert_equal "1", last_response.body
+  end
+
+  it "delete_tag" do
+    delete '/tags'
+      last_response.ok?
+      get '/tagCount'
+      assert_equal "0", last_response.body
+      puts "Tag test running successfully"
+  end
+end
+
+
+describe 'Retweet' do
+  it "create_retweet" do
+    post '/newRetweet'
+    last_response.ok?
+    get '/retweetCount'
+    assert_equal "1", last_response.body
+  end
+
+  it "delete_retweet" do
+    delete '/retweets'
+      last_response.ok?
+      get '/retweetCount'
+      assert_equal "0", last_response.body
+      puts "Retweet test running successfully"
+  end
+end
+
+
+describe 'tweetReply' do
+  it "create_tweetReply" do
+    post '/newTweetReply'
+    last_response.ok?
+    get '/tweetReplyCount'
+    assert_equal "1", last_response.body
+  end
+
+  it "delete_tag" do
+    delete '/tweetReplies'
+      last_response.ok?
+      get '/tweetReplyCount'
+      assert_equal "0", last_response.body
+      puts "tweetReply test running successfully"
+  end
+end

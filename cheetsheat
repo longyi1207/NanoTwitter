@@ -1,0 +1,19 @@
+### for developer usage, syntax I always forgot.
+
+drop db in psql:
+drop database "nt_project_test";
+
+set up test db:
+rake db:test:prepare
+
+run test:
+ruby test/relation_test.rb      
+
+heroku:
+heroku create
+heroku addons:create heroku-postgresql:hobby-dev
+git push heroku main
+heroku open
+heroku logs
+git add .
+git push heroku main
