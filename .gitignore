@@ -58,4 +58,3 @@ build-iPhoneSimulator/
 # .rubocop-https?--*
 .DS_Store
 config/database.yml
-Gemfile.lock
