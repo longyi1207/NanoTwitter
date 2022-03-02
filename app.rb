@@ -13,8 +13,11 @@ require_relative 'models/tweetReply.rb'
 require 'faker'
 
 get '/' do
+    erb :login
+end
+
+get '/hi' do
     "hi"
-    # erb :index
 end
 
 #### USER ENDPOINTS

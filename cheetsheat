@@ -1,4 +1,5 @@
 ### for developer usage, syntax I always forgot.
+rerun 'ruby app.rb'
 
 drop db in psql:
 drop database "nt_project_test";
