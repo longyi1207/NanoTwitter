@@ -1,6 +1,7 @@
 require 'sinatra'
 require 'sinatra/activerecord'
 require 'active_record'
+require 'active_support/core_ext'
 require_relative 'models/tweet.rb'
 require_relative 'models/user.rb'
 require_relative 'models/tag.rb'
