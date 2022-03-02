@@ -16,6 +16,10 @@ get '/' do
     erb :login
 end
 
+get '/index' do
+    erb: user
+end
+
 get '/hi' do
     "hi"
 end
