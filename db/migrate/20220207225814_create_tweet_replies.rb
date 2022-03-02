@@ -1,7 +1,7 @@
 class CreateTweetReplies < ActiveRecord::Migration[7.0]
   def change
     create_table :tweet_replies do |t|
-      t.string: text
+      t.string :text
       t.integer :tweet_id
       t.integer :user_id
       t.integer :reply_id
