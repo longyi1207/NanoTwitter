@@ -17,7 +17,7 @@ get '/' do
 end
 
 get '/index' do
-    erb: user
+    erb :user
 end
 
 get '/hi' do
