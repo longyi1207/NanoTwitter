@@ -12,16 +12,13 @@ require_relative 'models/retweet.rb'
 require_relative 'models/tweetReply.rb'
 require 'faker'
 
+# These two will eventually become one once authentication is implemented.
 get '/' do
     erb :login
 end
 
-get '/index' do
+get '/home' do
     erb :user
-end
-
-get '/hi' do
-    "hi"
 end
 
 #### USER ENDPOINTS
@@ -29,17 +26,17 @@ get '/users' do
 	@user = User.all
 end
 
-get '/userCount' do
+get '/users/count' do
     User.all.count.to_s
 end
 
-post '/newUser' do
+post '/users/new' do
     @user = User.create(name:Faker::Name.name,
         password:Faker::Number.decimal_part, 
         create_time:Time.now())
 end
 
-delete '/users' do
+delete '/users/delete/:id' do
     User.delete_all
 end
 
@@ -48,11 +45,11 @@ get '/tweets' do
 	@tweet = Tweet.all
 end
 
-get '/tweetCount' do
+get '/tweets/count' do
     Tweet.all.count.to_s
 end
 
-post '/newTweet' do
+post '/tweet/new' do
     @tweet= Tweet.create(text:Faker::Name.name+" "+Faker::Verb.past+" "+Faker::Hobby.activity,
     user_id:rand(1..10), likes_counter:rand(0..100), retweets_counter:rand(1..100), 
     parent_tweet_id:rand(1..10), original_tweet_id:rand(1..10), create_time:Time.now())
@@ -68,15 +65,15 @@ get '/tags' do
 	@tag = Tag.all
 end
 
-get '/tagCount' do
+get '/tags/count' do
     Tag.all.count.to_s
 end
 
-post '/newTag' do
+post '/tags/new' do
     @tag= Tag.create(name:Faker::WorldCup.team)
 end
 
-delete '/tags' do
+delete '/tags/delete/:id' do
     Tag.delete_all
 end
 
@@ -86,21 +83,22 @@ get '/retweets' do
 	@retweet = Retweet.all
 end
 
-get '/retweetCount' do
+get '/retweets/count' do
     Retweet.all.count.to_s
 end
 
-post '/newRetweet' do
+post '/retweets/new' do
     @retweet=  Retweet.create( user_id:rand(1..10), tweet_id:rand(1..10), 
         tweet_user_id:rand(1..10), create_time:Time.now())
 end
 
-delete '/retweets' do
+delete '/retweets/delete/:id' do
     Retweet.delete_all
 end
 
 
 #### tweetReply ENDPOINTS
+#This may get deleted soon
 get '/tweetReplies' do
 	@tweetReplies = TweetReply.all
 end
