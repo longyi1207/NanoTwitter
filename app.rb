@@ -21,6 +21,17 @@ get '/home' do
     erb :user
 end
 
+<<<<<<< Updated upstream
+=======
+get '/signup' do
+    erb :signup
+end
+
+get '/hi' do
+    "hi"
+end
+
+>>>>>>> Stashed changes
 #### USER ENDPOINTS
 get '/users' do
 	@user = User.all
