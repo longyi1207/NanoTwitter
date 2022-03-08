@@ -21,6 +21,6 @@ module UserService
         end
 
         user = User.create(name: params[:username], password: password_hash, create_time:Time.now())
-        return true, user
+        return true, user.slice(:id, :name)
     end
 end

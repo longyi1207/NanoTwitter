@@ -1,7 +1,7 @@
 test:
   adapter: postgresql
   database: nt_project_test
-  host: 172.27.16.1
+  host: 172.20.80.1
   port: 5432
   username: postgres
   password: 123456
@@ -10,7 +10,7 @@ test:
 development:
   adapter: postgresql
   database: nt_project_dev
-  host: 172.27.16.1
+  host: 172.20.80.1
   port: 5432
   username: postgres
   password: 123456

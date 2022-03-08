@@ -28,6 +28,11 @@ get '/login' do
     erb :login
 end
 
+get '/logout' do
+    session.clear
+    redirect '/login'
+end
+
 post '/login' do
     valid, data = authenticate(params)
     if valid 
@@ -41,6 +46,7 @@ end
 
 get '/home' do
     authenticate!
+    @user = session[:user]
     erb :user
 end
 
