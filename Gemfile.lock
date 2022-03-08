@@ -13,6 +13,7 @@ GEM
       tzinfo (~> 2.0)
     addressable (2.8.0)
       public_suffix (>= 2.0.2, < 5.0)
+    bcrypt (3.1.16)
     celluloid (0.18.0)
       timers (~> 4)
     celluloid-io (0.17.3)
@@ -95,6 +96,7 @@ PLATFORMS
 
 DEPENDENCIES
   activerecord
+  bcrypt
   faker
   http
   pg

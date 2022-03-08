@@ -15,7 +15,7 @@
     <div style="width: 50%; position: absolute; right: 0px; height: 100%;">
       <div style="margin-top:100px; self-align:center; text-align:center">
         <p style="margin-top:100px"> Log in and see whats NEW </p>
-        <form> 
+        <form action="/login" method="post"> 
           <label for="username"> Username: </label>
           <br>
           <input type="text" name="username">
@@ -25,10 +25,14 @@
           <input type="text" name="password">
           <br>
           <br>
-          <input type="submit" value="Log in">
+          <input type="submit" value="Submit">
         </form>
-
-        <p style="margin-top:100px;"> Or <a href="#">Sign Up</a> if you dont have an account. </p>
+        <% if @error_message %>
+          <p id="error" style="color: red">
+            <%= @error_message %>
+          </p>
+        <% end %>
+        <p style="margin-top:100px;"> Or <a href="/users/new">Sign Up</a> if you dont have an account. </p>
       </div>
     </div>
 

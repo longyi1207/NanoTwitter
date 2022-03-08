@@ -10,28 +10,40 @@ require_relative 'models/mention.rb'
 require_relative 'models/like.rb'
 require_relative 'models/retweet.rb'
 require_relative 'models/tweetReply.rb'
+require_relative 'authentication.rb'
+require_relative 'userService.rb'
 require 'faker'
 
+enable :sessions
+
+include Authentication
+include UserService
 # These two will eventually become one once authentication is implemented.
 get '/' do
+    authenticate!
+    redirect "/home"
+end
+
+get '/login' do
     erb :login
 end
 
+post '/login' do
+    valid, data = authenticate(params)
+    if valid 
+        session[:user] = data
+        redirect_to_original_request
+    else
+        @error_message = data
+        erb :login
+    end
+end
+
 get '/home' do
+    authenticate!
     erb :user
 end
 
-<<<<<<< Updated upstream
-=======
-get '/signup' do
-    erb :signup
-end
-
-get '/hi' do
-    "hi"
-end
-
->>>>>>> Stashed changes
 #### USER ENDPOINTS
 get '/users' do
 	@user = User.all
@@ -41,10 +53,19 @@ get '/users/count' do
     User.all.count.to_s
 end
 
+get '/users/new' do
+    erb :signup
+end
+
 post '/users/new' do
-    @user = User.create(name:Faker::Name.name,
-        password:Faker::Number.decimal_part, 
-        create_time:Time.now())
+    valid, data = createUser(params)
+    if valid
+        session[:user] = data
+        redirect "/home"
+    else
+        @error_message = data
+        erb :signup
+    end
 end
 
 delete '/users/delete/:id' do

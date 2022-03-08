@@ -16,7 +16,7 @@
       <div style="margin-top:100px; self-align:center; text-align:center">
       <h1>Sign up</h1>
 
-      <form> 
+      <form action="/users/new" method="post"> 
           <label for="username"> our name </label>
           <br>
           <input type="text" name="username">
@@ -32,6 +32,11 @@
           <br>
           <input type="submit">
       </form>
+      <% if @error_message %>
+        <p id="error" style="color: red">
+          <%= @error_message %>
+        </p>
+      <% end %>
 
       </div>
     </div>
