@@ -18,3 +18,7 @@ heroku open
 heroku logs
 git add .
 git push heroku main
+
+
+ sudo lsof -i :4567
+ kill -9 36795      

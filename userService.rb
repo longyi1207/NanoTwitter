@@ -14,6 +14,7 @@ module UserService
             return false, "Passwords do not match!"
         end
         
+
         password_hash = Password.create(params[:password1])
         user = User.where(name: params[:username], password: password_hash).first
         if user != nil

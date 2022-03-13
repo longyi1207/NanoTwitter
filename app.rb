@@ -97,6 +97,14 @@ delete '/tweets' do
     Tweet.delete_all
 end
 
+post '/tweet/search' do
+    if !params[:keyword].blank?
+        @key = params[:keyword]
+        @result = Tweet.where("text like '%"+@key+"%'")
+        puts @result
+        erb :searchResult
+    end
+end
 
 #### TAG ENDPOINTS
 get '/tags' do
