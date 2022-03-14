@@ -47,13 +47,17 @@ end
 get '/home' do
     authenticate!
     @user = session[:user]
-    @followingCount, @followerCount = getFollowerCount(session[:user])
-    @followee = UserFollower.where("follower_id="+@user["id"].to_s).all
-    if @followee.length==0
-        return "Recommend some followees:"
-        ### to be done
+    @followingCount, @followerCount = getFollowerCount(@user)
+    followee = UserFollower.where("follower_id="+@user["id"].to_s).all
+    if followee.length==0
+        @tweet = []
+    else
+        @tweet = Tweet.where("user_id=any(array"+ followee.ids.to_s+")").order("create_time")
     end
-    @tweet = Tweet.where("user_id=any(array"+ @followee.ids.to_s+")").order("create_time")
+    @users = User.all
+    if @users.length>10
+        @users = @users[1..10]
+    end
     erb :user
 end
 

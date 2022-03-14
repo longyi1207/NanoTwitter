@@ -107,7 +107,7 @@
           <div class="card shadow-lg bg-dark" style="border-radius:10px; display: block; margin-top:20px; margin-bottom:20px;">
             <div class="card-title">
               <span class="glyphicon glyphicon-user"></span>
-              Timothy
+              HARDCODE : Timothy
               <br>
               <button style="font-size:10px;border-radius:12px; background-color:white; color: black; border: solid; margin-left: auto; margin-right: 0;"> Follow </button>
             </div>
@@ -116,12 +116,24 @@
           <div class="card shadow-lg bg-dark" style="border-radius:10px; margin-top:20px; margin-bottom:20px;">
             <div class="card-title">
               <span class="glyphicon glyphicon-user"></span>
-              Antonella
+              HARDCODE : Antonella
               <br>
               <button style="font-size:10px;border-radius:12px; background-color:white; color: black; border: solid; margin-left: auto;
               margin-right: 0;"> Follow </button>
             </div>
           </div>
+
+          <% @users.each do |u| %>
+            <div class="card shadow-lg bg-dark" style="border-radius:10px; margin-top:20px; margin-bottom:20px;">
+              <div class="card-title">
+                <span class="glyphicon glyphicon-user"></span>
+                <%= u.name %>
+                <br>
+                <button style="font-size:10px;border-radius:12px; background-color:white; color: black; border: solid; margin-left: auto;
+                margin-right: 0;"> Follow </button>
+              </div>
+            </div>
+          <% end %>
         </div>
 
       </div>
