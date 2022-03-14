@@ -49,10 +49,15 @@ get '/home' do
     @user = session[:user]
     @followingCount, @followerCount = getFollowerCount(@user)
     followee = UserFollower.where("follower_id="+@user["id"].to_s).all
-    if followee.length==0
+    followee_id = []
+    followee.each do |f|
+        followee_id.append(f["user_id"])
+    end
+
+    if followee_id.length==0
         @tweet = []
     else
-        @tweet = Tweet.where("user_id=any(array"+ followee.ids.to_s+")").order("create_time")
+        @tweet = Tweet.where("user_id=any(array"+ followee_id.to_s+")").order("create_time")
     end
 
     @user_names = []
