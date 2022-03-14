@@ -71,7 +71,7 @@
               Pito
             </div>
             <div class="card-body">
-              Having an icecream, yipee!
+              HARDCODE EXAMPLE: Having an icecream, yipee!
               <div style="font-size:10px">
               <a href="#"> <span class="glyphicon glyphicon-comment"></span> </a>
               1 comment 
@@ -81,21 +81,23 @@
             </div> 
           </div>
 
+          <% @tweet.each do |t| %>
           <div class="card shadow-lg bg-dark" style="border-radius:10px; margin-top:20px; margin-bottom:20px;">
             <div class="card-title">
               <span class="glyphicon glyphicon-user"></span>
-              Pito
+              <%= t.user_id %>
             </div>
             <div class="card-body">
-              Got to teach cosi105 now, sad :(
-              <div style="font-size:10px">
-              <a href="#"> <span class="glyphicon glyphicon-comment"></span> </a>
-              7 comment 
-              <a href="#"> <span class="glyphicon glyphicon-heart"></span> </a>
-              8 likes
-              </div>
+              <%= t.text %>
+                <div style="font-size:10px">
+                  <a href="#"> <span class="glyphicon glyphicon-comment"></span> </a>
+                  <%= t.retweets_counter %> retweets
+                  <a href="#"> <span class="glyphicon glyphicon-heart"></span> </a>
+                  <%= t.likes_counter %> likes
+                </div>
             </div> 
           </div>
+          <% end %>
 
         </div>
       
