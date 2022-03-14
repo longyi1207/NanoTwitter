@@ -86,11 +86,11 @@
             <h1 style="text-align:center"> Follow users to read their posts </h1>
           <% end %>
 
-          <% @tweet.each do |t| %>
+          <% @tweet.each_with_index do |t,i| %>
           <div class="card shadow-lg bg-dark" style="border-radius:10px; margin-top:20px; margin-bottom:20px;">
             <div class="card-title">
               <span class="glyphicon glyphicon-user"></span>
-              <%= t.user_id %>
+              <%= @user_names[i] %>
             </div>
             <div class="card-body">
               <%= t.text %>
@@ -127,7 +127,7 @@
             </div>
           </div>
 
-          <% @users.each do |u| %>
+          <% @recommend_users.each do |u| %>
             <div class="card shadow-lg bg-dark" style="border-radius:10px; margin-top:20px; margin-bottom:20px;">
               <div class="card-title">
                 <span class="glyphicon glyphicon-user"></span>

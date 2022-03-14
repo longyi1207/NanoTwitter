@@ -54,9 +54,16 @@ get '/home' do
     else
         @tweet = Tweet.where("user_id=any(array"+ followee.ids.to_s+")").order("create_time")
     end
-    @users = User.all
-    if @users.length>10
-        @users = @users[1..10]
+
+    @user_names = []
+    @tweet.each do |t|
+        @user_names.append(User.find(t["user_id"]).name)
+    end
+
+
+    @recommend_users = User.all
+    if @recommend_users.length>10
+        @recommend_users = @recommend_users[1..10]
     end
     erb :user
 end
