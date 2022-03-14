@@ -59,6 +59,9 @@ get '/home' do
     else
         @tweet = Tweet.where("user_id=any(array"+ followee_id.to_s+")").order("create_time")
     end
+    if @tweet.length>50
+        @tweet = @tweet[1..50]
+    end
 
     @user_names = []
     @tweet.each do |t|
