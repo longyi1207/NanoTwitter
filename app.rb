@@ -97,10 +97,15 @@ get '/tweets/count' do
     Tweet.all.count.to_s
 end
 
-post '/tweet/new' do
+post '/tweet/randNew' do
     @tweet= Tweet.create(text:Faker::Name.name+" "+Faker::Verb.past+" "+Faker::Hobby.activity,
     user_id:rand(1..10), likes_counter:rand(0..100), retweets_counter:rand(1..100), 
     parent_tweet_id:rand(1..10), original_tweet_id:rand(1..10), create_time:Time.now())
+end
+
+post '/tweet/new' do
+    @tweet= Tweet.create(text:params[:text], user_id:session[:user]["id"], likes_counter:0, retweets_counter:0, parent_tweet_id:0, original_tweet_id:0, create_time:Time.now())
+    redirect "/home"
 end
 
 delete '/tweets' do
