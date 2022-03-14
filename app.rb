@@ -47,7 +47,17 @@ end
 get '/home' do
     authenticate!
     @user = session[:user]
-    @followingCount, @followerCount = getFollowerCount(session[:user])
+    @followingCount, @followerCount = getFollowerCount(@user)
+    followee = UserFollower.where("follower_id="+@user["id"].to_s).all
+    if followee.length==0
+        @tweet = []
+    else
+        @tweet = Tweet.where("user_id=any(array"+ followee.ids.to_s+")").order("create_time")
+    end
+    @users = User.all
+    if @users.length>10
+        @users = @users[1..10]
+    end
     erb :user
 end
 
@@ -94,10 +104,15 @@ get '/tweets/count' do
     Tweet.all.count.to_s
 end
 
-post '/tweet/new' do
+post '/tweet/randNew' do
     @tweet= Tweet.create(text:Faker::Name.name+" "+Faker::Verb.past+" "+Faker::Hobby.activity,
     user_id:rand(1..10), likes_counter:rand(0..100), retweets_counter:rand(1..100), 
     parent_tweet_id:rand(1..10), original_tweet_id:rand(1..10), create_time:Time.now())
+end
+
+post '/tweet/new' do
+    @tweet= Tweet.create(text:params[:text], user_id:session[:user]["id"], likes_counter:0, retweets_counter:0, parent_tweet_id:0, original_tweet_id:0, create_time:Time.now())
+    redirect "/home"
 end
 
 delete '/tweets' do
@@ -195,29 +210,39 @@ end
 
 
 #### Generating ten rows for each table, for testing purpose
-get '/testing' do
-    for i in 1..10 do
-         User.create(name:Faker::Name.name, password:Faker::Number.decimal_part, create_time:Time.now())
-         
-         Tweet.create(text:Faker::Name.name+" "+Faker::Verb.past+" "+Faker::Hobby.activity,
-         user_id:rand(1..10), likes_counter:rand(0..100), retweets_counter:rand(1..100), 
-         parent_tweet_id:rand(1..10), original_tweet_id:rand(1..10), create_time:Time.now())
-         
-         Tag.create(name:Faker::WorldCup.team)
-         
-         Retweet.create( user_id:rand(1..10), tweet_id:rand(1..10), tweet_user_id:rand(1..10), create_time:Time.now())
-    
-         UserFollower.create(user_id:rand(1..10),follower_id:(1..10))
-         TagTweet.create(tag_id:rand(1..10), tweet_id:rand(1..10), create_time:Time.now)
-         Like.create(user_id:rand(1..10), tweet_id:rand(1..10), tweet_user_id:rand(1..10), create_time:Time.now)
-         Mention.create(user_id:rand(1..10), tweet_id:rand(1..10), tweet_user_id:rand(1..10), create_time:Time.now)
-    end
-end
-
-
-delete '/testing' do
+get '/generateRandomData' do
     User.delete_all
     Tweet.delete_all
     Tag.delete_all
     Retweet.delete_all
+    UserFollower.delete_all
+    TagTweet.delete_all
+    Like.delete_all
+    Mention.delete_all
+
+
+    for i in 1..50 do
+         User.create(name:Faker::Name.name, password:Faker::Number.decimal_part, create_time:Time.now())
+
+         Tag.create(name:Faker::WorldCup.team)
+         
+         Retweet.create( user_id:rand(1..51), tweet_id:rand(1..200), tweet_user_id:rand(1..51), create_time:Time.now())
+    
+         UserFollower.create(user_id:rand(1..51),follower_id:rand(1..51))
+         TagTweet.create(tag_id:rand(1..50), tweet_id:rand(1..200), create_time:Time.now)
+         Like.create(user_id:rand(1..51), tweet_id:rand(1..200), tweet_user_id:rand(1..51), create_time:Time.now)
+         Mention.create(user_id:rand(1..51), tweet_id:rand(1..200), tweet_user_id:rand(1..51), create_time:Time.now)
+    end
+
+    for i in 1..200 do
+        Tweet.create(text:Faker::Name.name+" "+Faker::Verb.past+" "+Faker::Hobby.activity,
+            user_id:rand(1..51), likes_counter:rand(0..100), retweets_counter:rand(1..100), 
+            parent_tweet_id:rand(1..200), original_tweet_id:rand(1..200), create_time:Time.now())
+    end
+
+    for i in 1..10 do
+        UserFollower.create(user_id:rand(1..51),follower_id:51)
+    end
+
+    redirect "/home"
 end

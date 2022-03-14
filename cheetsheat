@@ -1,10 +1,17 @@
 ### for developer usage, syntax I always forgot.
+irb:
+require_relative "app.rb"
+
+automatic rerload:
 rerun 'ruby app.rb'
 
 drop db in psql:
-drop database "nt_project_test";
+drop database "nt_project_dev";
+create database "nt_project_dev";
+select * from tweets;
 
 set up test db:
+rake db:migrate
 rake db:test:prepare
 
 run test:
@@ -25,3 +32,17 @@ git update-index --no-assume-unchanged config/database.yml
 
 sudo lsof -i :4567
 kill -9 36795      
+kill process:
+sudo lsof -i :4567
+kill -9 36795      
+
+reset id to 1:
+ALTER SEQUENCE users_id_seq RESTART WITH 1;
+ALTER SEQUENCE tweets_id_seq RESTART WITH 1;
+ALTER SEQUENCE likes_id_seq RESTART WITH 1;
+ALTER SEQUENCE mentions_id_seq RESTART WITH 1;
+ALTER SEQUENCE retweets_id_seq RESTART WITH 1;
+ALTER SEQUENCE tag_tweets_id_seq RESTART WITH 1;
+ALTER SEQUENCE tags_id_seq RESTART WITH 1;
+ALTER SEQUENCE tweet_replies_id_seq RESTART WITH 1;
+ALTER SEQUENCE user_followers_id_seq RESTART WITH 1;
