@@ -82,6 +82,10 @@
             </div> 
           </div>
 
+          <% if @tweet.length==0 %>
+            <h1 style="text-align:center"> Follow users to read their posts </h1>
+          <% end %>
+
           <% @tweet.each do |t| %>
           <div class="card shadow-lg bg-dark" style="border-radius:10px; margin-top:20px; margin-bottom:20px;">
             <div class="card-title">
