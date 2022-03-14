@@ -18,7 +18,7 @@ enable :sessions
 
 include Authentication
 include UserService
-# These two will eventually become one once authentication is implemented.
+
 get '/' do
     authenticate!
     redirect "/home"
@@ -47,6 +47,7 @@ end
 get '/home' do
     authenticate!
     @user = session[:user]
+    @followingCount, @followerCount = getFollowerCount(session[:user])
     erb :user
 end
 
@@ -78,6 +79,9 @@ delete '/users/delete/:id' do
     User.delete_all
 end
 
+post '/users/follow/:id' do
+
+end
 #### TWEETS ENDPOINTS
 get '/tweets' do
 	@tweet = Tweet.all
