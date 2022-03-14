@@ -79,9 +79,12 @@ delete '/users/delete/:id' do
     User.delete_all
 end
 
-post '/users/follow/:id' do
-
+get '/users/follow/:flag' do
+    authenticate!
+    @flag = params['flag']
+    erb :follower
 end
+
 #### TWEETS ENDPOINTS
 get '/tweets' do
 	@tweet = Tweet.all
