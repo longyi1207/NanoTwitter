@@ -274,3 +274,11 @@ get '/generateRandomData' do
 
     redirect "/home"
 end
+
+get "/generateFollowData" do
+    for i in 1..100 do
+        user = User.create(name:Faker::Name.name, password:Faker::Number.decimal_part, create_time:Time.now())
+        UserFollower.create(user_id:1,follower_id:user.id)
+        UserFollower.create(user_id:user.id,follower_id:1)
+    end
+end

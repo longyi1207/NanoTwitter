@@ -9,6 +9,16 @@
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
     <script>
+      $(window).scroll(function() {
+          if($(window).scrollTop() == $(document).height() - $(window).height()) {
+            if ( $('#followersTab').attr('aria-expanded') == 'true' ) {
+
+            } else {
+
+            }
+          }
+      });
+
       function doFollow(userid) {
         $.post("/users/doFollow",
         {
@@ -62,7 +72,7 @@
           </ul>
         </div>
 
-        <div class="col-8" style="height:100vh; border-left:solid; border-right:solid">
+        <div class="col-8" style="border-left:solid; border-right:solid">
           <div>
             <form class="form-inline my-2 my-lg-0" action="/tweet/search" method="post">
                 <input name="keyword" type="search" placeholder="Search" style="width:400px; text-align:center; margin:0 auto; color:black">
@@ -75,16 +85,16 @@
           </div>
 
           <ul class="nav nav-tabs justify-content-center" style="margin-top:50px; border-bottom:solid">
-            <li <%= @flag=='true' ? "class='active'" : "" %>>
-              <a href="#a" data-toggle="tab" href="#">Followers</a>
+            <li id=<%= @flag=='true' ? "class='active'" : "" %>>
+              <a id="followersTab" href="#followersContent" data-toggle="tab">Followers</a>
             </li>
             <li <%= @flag=='false' ? "class='active'" : "" %>>
-              <a href="#b" data-toggle="tab" href="#">Following</a>
+              <a id="followingTab" href="#followingContent" data-toggle="tab">Following</a>
             </li>
           </ul>
 
           <div class="tab-content">
-            <div <%= @flag=='true' ? "class='tab-pane active'" : "class='tab-pane'" %> id="a">
+            <div <%= @flag=='true' ? "class='tab-pane active'" : "class='tab-pane'" %> id="followersContent">
               <% @followersData.each do |follower| %>
                 <div class="card shadow-lg bg-dark" style="border-radius:10px; margin-top:20px; margin-bottom:20px;">
                   <div class="card-body">
@@ -96,12 +106,12 @@
                     <% else %>
                       <button id="follower<%= follower['id']%>" onclick="doFollow(<%= follower['id']%>)" style="font-size:10px;border-radius:12px; background-color:white; color: black; border: solid; margin-left: auto;
                       margin-right: 0;"> Follow </button>
-                    <% end %>
+                    <% end %> 
                   </div>
                 </div>
               <%end%>
             </div>
-            <div <%= @flag=='true' ? "class='tab-pane'" : "class='tab-pane active'" %> id="b">
+            <div <%= @flag=='true' ? "class='tab-pane'" : "class='tab-pane active'" %> id="followingContent">
               <% @followingData.each do |following| %>
                 <div class="card shadow-lg bg-dark" style="border-radius:10px; margin-top:20px; margin-bottom:20px;">
                   <div class="card-body">
