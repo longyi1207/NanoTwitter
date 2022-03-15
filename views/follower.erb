@@ -8,6 +8,29 @@
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <script>
+      function doFollow(userid) {
+        $.post("/users/doFollow",
+        {
+          userid: userid 
+        },
+        function(data) {
+          $("#follower" + userid).attr("onclick","doUnfollow(" + userid + ")");
+          $("#follower" + userid).html("Unfollow");
+        });
+      }
+
+      function doUnfollow(userid) {
+        $.post("/users/doUnfollow",
+        {
+          userid: userid 
+        },
+        function(data) {
+          $("#follower" + userid).attr("onclick","doFollow(" + userid + ")");
+          $("#follower" + userid).html("Follow");
+        });
+      }
+    </script>
 
   </head>
   <body style="background-color:black; color:white; font-size:20px">
@@ -56,14 +79,21 @@
 
           <div class="tab-content">
             <div <%= @flag=='true' ? "class='tab-pane active'" : "class='tab-pane'" %> id="a">
-              <div class="card shadow-lg bg-dark" style="border-radius:10px; margin-top:20px; margin-bottom:20px;">
-                <div class="card-body">
-                  <span class="glyphicon glyphicon-user"></span>
-                  Antonella
-                  <button style="font-size:10px;border-radius:12px; background-color:white; color: black; border: solid; margin-left: auto;
-                  margin-right: 0;"> Follow </button>
+              <% @followersData.each do |follower| %>
+                <div class="card shadow-lg bg-dark" style="border-radius:10px; margin-top:20px; margin-bottom:20px;">
+                  <div class="card-body">
+                    <span class="glyphicon glyphicon-user"></span>
+                    <%= follower["name"] %>
+                    <% if follower["followed"]>0%>
+                      <button id="follower<%= follower['id']%>" onclick="doUnfollow(<%= follower['id']%>)" style="font-size:10px;border-radius:12px; background-color:white; color: black; border: solid; margin-left: auto;
+                      margin-right: 0;"> Unfollow </button>
+                    <% else %>
+                      <button id="follower<%= follower['id']%>" onclick="doFollow(<%= follower['id']%>)" style="font-size:10px;border-radius:12px; background-color:white; color: black; border: solid; margin-left: auto;
+                      margin-right: 0;"> Follow </button>
+                    <% end %>
+                  </div>
                 </div>
-              </div>
+              <%end%>
             </div>
             <div <%= @flag=='true' ? "class='tab-pane'" : "class='tab-pane active'" %> id="b">BBB</div>
           </div>

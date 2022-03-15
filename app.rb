@@ -47,7 +47,7 @@ end
 get '/home' do
     authenticate!
     @user = session[:user]
-    @followingCount, @followerCount = getFollowerCount(@user)
+    @followingCount, @followerCount = getFollowerCount(@user["id"])
     followee = UserFollower.where("follower_id="+@user["id"].to_s).all
     followee_id = []
     followee.each do |f|
@@ -105,9 +105,24 @@ delete '/users/delete/:id' do
 end
 
 get '/users/follow/:flag' do
+    #true: follower, flase: following
     authenticate!
     @flag = params['flag']
+    if @flag == "true"
+        @followersData = getFollowers(session[:user][:id], 0, 50)
+    end
+    puts @followersData
     erb :follower
+end
+
+post "/users/doFollow" do
+    userid = params['userid']
+    followUser(session[:user][:id], userid)
+end
+
+post "/users/doUnfollow" do
+    userid = params['userid']
+    unfollowUser(session[:user][:id], userid)
 end
 
 #### TWEETS ENDPOINTS

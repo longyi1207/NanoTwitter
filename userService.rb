@@ -31,11 +31,13 @@ module UserService
         if check != nil
             UserFollower.create(user_id: userid, follower_id: myid)
         end
+        true
     end
 
     # Unfollow a user
     def unfollowUser(myid, userid)
         UserFollower.delete_by(user_id: userid, follower_id: myid)
+        true
     end
 
     # Get number of followings and followers
@@ -43,5 +45,18 @@ module UserService
         followingCount = UserFollower.where(follower_id: userid).count
         followerCount = UserFollower.where(user_id: userid).count
         return followingCount, followerCount
+    end
+
+    # Get folowers belonging to userid
+    def getFollowers(userid, offset, limit)
+        sql = %{select a.id, name, fid, COALESCE(follower_id, 0) as followed from (
+            select users.*, f.id as fid from 
+            (SELECT follower_id, user_followers.id FROM users
+            INNER JOIN user_followers ON user_followers.user_id = users.id WHERE users.id = #{userid}) as f 
+            inner join users on f.follower_id = users.id 
+            where f.id > #{offset} limit #{limit}) as a
+            left join user_followers on a.id = user_followers.user_id and follower_id = #{userid}
+            }
+        ActiveRecord::Base.connection.execute(sql)
     end
 end
