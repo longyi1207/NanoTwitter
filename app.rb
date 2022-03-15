@@ -294,9 +294,9 @@ get '/generateRandomData' do
 end
 
 get "/generateFollowData" do
-    User.delete_all
-    UserFollower.delete_all
-    User.create(name:"uuu", password:"$2a$12$tgM4oeSqLOJuvbvcscWICuIYRmoCbfGJ442yBugcGyg3lxc7d2OXa", create_time:Time.now())
+    ActiveRecord::Base.connection.execute("TRUNCATE TABLE users RESTART IDENTITY")
+    ActiveRecord::Base.connection.execute("TRUNCATE TABLE user_followers RESTART IDENTITY")
+    User.create(name:"test", password:"$2a$12$mr6D26FAAwzjQkB5jV2m0.13pp6CJnDh9xYUe4/.oOeryuXVHc8Vu", create_time:Time.now())
     for i in 1..100 do
         name = "name" + i.to_s
         user = User.create(name: name, password:Faker::Number.decimal_part, create_time:Time.now())
