@@ -9,15 +9,22 @@
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
     <script>
-      $(window).scroll(function() {
-          if($(window).scrollTop() == $(document).height() - $(window).height()) {
-            if ( $('#followersTab').attr('aria-expanded') == 'true' ) {
+      // $(window).scroll(function() {
+      //     if($(window).scrollTop() == $(document).height() - $(window).height()) {
+      //       if ( $("#followersTab").hasClass("active") ) {
+      //         maxId = $('#maxFollowersId').val()
+      //         $.post("/users/getMoreFollowers",
+      //         {
+      //           offset: maxId
+      //         },
+      //         function(data) {
+      //           alert(data)
+      //         });
+      //       } else {
 
-            } else {
-
-            }
-          }
-      });
+      //       }
+      //     }
+      // });
 
       function doFollow(userid) {
         $.post("/users/doFollow",
@@ -82,13 +89,15 @@
           <div class="text-center" style="margin-top:50px">
             <span class="glyphicon glyphicon-user" style="font-size:100px"></span>
             <h3> <%= session[:user][:name] %> </h3>
+            <input id="maxFollowersId" type="hidden" value="<%= @maxFollowersId%>">
+            <input id="maxFollowingId" type="hidden" value="<%= @maxFollowingId%>">
           </div>
 
           <ul class="nav nav-tabs justify-content-center" style="margin-top:50px; border-bottom:solid">
-            <li id=<%= @flag=='true' ? "class='active'" : "" %>>
+            <li id="followersTab" <%= @flag=='true' ? "class='active'" : "" %>>
               <a id="followersTab" href="#followersContent" data-toggle="tab">Followers</a>
             </li>
-            <li <%= @flag=='false' ? "class='active'" : "" %>>
+            <li id="followingTab" <%= @flag=='false' ? "class='active'" : "" %>>
               <a id="followingTab" href="#followingContent" data-toggle="tab">Following</a>
             </li>
           </ul>

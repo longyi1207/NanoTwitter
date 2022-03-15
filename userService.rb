@@ -67,8 +67,8 @@ module UserService
             (SELECT user_id, user_followers.id FROM users
             INNER JOIN user_followers ON user_followers.follower_id = users.id WHERE users.id = #{userid}) as f 
             inner join users on f.user_id = users.id 
-            where f.id > #{offset} limit #{limit}
-            order by id asc
+            where f.id > #{offset}
+            order by id asc limit #{limit}
             }
         ActiveRecord::Base.connection.execute(sql)
     end
