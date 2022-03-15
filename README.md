@@ -13,7 +13,7 @@ in terminal: rake db:migrate
 in terminal: ruby app.rb
 
 * generate random data
-calling the route: localhost:546/generateRandomData
+calling the route: localhost:5467/generateRandomData
 generates 50 random users and 200 random tweets etc. for testing 
 
 * How to run the test suite
