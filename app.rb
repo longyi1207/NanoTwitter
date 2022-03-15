@@ -108,10 +108,8 @@ get '/users/follow/:flag' do
     #true: follower, flase: following
     authenticate!
     @flag = params['flag']
-    if @flag == "true"
-        @followersData = getFollowers(session[:user][:id], 0, 50)
-    end
-    puts @followersData
+    @followersData = getFollowers(session[:user][:id], 0, 50)
+    @followingData = getFollowing(session[:user][:id], 0, 50)
     erb :follower
 end
 

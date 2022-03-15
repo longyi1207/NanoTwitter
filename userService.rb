@@ -47,7 +47,7 @@ module UserService
         return followingCount, followerCount
     end
 
-    # Get folowers belonging to userid
+    # Get folowers following to userid
     def getFollowers(userid, offset, limit)
         sql = %{select a.id, name, fid, COALESCE(follower_id, 0) as followed from (
             select users.*, f.id as fid from 
@@ -56,6 +56,17 @@ module UserService
             inner join users on f.follower_id = users.id 
             where f.id > #{offset} limit #{limit}) as a
             left join user_followers on a.id = user_followers.user_id and follower_id = #{userid}
+            }
+        ActiveRecord::Base.connection.execute(sql)
+    end
+
+    # Get users followed by userid
+    def getFollowing(userid, offset, limit)
+        sql = %{select users.id, users.name, f.id as fid from 
+            (SELECT user_id, user_followers.id FROM users
+            INNER JOIN user_followers ON user_followers.follower_id = users.id WHERE users.id = #{userid}) as f 
+            inner join users on f.user_id = users.id 
+            where f.id > #{offset} limit #{limit}
             }
         ActiveRecord::Base.connection.execute(sql)
     end

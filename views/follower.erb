@@ -17,6 +17,9 @@
         function(data) {
           $("#follower" + userid).attr("onclick","doUnfollow(" + userid + ")");
           $("#follower" + userid).html("Unfollow");
+
+          $("#following" + userid).attr("onclick","doUnfollow(" + userid + ")");
+          $("#following" + userid).html("Unfollow");
         });
       }
 
@@ -28,6 +31,9 @@
         function(data) {
           $("#follower" + userid).attr("onclick","doFollow(" + userid + ")");
           $("#follower" + userid).html("Follow");
+
+          $("#following" + userid).attr("onclick","doFollow(" + userid + ")");
+          $("#following" + userid).html("Follow");
         });
       }
     </script>
@@ -95,7 +101,18 @@
                 </div>
               <%end%>
             </div>
-            <div <%= @flag=='true' ? "class='tab-pane'" : "class='tab-pane active'" %> id="b">BBB</div>
+            <div <%= @flag=='true' ? "class='tab-pane'" : "class='tab-pane active'" %> id="b">
+              <% @followingData.each do |following| %>
+                <div class="card shadow-lg bg-dark" style="border-radius:10px; margin-top:20px; margin-bottom:20px;">
+                  <div class="card-body">
+                    <span class="glyphicon glyphicon-user"></span>
+                    <%= following["name"] %>
+                    <button id="following<%= following['id']%>" onclick="doUnfollow(<%= following['id']%>)" style="font-size:10px;border-radius:12px; background-color:white; color: black; border: solid; margin-left: auto;
+                    margin-right: 0;"> Unfollow </button>
+                  </div>
+                </div>
+              <%end%>
+            </div>
           </div>
 
         </div>
