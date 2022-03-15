@@ -113,10 +113,10 @@ get '/users/follow/:flag' do
     @maxFollowersId = 0
     @maxFollowingId = 0
     if @followersData.ntuples > 0
-        @maxFollowersId = @followersData[@followersData.ntuples-1]["id"]
+        @maxFollowersId = @followersData[@followersData.ntuples-1]["fid"]
     end
     if @followingData.ntuples > 0
-        @maxFollowingId = @followingData[@followingData.ntuples-1]["id"]
+        @maxFollowingId = @followingData[@followingData.ntuples-1]["fid"]
     end
     erb :follower
 end
@@ -133,12 +133,12 @@ end
 
 post "/users/getMoreFollowers" do
     offset = params['offset']
-    getFollowers(session[:user][:id], offset, 50).to_json
+    getFollowers(session[:user][:id], offset, 10).to_json
 end
 
 post "/users/getMoreFollowing" do
     offset = params['offset']
-    getFollowing(session[:user][:id], offset, 50).to_json
+    getFollowing(session[:user][:id], offset, 10).to_json
 end
 
 #### TWEETS ENDPOINTS
@@ -294,8 +294,12 @@ get '/generateRandomData' do
 end
 
 get "/generateFollowData" do
+    User.delete_all
+    UserFollower.delete_all
+    User.create(name:"uuu", password:"$2a$12$tgM4oeSqLOJuvbvcscWICuIYRmoCbfGJ442yBugcGyg3lxc7d2OXa", create_time:Time.now())
     for i in 1..100 do
-        user = User.create(name:Faker::Name.name, password:Faker::Number.decimal_part, create_time:Time.now())
+        name = "name" + i.to_s
+        user = User.create(name: name, password:Faker::Number.decimal_part, create_time:Time.now())
         UserFollower.create(user_id:1,follower_id:user.id)
         UserFollower.create(user_id:user.id,follower_id:1)
     end

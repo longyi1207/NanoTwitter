@@ -27,7 +27,7 @@ module UserService
 
     # Follow a user
     def followUser(myid, userid)
-        check = UserFollower.where(user_id: userid, follower_id: myid)
+        check = UserFollower.where(user_id: userid, follower_id: myid).first
         if check != nil
             UserFollower.create(user_id: userid, follower_id: myid)
         end
@@ -56,7 +56,7 @@ module UserService
             inner join users on f.follower_id = users.id 
             where f.id > #{offset} limit #{limit}) as a
             left join user_followers on a.id = user_followers.user_id and follower_id = #{userid}
-            order by id asc
+            order by fid asc
             }
         ActiveRecord::Base.connection.execute(sql)
     end
@@ -68,7 +68,7 @@ module UserService
             INNER JOIN user_followers ON user_followers.follower_id = users.id WHERE users.id = #{userid}) as f 
             inner join users on f.user_id = users.id 
             where f.id > #{offset}
-            order by id asc limit #{limit}
+            order by f.id asc limit #{limit}
             }
         ActiveRecord::Base.connection.execute(sql)
     end

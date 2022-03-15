@@ -9,22 +9,47 @@
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
     <script>
-      // $(window).scroll(function() {
-      //     if($(window).scrollTop() == $(document).height() - $(window).height()) {
-      //       if ( $("#followersTab").hasClass("active") ) {
-      //         maxId = $('#maxFollowersId').val()
-      //         $.post("/users/getMoreFollowers",
-      //         {
-      //           offset: maxId
-      //         },
-      //         function(data) {
-      //           alert(data)
-      //         });
-      //       } else {
+      var timeout
+      $(window).scroll(function() {
+          clearTimeout(timeout); 
+          timeout = setTimeout(() => {
+          // if($(window).scrollTop() == $(document).height() - $(window).height()) {
+            if ((window.innerHeight + window.pageYOffset) >= document.body.offsetHeight) {
+              if ( $("#followersTab").hasClass("active") ) {
+                maxId = $('#maxFollowersId').val()
+                $.post("/users/getMoreFollowers",
+                {
+                  offset: maxId
+                },
+                function(data) {
+                  data = $.parseJSON(data);
+                  if (data.length > 0) {
+                    $('#maxFollowersId').val(data[data.length-1]["fid"]);
+                    $.each(data, function(i, item) {
+                      html = "";
+                      if (item["followed"] > 0) {
+                        html = $('<div class="card shadow-lg bg-dark" style="border-radius:10px; margin-top:20px; margin-bottom:20px;">')
+                            .append($('<div class="card-body">')
+                            .append('<span class="glyphicon glyphicon-user"></span>')
+                            .append(item["name"])
+                            .append('<button id="follower'+item["id"]+'" onclick="doUnfollow('+item["id"]+')" style="font-size:10px;border-radius:12px; background-color:white; color: black; border: solid; margin-left: auto; margin-right: 0;"> Unfollow </button>'));
+                      } else {
+                        html = $('<div class="card shadow-lg bg-dark" style="border-radius:10px; margin-top:20px; margin-bottom:20px;">')
+                            .append($('<div class="card-body">')
+                            .append('<span class="glyphicon glyphicon-user"></span>')
+                            .append(item["name"])
+                            .append('<button id="follower'+item["id"]+'" onclick="doFollow('+item["id"]+')" style="font-size:10px;border-radius:12px; background-color:white; color: black; border: solid; margin-left: auto; margin-right: 0;"> Follow </button>'));
+                      }
+                      $('#followersContent').append(html)
+                    });
+                  }
+                });
+              } else {
 
-      //       }
-      //     }
-      // });
+              }
+            }
+          }, 50);
+      });
 
       function doFollow(userid) {
         $.post("/users/doFollow",
