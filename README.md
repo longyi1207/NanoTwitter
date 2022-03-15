@@ -1,32 +1,38 @@
-# NanoTwitter
+# NanoTwitter 1.0
+* Ruby version
+"3.0.3"
 
+* System dependencies
+ "thin", "puma", "reel", "http", "webrick", "rake", "sinatra", "activerecord", "sinatra-activerecord", "pg", "rack-test", "faker", "bcrypt"
 
-This README would normally document whatever steps are necessary to get the
-application up and running.
+* Database creation
+in postgres: create database nt_project_dev
+in terminal: rake db:migrate
+
+* How to run the app
+in terminal: ruby app.rb
+
+* generate random data
+calling the route: localhost:546/generateRandomData
+generates 50 random users and 200 random tweets etc. for testing 
+
+* How to run the test suite
+in terminal: ruby test/test.rb
+
+* Services (job queues, cache servers, search engines, etc.)
+redis, snowflake?
+
+* Deployment
+https://cosi105nanotwitter.herokuapp.com/home
+
+* Change History
+NT-0.1 Feb14: create active record scheme, migration, and testing suite
+NT-0.2 Mar2: create frontend UI, deploy to heroku
+NT-1.0 Mar14: implement core function including user following, tweeting, and timeline
+
 
 SCREENSHOT:
 ![alt text](https://github.com/longyi1207/NanoTwitter/blob/main/login.jpg?raw=true)
 ![alt text](https://github.com/longyi1207/NanoTwitter/blob/main/user.jpg?raw=true)
 
-Things you may want to cover:
-
-* Ruby version
-
-* System dependencies
-
-* Configuration
-
-* Database creation
-
-* Database initialization
-
-* How to run the test suite
-
-* Services (job queues, cache servers, search engines, etc.)
-
-* Deployment instructions
-
-* Change History
-NT-0.1 : xxx (Zhendan), xxx (Lisandro), xxx (Long)
-  
   
