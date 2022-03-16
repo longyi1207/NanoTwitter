@@ -330,6 +330,22 @@ get '/generateRandomData' do
     redirect "/home"
 end
 
+get "/test/tweet" do
+    if params[:tweet_user].to_i <= 0 || params[:tweet_count].to_i <= 0
+        return 400, "Params invalid!"
+    end
+    user = User.where(id: params[:tweet_user]).first
+    if user == nil
+        [400, "User does not exist!"]
+    else
+        1.upto(params[:tweet_count].to_i) do |i|
+            Tweet.create(text:Faker::Name.name+" "+Faker::Verb.past+" "+Faker::Hobby.activity,
+                user_id:params[:tweet_user], likes_counter:0, retweets_counter:0, create_time:Time.now())
+        end
+        [200, "Success"]
+    end
+end
+
 get "/generateFollowData" do
     ActiveRecord::Base.connection.execute("TRUNCATE TABLE users RESTART IDENTITY")
     ActiveRecord::Base.connection.execute("TRUNCATE TABLE user_followers RESTART IDENTITY")
