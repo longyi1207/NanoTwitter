@@ -178,6 +178,35 @@ get '/test/reset/standard' do
     status 200
 end
 
+get "/test/tweet" do
+    if params[:tweet_user].to_i <= 0 || params[:tweet_count].to_i <= 0
+        return 400, "Params invalid!"
+    end
+    user = User.where(id: params[:tweet_user]).first
+    if user == nil
+        [400, "User does not exist!"]
+    else
+        1.upto(params[:tweet_count].to_i) do |i|
+            Tweet.create(text:Faker::Name.name+" "+Faker::Verb.past+" "+Faker::Hobby.activity,
+                user_id:params[:tweet_user], likes_counter:0, retweets_counter:0, create_time:Time.now())
+        end
+        [200, "Success"]
+    end
+end
+
+get "/test/status" do
+    @users = User.all.count
+    @follows = UserFollower.all.count
+    @tweets = Tweet.all.count
+    user = User.where(name: "testuser").first
+    if user == nil
+        @testUser = "Not exist"
+    else
+        @testUser = user.id
+    end
+    erb :status
+end
+
 #### TWEETS ENDPOINTS
 get '/tweets' do
 	@tweet = Tweet.all
@@ -328,35 +357,6 @@ get '/generateRandomData' do
     end
 
     redirect "/home"
-end
-
-get "/test/tweet" do
-    if params[:tweet_user].to_i <= 0 || params[:tweet_count].to_i <= 0
-        return 400, "Params invalid!"
-    end
-    user = User.where(id: params[:tweet_user]).first
-    if user == nil
-        [400, "User does not exist!"]
-    else
-        1.upto(params[:tweet_count].to_i) do |i|
-            Tweet.create(text:Faker::Name.name+" "+Faker::Verb.past+" "+Faker::Hobby.activity,
-                user_id:params[:tweet_user], likes_counter:0, retweets_counter:0, create_time:Time.now())
-        end
-        [200, "Success"]
-    end
-end
-
-get "/test/status" do
-    @users = User.all.count
-    @follows = UserFollower.all.count
-    @tweets = Tweet.all.count
-    user = User.where(name: "testuser").first
-    if user == nil
-        @testUser = "Not exist"
-    else
-        @testUser = user.id
-    end
-    erb :status
 end
 
 get "/generateFollowData" do
