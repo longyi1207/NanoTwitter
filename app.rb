@@ -346,6 +346,19 @@ get "/test/tweet" do
     end
 end
 
+get "/test/status" do
+    @users = User.all.count
+    @follows = UserFollower.all.count
+    @tweets = Tweet.all.count
+    user = User.where(name: "testuser").first
+    if user == nil
+        @testUser = "Not exist"
+    else
+        @testUser = user.id
+    end
+    erb :status
+end
+
 get "/generateFollowData" do
     ActiveRecord::Base.connection.execute("TRUNCATE TABLE users RESTART IDENTITY")
     ActiveRecord::Base.connection.execute("TRUNCATE TABLE user_followers RESTART IDENTITY")
