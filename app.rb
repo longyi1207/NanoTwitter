@@ -13,6 +13,7 @@ require_relative 'models/tweetReply.rb'
 require_relative 'authentication.rb'
 require_relative 'userService.rb'
 require 'faker'
+require 'csv'
 
 enable :sessions
 
@@ -139,6 +140,42 @@ end
 post "/users/getMoreFollowing" do
     offset = params['offset']
     getFollowing(session[:user][:id], offset, 10).to_json
+end
+
+
+#### TEST ENDPOINTS
+get '/test/reset/standard' do
+    User.delete_all
+    Tweet.delete_all
+    Tag.delete_all
+    Retweet.delete_all
+    UserFollower.delete_all
+    TagTweet.delete_all
+    Like.delete_all
+    Mention.delete_all
+
+    followData = File.open("./seeds/follows.csv").read
+    userData = File.open("./seeds/users.csv").read
+    tweetData = File.open("./seeds/tweets.csv").read
+    
+    tweetN = params[:tweets]
+    userN = params[:users]
+    followN = params[:follows]
+
+    userParse = CSV.parse(userData)[0..userN.to_i-1]
+    followParse = CSV.parse(followData)[0..followN.to_i-1]
+    tweetParse = CSV.parse(tweetData)[0..tweetN.to_i-1]
+
+    userJson = userParse.map{ |e| {id: e[0], name: e[1]} }
+    User.insert_all(userJson)
+
+    tweetJson = tweetParse.map{ |e| {user_id: e[0], text: e[1], create_time: e[2]} }
+    Tweet.insert_all(tweetJson)
+
+    followJson = followParse.map{ |e| {user_id: e[0], follower_id: e[1]} }
+    UserFollower.insert_all(followJson)
+
+    status 200
 end
 
 #### TWEETS ENDPOINTS
