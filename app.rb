@@ -170,13 +170,19 @@ get '/test/reset/standard' do
     tweetParse = CSV.parse(tweetData)[0..tweetN.to_i-1]
 
     userJson = userParse.map{ |e| {id: e[0], name: e[1]} }
-    User.insert_all(userJson)
+    userJson.each_slice(1000).to_a.each do |data|
+        User.insert_all(data)
+    end
 
     tweetJson = tweetParse.map{ |e| {user_id: e[0], text: e[1], create_time: e[2]} }
-    Tweet.insert_all(tweetJson)
+    tweetJson.each_slice(1000).to_a.each do |data|
+        Tweet.insert_all(data)
+    end
 
     followJson = followParse.map{ |e| {user_id: e[0], follower_id: e[1]} }
-    UserFollower.insert_all(followJson)
+    followJson.each_slice(1000).to_a.each do |data|
+        UserFollower.insert_all(data)
+    end
 
     status 200
 end
