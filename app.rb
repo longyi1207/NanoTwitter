@@ -16,6 +16,7 @@ require_relative 'testService.rb'
 require_relative 'tweetService.rb'
 require 'faker'
 require 'csv'
+require 'json'
 
 enable :sessions
 
@@ -64,6 +65,39 @@ get '/home' do
 end
 
 #### USER ENDPOINTS
+###
+get '/user/#id' do
+    @user = User.find(id)
+    @followingCount, @followerCount = getFollowerCount(@user["id"])
+    followee = UserFollower.where("follower_id="+@user["id"].to_s).all
+    followee_id = []
+    followee.each do |f|
+        followee_id.append(f["user_id"])
+    end
+
+    if followee_id.length==0
+        @tweet = []
+    else
+        @tweet = Tweet.where("user_id=any(array"+ followee_id.to_s+")").order("create_time")
+    end
+    if @tweet.length>50
+        @tweet = @tweet[1..50]
+    end
+
+    @user_names = []
+    @tweet.each do |t|
+        @user_names.append(User.find(t["user_id"]).name)
+    end
+
+
+    @recommend_users = User.all
+    if @recommend_users.length>10
+        @recommend_users = @recommend_users[1..10]
+    end
+    erb :user
+end
+
+
 get '/users' do
 	@user = User.all
 end
@@ -130,6 +164,35 @@ end
 
 
 #### TEST ENDPOINTS
+
+### I don't know how to parse local json file
+get '/test/readCsv' do
+
+    followData = File.open("./seeds/follows.csv").read
+    userData = File.open("./seeds/users.csv").read
+    tweetData = File.open("./seeds/tweets.csv").read
+
+    userParse = CSV.parse(userData)
+    followParse = CSV.parse(followData)
+    tweetParse = CSV.parse(tweetData)
+
+    userJson = userParse.map{ |e| {id: e[0], name: e[1]} }
+    tweetJson = tweetParse.map{ |e| {user_id: e[0], text: e[1], create_time: e[2]} }
+    followJson = followParse.map{ |e| {user_id: e[0], follower_id: e[1]} }
+    File.open("user.json","w") do |f|
+        f.write(userJson)
+    end
+    File.open("tweet.json","w") do |f|
+        f.write(tweetJson)
+    end
+    File.open("follow.json","w") do |f|
+        f.write(followJson)
+    end
+
+    # File.exist?("tweets.json")
+end
+
+
 get '/test/reset/standard' do
     ActiveRecord::Base.connection.execute("TRUNCATE TABLE users RESTART IDENTITY")
     ActiveRecord::Base.connection.execute("TRUNCATE TABLE tweets RESTART IDENTITY")
@@ -164,9 +227,45 @@ get '/test/reset/standard' do
     end
 
     followJson = followParse.map{ |e| {user_id: e[0], follower_id: e[1]} }
+
     followJson.each_slice(1000).to_a.each do |data|
         UserFollower.insert_all(data)
     end
+
+    status 200
+end
+
+
+get '/test/reset' do
+    User.delete_all
+    Tweet.delete_all
+    UserFollower.delete_all
+
+    followData = File.open("./seeds/follows.csv").read
+    userData = File.open("./seeds/users.csv").read
+    tweetData = File.open("./seeds/tweets.csv").read
+    
+    userN = params[:user_count]
+
+    userParse = CSV.parse(userData)[0..user_count.to_i-1]
+    followParse = CSV.parse(followData)
+    tweetParse = CSV.parse(tweetData)
+
+    userJson = userParse.map{ |e| {id: e[0], name: e[1]} }
+    User.insert_all(userJson)
+
+    ### import tweet by users
+    tweetJson = tweetParse.map{ |e| {user_id: e[0], text: e[1], create_time: e[2]} }
+    Tweet.insert_all(tweetJson)
+
+    ## import followings of users
+    followJson = followParse.map{ |e| {user_id: e[0], follower_id: e[1]} }
+    UserFollower.insert_all(followJson)
+
+    ### import more users
+    
+    User.create(name:"testuser", password:"password")
+
 
     status 200
 end
