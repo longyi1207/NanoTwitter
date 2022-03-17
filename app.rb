@@ -12,6 +12,7 @@ require_relative 'models/retweet.rb'
 require_relative 'models/tweetReply.rb'
 require_relative 'authentication.rb'
 require_relative 'userService.rb'
+require_relative 'testService.rb'
 require 'faker'
 require 'csv'
 
@@ -19,6 +20,7 @@ enable :sessions
 
 include Authentication
 include UserService
+include TestService
 
 get '/' do
     authenticate!
@@ -145,14 +147,15 @@ end
 
 #### TEST ENDPOINTS
 get '/test/reset/standard' do
-    User.delete_all
-    Tweet.delete_all
-    Tag.delete_all
-    Retweet.delete_all
-    UserFollower.delete_all
-    TagTweet.delete_all
-    Like.delete_all
-    Mention.delete_all
+    ActiveRecord::Base.connection.execute("TRUNCATE TABLE users RESTART IDENTITY")
+    ActiveRecord::Base.connection.execute("TRUNCATE TABLE tweets RESTART IDENTITY")
+    ActiveRecord::Base.connection.execute("TRUNCATE TABLE tags RESTART IDENTITY")
+    ActiveRecord::Base.connection.execute("TRUNCATE TABLE retweets RESTART IDENTITY")
+    ActiveRecord::Base.connection.execute("TRUNCATE TABLE user_followers RESTART IDENTITY")
+    ActiveRecord::Base.connection.execute("TRUNCATE TABLE tag_tweets RESTART IDENTITY")
+    ActiveRecord::Base.connection.execute("TRUNCATE TABLE likes RESTART IDENTITY")
+    ActiveRecord::Base.connection.execute("TRUNCATE TABLE mentions RESTART IDENTITY")
+    ActiveRecord::Base.connection.execute("TRUNCATE TABLE tweet_replies RESTART IDENTITY")   
 
     followData = File.open("./seeds/follows.csv").read
     userData = File.open("./seeds/users.csv").read
@@ -205,6 +208,23 @@ get "/test/status" do
         @testUser = user.id
     end
     erb :status
+end
+
+get "/test/corrupted" do
+    max = User.all.count
+    1.upto(params[:user_count].to_i) do |i|
+        userid = rand(1..max)
+        if !userCorrupted?(userid)
+            return [400, "Corrupted!"]
+        end
+        tweets = Tweet.where(user_id:userid)
+        tweets.each do |t|
+            if !tweetCorrupted?(tweet)
+                return [400, "Corrupted!"]
+            end
+        end
+    end
+    [200, "OK"]
 end
 
 #### TWEETS ENDPOINTS
