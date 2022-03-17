@@ -13,6 +13,7 @@ require_relative 'models/tweetReply.rb'
 require_relative 'authentication.rb'
 require_relative 'userService.rb'
 require_relative 'testService.rb'
+require_relative 'tweetService.rb'
 require 'faker'
 require 'csv'
 
@@ -21,6 +22,7 @@ enable :sessions
 include Authentication
 include UserService
 include TestService
+include TweetService
 
 get '/' do
     authenticate!
@@ -51,26 +53,8 @@ get '/home' do
     authenticate!
     @user = session[:user]
     @followingCount, @followerCount = getFollowerCount(@user["id"])
-    followee = UserFollower.where("follower_id="+@user["id"].to_s).all
-    followee_id = []
-    followee.each do |f|
-        followee_id.append(f["user_id"])
-    end
 
-    if followee_id.length==0
-        @tweet = []
-    else
-        @tweet = Tweet.where("user_id=any(array"+ followee_id.to_s+")").order("create_time")
-    end
-    if @tweet.length>50
-        @tweet = @tweet[1..50]
-    end
-
-    @user_names = []
-    @tweet.each do |t|
-        @user_names.append(User.find(t["user_id"]).name)
-    end
-
+    @user_names, @tweet = fetchTimeline(@user["id"])
 
     @recommend_users = User.all
     if @recommend_users.length>10
@@ -233,6 +217,38 @@ get "/test/corrupted" do
     [200, "OK"]
 end
 
+get "/test/stress" do
+    n = params[:n].to_i
+    star = params[:star].to_i
+    fan = params[:fan].to_i
+    check = UserFollower.where(user_id:star, follower_id:fan).first
+    if check == nil
+        UserFollower.create(user_id:star, follower_id:fan)
+    end
+    text_list = []
+    id_list = []
+    1.upto(n) do |i|
+        text = Faker::Name.name+" "+Faker::Verb.past+" "+Faker::Hobby.activity
+        tweet = doTweet(text, star)
+        text_list.append(text)
+        id_list.append(tweet.id)
+    end
+    id_list.each do |i|
+        getTweet(i)
+    end
+    user_names, tweet = fetchTimeline(fan)
+    timeline = Set.new
+    tweet.each do |t|
+        timeline << t.id
+    end
+    id_list.each do |i|
+        if !timeline.include?(i)
+            return [400, "Timeline test failed!"]
+        end
+    end
+    [200, "OK"]
+end
+
 #### TWEETS ENDPOINTS
 get '/tweets' do
 	@tweet = Tweet.all
@@ -249,7 +265,7 @@ post '/tweet/randNew' do
 end
 
 post '/tweet/new' do
-    @tweet= Tweet.create(text:params[:text], user_id:session[:user]["id"], likes_counter:0, retweets_counter:0, parent_tweet_id:0, original_tweet_id:0, create_time:Time.now())
+    @tweet = doTweet(params[:text], session[:user]["id"])
     redirect "/home"
 end
 
