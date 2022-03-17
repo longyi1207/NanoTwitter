@@ -237,9 +237,9 @@ end
 
 
 get '/test/reset' do
-    User.delete_all
-    Tweet.delete_all
-    UserFollower.delete_all
+    ActiveRecord::Base.connection.execute("TRUNCATE TABLE users RESTART IDENTITY")
+    ActiveRecord::Base.connection.execute("TRUNCATE TABLE tweets RESTART IDENTITY")
+    ActiveRecord::Base.connection.execute("TRUNCATE TABLE user_followers RESTART IDENTITY")
 
     followData = File.open("./seeds/follows.csv").read
     userData = File.open("./seeds/users.csv").read
@@ -247,26 +247,34 @@ get '/test/reset' do
     
     userN = params[:user_count]
 
-    userParse = CSV.parse(userData)[0..user_count.to_i-1]
+    userParse = CSV.parse(userData)
     followParse = CSV.parse(followData)
     tweetParse = CSV.parse(tweetData)
 
-    userJson = userParse.map{ |e| {id: e[0], name: e[1]} }
-    User.insert_all(userJson)
-
-    ### import tweet by users
-    tweetJson = tweetParse.map{ |e| {user_id: e[0], text: e[1], create_time: e[2]} }
-    Tweet.insert_all(tweetJson)
+    userIds = userParse[0..userN.to_i-1].map{ |e| e[0] }
 
     ## import followings of users
-    followJson = followParse.map{ |e| {user_id: e[0], follower_id: e[1]} }
-    UserFollower.insert_all(followJson)
+    relatedFollows = followParse.select{|e| (userIds.include?e[1]) || (userIds.include?e[0])} 
+    followJson = relatedFollows.map{ |e| {user_id: e[0], follower_id: e[1]}}
+    followJson.each_slice(1000).to_a.each do |data|
+        UserFollower.insert_all(data)
+    end
 
     ### import more users
+    userIds = relatedFollows.flatten.uniq;
+    userJson = userParse.select{|e| (userIds.include?e[0])}.map{ |e| {id: e[0], name: e[1]} }
+    userJson.each_slice(1000).to_a.each do |data|
+        User.insert_all(data)
+    end
     
+    ### import tweet by users
+    tweetJson = tweetParse.select{|e| (userIds.include?e[0])}.map{ |e| {user_id: e[0], text: e[1], create_time: e[2]} }
+    tweetJson.each_slice(1000).to_a.each do |data|
+        Tweet.insert_all(data)
+    end
+
+    ActiveRecord::Base.connection.reset_pk_sequence!('users')
     User.create(name:"testuser", password:"password")
-
-
     status 200
 end
 
