@@ -26,9 +26,9 @@ redis, snowflake?
 https://cosi105nanotwitter.herokuapp.com/home
 
 * Change History
-NT-0.1 Feb14: create active record scheme, migration, and testing suite
-NT-0.2 Mar2: create frontend UI, deploy to heroku
-NT-1.0 Mar14: implement core function including user following, tweeting, and timeline
+NT-0.1 Feb14: create active record scheme, migration (Zhendan), and testing suite (Long)
+NT-0.2 Mar2: create frontend UI (Long), deploy to heroku (Zhendan), create routes (Lisandro)
+NT-1.0 Mar14: implement core function including user following (Zhendan), tweeting (Long), and timeline (Long)
 
 
 SCREENSHOT:
