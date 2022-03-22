@@ -19,8 +19,22 @@ module TweetService
         return user_names, tweet
     end
 
-    def doTweet(text, userid)
+    # body = "hi asd #emem @ads #aa dasda @"
+    def parseTweet(text, userid)
+        body = text.split()
+        body.each do |t|
+            if t.length > 1
+                if t[0]=="#"
+                    Tag.create()
+                    TagTweet.create()
+                elsif t[0]=="@"
+                    Mention.create()
+                end
+            end
+
+        end
         tweet= Tweet.create(text:text, user_id:userid, likes_counter:0, retweets_counter:0, parent_tweet_id:0, original_tweet_id:0, create_time:Time.now())
+        
         return tweet
     end
 

@@ -30,6 +30,10 @@ get '/' do
     redirect "/home"
 end
 
+get '/loaderio-7945fcb84861825ad8feaf1461ab7335/' do
+    File.read(File.join('public', 'loaderio-7945fcb84861825ad8feaf1461ab7335.txt'))
+end
+
 get '/login' do
     erb :login
 end
@@ -273,6 +277,7 @@ get '/test/reset' do
         Tweet.insert_all(data)
     end
 
+    ### create test user
     ActiveRecord::Base.connection.reset_pk_sequence!('users')
     User.create(name:"testuser", password:"password")
     status 200
@@ -372,7 +377,7 @@ post '/tweet/randNew' do
 end
 
 post '/tweet/new' do
-    @tweet = doTweet(params[:text], session[:user]["id"])
+    @tweet = parseTweet(params[:text], session[:user]["id"])
     redirect "/home"
 end
 

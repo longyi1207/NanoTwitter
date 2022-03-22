@@ -1,19 +1,19 @@
 test:
   adapter: postgresql
   database: nt_project_test
-  host: 172.20.80.1
+  host: localhost
   port: 5432
   username: postgres
-  password: 123456
+  password: postgres
   pool: 2
 
 development:
   adapter: postgresql
   database: nt_project_dev
-  host: 172.20.80.1
+  host: localhost
   port: 5432
   username: postgres
-  password: 123456
+  password: postgres
   pool: 2
 
 production:
