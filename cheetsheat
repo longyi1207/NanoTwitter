@@ -18,13 +18,12 @@ run test:
 ruby test/relation_test.rb      
 
 heroku:
-heroku create
-heroku addons:create heroku-postgresql:hobby-dev
+git add .
+git commit -a -m ""
 git push heroku main
 heroku open
 heroku logs
-git add .
-git push heroku main
+
 
 git ignore modification:
 git update-index --assume-unchanged config/database.yml
