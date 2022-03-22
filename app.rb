@@ -55,8 +55,12 @@ post '/login' do
 end
 
 get '/home' do
-    authenticate!
-    @user = session[:user]
+    if params[:user_id]
+        @user = User.find(params[:user_id].to_i)
+    else
+        authenticate!
+        @user = session[:user]
+    end
     @followingCount, @followerCount = getFollowerCount(@user["id"])
 
     @user_names, @tweet = fetchTimeline(@user["id"])
@@ -67,6 +71,7 @@ get '/home' do
     end
     erb :user
 end
+
 
 #### USER ENDPOINTS
 ###
