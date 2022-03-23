@@ -17,6 +17,12 @@ require_relative 'tweetService.rb'
 require 'faker'
 require 'csv'
 require 'json'
+require "logger"
+require "remote_syslog_logger"
+
+before do
+    @logger = RemoteSyslogLogger.new('logs.papertrailapp.com','26749')
+end
 
 enable :sessions
 
@@ -40,6 +46,7 @@ end
 
 get '/logout' do
     session.clear
+    @logger.info "Session data: #{session[:user]}"
     redirect '/login'
 end
 
@@ -47,6 +54,7 @@ post '/login' do
     valid, data = authenticate(params)
     if valid 
         session[:user] = data
+        @logger.info "Session data: #{session[:user]}"
         redirect_to_original_request
     else
         @error_message = data
@@ -69,6 +77,7 @@ get '/home' do
     if @recommend_users.length>10
         @recommend_users = @recommend_users[1..10]
     end
+    @logger.info "user #{session[:user]["id"]} request timeline"
     erb :user
 end
 
@@ -383,6 +392,7 @@ end
 
 post '/tweet/new' do
     @tweet = parseTweet(params[:text], session[:user]["id"])
+    @logger.info "user #{session[:user]["id"]} post tweet #{@tweet.id}"
     redirect "/home"
 end
 
