@@ -19,7 +19,7 @@ module TweetService
         tweet.each do |t|
             user_names.append(User.find(t["user_id"]).name)
         end
-        logger.info("#{self.class}##{__method__}--> TIME COST: #{Time.now()-start_time} SECONDS")
+        logger.info("#{self.class}##{__method__}--> userid=#{userid} TIME COST: #{Time.now()-start_time} SECONDS")
         return user_names, tweet
     end
 
@@ -39,14 +39,14 @@ module TweetService
 
         end
         tweet= Tweet.create(text:text, user_id:userid, likes_counter:0, retweets_counter:0, parent_tweet_id:0, original_tweet_id:0, create_time:Time.now())
-        logger.info("#{self.class}##{__method__}--> TIME COST: #{Time.now()-start_time} SECONDS") 
+        logger.info("#{self.class}##{__method__}--> tweetid=#{tweet.id} TIME COST: #{Time.now()-start_time} SECONDS") 
         return tweet
     end
 
     def getTweet(tweetid)
         start_time = Time.now()
         tweet = Tweet.where(id:tweetid).first
-        logger.info("#{self.class}##{__method__}--> TIME COST: #{Time.now()-start_time} SECONDS") 
+        logger.info("#{self.class}##{__method__}--> tweetid=#{tweetid} TIME COST: #{Time.now()-start_time} SECONDS") 
         return tweet
     end
 end
