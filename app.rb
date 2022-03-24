@@ -18,10 +18,9 @@ require 'faker'
 require 'csv'
 require 'json'
 require "logger"
-require "remote_syslog_logger"
 
 before do
-    @logger = RemoteSyslogLogger.new('logs.papertrailapp.com','26749')
+    @logger = Logger.new($stdout)
 end
 
 enable :sessions
