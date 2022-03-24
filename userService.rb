@@ -1,10 +1,13 @@
 require "bcrypt"
+require "logger"
 
 module UserService
     include BCrypt
+    logger = Logger.new($stdout)
 
     # Create user
     def createUser(params = {})
+        start_time = Time.now()
         if params[:username].blank? || params[:password1].blank? || params[:password2].blank?
             return false, "Please provide required information!"
         end
@@ -21,34 +24,41 @@ module UserService
         end
 
         user = User.create(name: params[:username], password: password_hash, create_time:Time.now())
-
+        logger.info("#{self.class}##{__method__}--> TIME COST: #{Time.now()-start_time} SECONDS")  
         return true, user.slice(:id, :name)
     end
 
     # Follow a user
     def followUser(myid, userid)
+        start_time = Time.now()
         check = UserFollower.where(user_id: userid, follower_id: myid).first
         if check != nil
             UserFollower.create(user_id: userid, follower_id: myid)
         end
+        logger.info("#{self.class}##{__method__}--> TIME COST: #{Time.now()-start_time} SECONDS") 
         true
     end
 
     # Unfollow a user
     def unfollowUser(myid, userid)
+        start_time = Time.now()
         UserFollower.delete_by(user_id: userid, follower_id: myid)
+        logger.info("#{self.class}##{__method__}--> TIME COST: #{Time.now()-start_time} SECONDS") 
         true
     end
 
     # Get number of followings and followers
     def getFollowerCount(userid)
+        start_time = Time.now()
         followingCount = UserFollower.where(follower_id: userid).count
         followerCount = UserFollower.where(user_id: userid).count
+        logger.info("#{self.class}##{__method__}--> TIME COST: #{Time.now()-start_time} SECONDS") 
         return followingCount, followerCount
     end
 
     # Get folowers following to userid
     def getFollowers(userid, offset, limit)
+        start_time = Time.now()
         sql = %{select a.id, name, fid, COALESCE(follower_id, 0) as followed from (
             select users.*, f.id as fid from 
             (SELECT follower_id, user_followers.id FROM users
@@ -58,11 +68,14 @@ module UserService
             left join user_followers on a.id = user_followers.user_id and follower_id = #{userid}
             order by fid asc
             }
-        ActiveRecord::Base.connection.execute(sql)
+        result = ActiveRecord::Base.connection.execute(sql)
+        logger.info("#{self.class}##{__method__}--> TIME COST: #{Time.now()-start_time} SECONDS")
+        result 
     end
 
     # Get users followed by userid
     def getFollowing(userid, offset, limit)
+        start_time = Time.now()
         sql = %{select users.id, users.name, f.id as fid from 
             (SELECT user_id, user_followers.id FROM users
             INNER JOIN user_followers ON user_followers.follower_id = users.id WHERE users.id = #{userid}) as f 
@@ -70,6 +83,8 @@ module UserService
             where f.id > #{offset}
             order by f.id asc limit #{limit}
             }
-        ActiveRecord::Base.connection.execute(sql)
+        result = ActiveRecord::Base.connection.execute(sql)
+        logger.info("#{self.class}##{__method__}--> TIME COST: #{Time.now()-start_time} SECONDS")
+        result 
     end
 end

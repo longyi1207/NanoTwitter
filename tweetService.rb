@@ -1,5 +1,8 @@
-module TweetService 
+module TweetService
+    logger = Logger.new($stdout)
+
     def fetchTimeline(userid)
+        start_time = Time.now()
         followee = UserFollower.where("follower_id="+userid.to_s).all
         followee_id = []
         followee.each do |f|
@@ -16,11 +19,13 @@ module TweetService
         tweet.each do |t|
             user_names.append(User.find(t["user_id"]).name)
         end
+        logger.info("#{self.class}##{__method__}--> TIME COST: #{Time.now()-start_time} SECONDS")
         return user_names, tweet
     end
 
     # body = "hi asd #emem @ads #aa dasda @"
     def parseTweet(text, userid)
+        start_time = Time.now()
         body = text.split()
         body.each do |t|
             if t.length > 1
@@ -34,12 +39,14 @@ module TweetService
 
         end
         tweet= Tweet.create(text:text, user_id:userid, likes_counter:0, retweets_counter:0, parent_tweet_id:0, original_tweet_id:0, create_time:Time.now())
-        
+        logger.info("#{self.class}##{__method__}--> TIME COST: #{Time.now()-start_time} SECONDS") 
         return tweet
     end
 
     def getTweet(tweetid)
+        start_time = Time.now()
         tweet = Tweet.where(id:tweetid).first
+        logger.info("#{self.class}##{__method__}--> TIME COST: #{Time.now()-start_time} SECONDS") 
         return tweet
     end
 end
