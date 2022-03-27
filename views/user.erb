@@ -108,33 +108,17 @@
       
         <div class="col-2">
           You might like:
-          <div class="card shadow-lg bg-dark" style="border-radius:10px; display: block; margin-top:20px; margin-bottom:20px;">
-            <div class="card-title">
-              <span class="glyphicon glyphicon-user"></span>
-              HARDCODE : Timothy
-              <br>
-              <button style="font-size:10px;border-radius:12px; background-color:white; color: black; border: solid; margin-left: auto; margin-right: 0;"> Follow </button>
-            </div>
-          </div>
-
-          <div class="card shadow-lg bg-dark" style="border-radius:10px; margin-top:20px; margin-bottom:20px;">
-            <div class="card-title">
-              <span class="glyphicon glyphicon-user"></span>
-              HARDCODE : Antonella
-              <br>
-              <button style="font-size:10px;border-radius:12px; background-color:white; color: black; border: solid; margin-left: auto;
-              margin-right: 0;"> Follow </button>
-            </div>
-          </div>
-
           <% @recommend_users.each do |u| %>
             <div class="card shadow-lg bg-dark" style="border-radius:10px; margin-top:20px; margin-bottom:20px;">
               <div class="card-title">
                 <span class="glyphicon glyphicon-user"></span>
                 <%= u.name %>
                 <br>
-                <button style="font-size:10px;border-radius:12px; background-color:white; color: black; border: solid; margin-left: auto;
+                <form action="/users/doFollow" method="post">
+                <input type="hidden" id="userId" name="userId" value=<%=u.id%> >
+                <button  style="font-size:10px;border-radius:12px; background-color:white; color: black; border: solid; margin-left: auto;
                 margin-right: 0;"> Follow </button>
+                </form>
               </div>
             </div>
           <% end %>

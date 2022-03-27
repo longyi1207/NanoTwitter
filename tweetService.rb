@@ -1,12 +1,22 @@
+# require 'redis'
+
 module TweetService
+
     logger = Logger.new($stdout)
 
     def fetchTimeline(userid)
         start_time = Time.now()
-        followee = UserFollower.where("follower_id="+userid.to_s).all
-        followee_id = []
-        followee.each do |f|
-            followee_id.append(f["user_id"])
+        if REDIS.get("followees")
+            followee_id = JSON::parse(REDIS.get("followees"))
+            logger.info("fetch followee ids #{followee_id} from redis")
+        else
+            followee = UserFollower.where("follower_id="+userid.to_s).all
+            followee_id = []
+            followee.each do |f|
+                followee_id.append(f["user_id"])
+            end
+            REDIS.set("followees",followee_id) 
+            logger.info("Cache followee ids #{followee_id} into redis")
         end
 
         if followee_id.length==0

@@ -18,6 +18,12 @@ require 'faker'
 require 'csv'
 require 'json'
 require "logger"
+require "redis"
+
+configure do
+    REDIS = Redis.new(url: "redis://redistogo:0ec33a6d36d9d4e488ed1288812a9cf1@sole.redistogo.com:10137/")
+end
+
 
 before do
     @logger = Logger.new($stdout)
@@ -160,8 +166,9 @@ get '/users/follow/:flag' do
 end
 
 post "/users/doFollow" do
-    userid = params['userid']
+    userid = params['userId']
     followUser(session[:user][:id], userid)
+    redirect "/home"
 end
 
 post "/users/doUnfollow" do
