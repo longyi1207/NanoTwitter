@@ -1,0 +1,26 @@
+EXPLANATION:
+To assess and increase the performance of the three core functions of our app 
+-- user following, tweeting, and reading timeline,
+We recorded the time each operation takes,
+So that we could future compare different optimization approaches.
+
+For each experiment, please call ROUTES
+/test/reset?user_count=1000
+/test/stress?n=500&star=666fan=888
+and then query the time by searching in PAPERTRAIL by "TEST STRESS:",
+and record the time of three operations here.
+
+For validity, for each experiment please repeat these process THREE times and record all of them
+
+=========================================================
+
+Mar28-12PM First Test:
+following:
+tweeting:
+reading:
+
+
+April xxx Update xxx:
+following:
+tweeting:
+reading:

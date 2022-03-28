@@ -34,7 +34,7 @@ module TweetService
     end
 
     # body = "hi asd #emem @ads #aa dasda @"
-    def parseTweet(text, userid)
+    def doTweet(text, userid)
         start_time = Time.now()
         body = text.split()
         body.each do |t|

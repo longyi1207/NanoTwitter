@@ -353,31 +353,47 @@ get "/test/stress" do
     n = params[:n].to_i
     star = params[:star].to_i
     fan = params[:fan].to_i
+
+    start_time = Time.now()
     check = UserFollower.where(user_id:star, follower_id:fan).first
     if check == nil
-        UserFollower.create(user_id:star, follower_id:fan)
+        followUser(star, fan)
+        # UserFollower.create(user_id:star, follower_id:fan)
     end
+    logger.info("TEST STRESS: userid=#{fan} follows myid=#{star} TIME COST: #{Time.now()-start_time} SECONDS") 
+
     text_list = []
     id_list = []
+    time_sum = 0
     1.upto(n) do |i|
         text = Faker::Name.name+" "+Faker::Verb.past+" "+Faker::Hobby.activity
+        start_time = Time.now()
         tweet = doTweet(text, star)
+        time_sum += Time.now()-start_time
         text_list.append(text)
         id_list.append(tweet.id)
     end
-    id_list.each do |i|
-        getTweet(i)
-    end
+    logger.info("TEST STRESS: userid=#{star} creates tweet AVERAGE TIME COST: #{time_sum/n} SECONDS") 
+
+    # id_list.each do |i|
+    #     getTweet(i)
+    # end
+
+    start_time = Time.now()
     user_names, tweet = fetchTimeline(fan)
+    logger.info("TEST STRESS: userid=#{fan} fetches timeline from #{n} tweets TIME COST: #{Time.now()-start_time} SECONDS") 
+
     timeline = Set.new
     tweet.each do |t|
         timeline << t.id
     end
-    id_list.each do |i|
-        if !timeline.include?(i)
-            return [400, "Timeline test failed!"]
-        end
-    end
+
+    # will only return 50 tweets, so this code would be problematic
+    # id_list.each do |i|
+    #     if !timeline.include?(i)
+    #         return [400, "Timeline test failed!"]
+    #     end
+    # end
     [200, "OK"]
 end
 
@@ -397,7 +413,7 @@ post '/tweet/randNew' do
 end
 
 post '/tweet/new' do
-    @tweet = parseTweet(params[:text], session[:user]["id"])
+    @tweet = doTweet(params[:text], session[:user]["id"])
     @logger.info "user #{session[:user]["id"]} post tweet #{@tweet.id}"
     redirect "/home"
 end
