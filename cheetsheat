@@ -20,6 +20,7 @@ ruby test/relation_test.rb
 heroku:
 git push -f
 heroku git:remote -a cosi105nanotwitter
+git remote -v
 
 heroku login
 heroku git:clone -a cosi105nanotwitter 
