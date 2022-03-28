@@ -18,9 +18,16 @@ run test:
 ruby test/relation_test.rb      
 
 heroku:
+git push -f
+heroku git:remote -a cosi105nanotwitter
+
+heroku login
+heroku git:clone -a cosi105nanotwitter 
+cd cosi105nanotwitter
 git add .
-git commit -a -m ""
+git commit -am "update"
 git push heroku main
+
 heroku open
 heroku logs
 
