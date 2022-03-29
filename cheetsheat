@@ -11,6 +11,9 @@ drop database "nt_project_dev";
 create database "nt_project_dev";
 select * from tweets;
 
+fix rake:
+
+
 set up test db:
 rake db:migrate
 rake db:test:prepare

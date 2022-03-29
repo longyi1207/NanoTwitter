@@ -398,7 +398,69 @@ get "/test/stress" do
     [200, "OK"]
 end
 
-get "test/performanceTest" do
+get "/test/performance" do
+    ActiveRecord::Base.connection.execute("TRUNCATE TABLE users RESTART IDENTITY")
+    ActiveRecord::Base.connection.execute("TRUNCATE TABLE tweets RESTART IDENTITY")
+    ActiveRecord::Base.connection.execute("TRUNCATE TABLE user_followers RESTART IDENTITY")
+    userId = params[:userId].to_i
+
+    followData = CSV.parse(File.open("./seeds/follows.csv").read)
+    userData = CSV.parse(File.open("./seeds/users.csv").read)
+    tweetData = CSV.parse(File.open("./seeds/tweets.csv").read)
+
+    followees = followData.select{|e| e[0]==userId.to_s}.transpose[1].map(&:to_i)
+
+
+    users = userData.select{|e| (e[0]==userId.to_s) || (followees.include?e[0].to_i)}.map{ |e| {id: e[0], name: e[1]} }
+    users.each_slice(1000).to_a.each do |data|
+        User.insert_all(data)
+    end
+
+    start_time = Time.now()
+    followees.each do |f|
+        check = UserFollower.where(user_id:userId, follower_id:f).first
+        if check == nil
+            followUser(userId, f)
+        end
+    end
+    logger.info("PERFORMANCE TEST 1: user #{userId} follows #{followees.length} users TIME COST: #{Time.now()-start_time} SECONDS") 
+
+    followees = followData.select{|e| e[0]==userId.to_s}.transpose[1].map(&:to_i)
+    start_time = Time.now()
+    followees.each do |f|
+        check = UserFollower.where(user_id:userId, follower_id:f).first
+        if check == nil
+            followUser(userId, f)
+        end
+    end
+    logger.info("PERFORMANCE TEST 2: user #{userId} follows #{followees.length} users TIME COST: #{Time.now()-start_time} SECONDS") 
+
+
+    tweets = tweetData.select{|e| followees.include?e[0].to_i}
+    start_time = Time.now()
+    tweets.each do |t|
+        doTweet(t[1], t[0].to_i)
+    end
+    logger.info("PERFORMANCE TEST 1: user #{userId}'s followees post #{tweets.length} tweets TIME COST: #{Time.now()-start_time} SECONDS") 
+
+
+    tweets = tweetData.select{|e| followees.include?e[0].to_i}
+    start_time = Time.now()
+    tweets.each do |t|
+        doTweet(t[1], t[0].to_i)
+    end
+    logger.info("PERFORMANCE TEST 2: user #{userId}'s followees post #{tweets.length} tweets TIME COST: #{Time.now()-start_time} SECONDS") 
+
+
+    start_time = Time.now()
+    user_names, tweet = fetchTimeline(userId)
+    logger.info("PERFORMANCE TEST 1: user #{userId} fetches timeline from #{tweet.length} tweets TIME COST: #{Time.now()-start_time} SECONDS") 
+
+    start_time = Time.now()
+    user_names, tweet = fetchTimeline(userId)
+    logger.info("PERFORMANCE TEST 2: user #{userId} fetches timeline from #{tweet.length} tweets TIME COST: #{Time.now()-start_time} SECONDS") 
+
+    [200, "OK"]
 end
 
 #### TWEETS ENDPOINTS

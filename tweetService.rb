@@ -26,8 +26,10 @@ module TweetService
         end
 
         user_names = []
-        tweet.each do |t|
-            user_names.append(User.find(t["user_id"]).name)
+        if tweet.length>0
+            tweet.each do |t|
+                user_names.append(User.find(t["user_id"]).name)
+            end
         end
         logger.info("#{self.class}##{__method__}--> userid=#{userid} TIME COST: #{Time.now()-start_time} SECONDS")
         return user_names, tweet
