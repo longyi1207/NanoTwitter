@@ -6,7 +6,7 @@ So that we could future compare different optimization approaches.
 
 For each experiment, please call ROUTES
 /test/reset?user_count=1000
-/test/stress?n=500&star=666fan=888
+/test/stress?n=500&star=666&fan=888
 and then query the time by searching in PAPERTRAIL by "TEST STRESS:",
 and record the time of three operations here.
 
@@ -15,9 +15,9 @@ For validity, for each experiment please repeat these process THREE times and re
 =========================================================
 
 Mar28-12PM First Test:
-following:
-tweeting:
-reading:
+follow: 0.032 0.006 0.024
+tweet: 0.013 0.008 0.010
+timeline:0.091 0.155 0.087
 
 
 April xxx Update xxx:

@@ -6,6 +6,7 @@ automatic rerload:
 rerun 'ruby app.rb'
 
 drop db in psql:
+\d users
 drop database "nt_project_dev";
 create database "nt_project_dev";
 select * from tweets;

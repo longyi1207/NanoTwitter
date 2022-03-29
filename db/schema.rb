@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2022_02_07_225814) do
+ActiveRecord::Schema[7.0].define(version: 2022_03_29_023906) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -62,17 +62,21 @@ ActiveRecord::Schema[7.0].define(version: 2022_02_07_225814) do
     t.integer "retweets_counter"
     t.integer "parent_tweet_id"
     t.integer "original_tweet_id"
+    t.index ["user_id"], name: "index_tweets_on_user_id"
   end
 
   create_table "user_followers", force: :cascade do |t|
     t.integer "user_id"
     t.integer "follower_id"
+    t.index ["follower_id"], name: "index_user_followers_on_follower_id"
+    t.index ["user_id"], name: "index_user_followers_on_user_id"
   end
 
   create_table "users", force: :cascade do |t|
     t.string "name"
     t.string "password"
     t.datetime "create_time"
+    t.index ["name"], name: "index_users_on_name"
   end
 
 end
