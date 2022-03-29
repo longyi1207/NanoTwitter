@@ -398,7 +398,7 @@ get "/test/stress" do
     [200, "OK"]
 end
 
-get "test/performanceTest"
+get "test/performanceTest" do
 end
 
 #### TWEETS ENDPOINTS
