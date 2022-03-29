@@ -1,25 +1,25 @@
 test:
   adapter: postgresql
   database: nt_project_test
-  host: localhost
+  host: 172.23.64.1
   port: 5432
   username: postgres
-  password: postgres
+  password: 123456
   pool: 2
 
 development:
   adapter: postgresql
   database: nt_project_dev
-  host: localhost
+  host: 172.23.64.1
   port: 5432
   username: postgres
-  password: postgres
+  password: 123456
   pool: 2
 
 production:
   adapter: postgresql
-  database: df8nooibf3mp9g
-  host: ec2-3-219-204-29.compute-1.amazonaws.com
+  database: de0q1nqr0dn536
+  host: ec2-54-173-77-184.compute-1.amazonaws.com
   port: 5432
-  username: lufmcxgqcfoarq
-  password: 284a706a401cbac8aa64570506edd72115ab2d5889ad02ac5f31d38bafededef
+  username: stigbvivahrnun
+  password: e33a64dc5d5a254c6303aa449ddb08861b9a8fff57c0dd68cbe769f0f4f0f342
