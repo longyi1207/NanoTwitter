@@ -60,4 +60,5 @@ build-iPhoneSimulator/
 
 config/longyi.yml
 config/database.yml
+config/database_xzd.yml
 

@@ -34,9 +34,7 @@ module UserService
         check = UserFollower.where(user_id: userid, follower_id: myid).first
         if !check
             UserFollower.create(user_id: userid, follower_id: myid)
-            followee = JSON::parse(REDIS.get("followees"))
-            followee.append userid.to_i
-            REDIS.set("followees",followee)
+            REDIS.rpush("followees:#{userid}", myid)
         end
         logger.info("#{self.class}##{__method__}--> myid=#{myid},userid=#{userid} TIME COST: #{Time.now()-start_time} SECONDS") 
         true

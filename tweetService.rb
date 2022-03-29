@@ -6,23 +6,23 @@ module TweetService
 
     def fetchTimeline(userid)
         start_time = Time.now()
-        if REDIS.get("followees")
-            followee_id = JSON::parse(REDIS.get("followees"))
+        if REDIS.exists("followees:#{userid}") == 1
+            followee_id = REDIS.lrange("followees:#{userid}", 0, -1)
             logger.info("fetch followee ids #{followee_id} from redis")
         else
             followee = UserFollower.where("follower_id="+userid.to_s).all
             followee_id = []
             followee.each do |f|
                 followee_id.append(f["user_id"])
+                REDIS.rpush("followees:#{userid}", f["user_id"])
             end
-            REDIS.set("followees",followee_id) 
             logger.info("Cache followee ids #{followee_id} into redis")
         end
 
         if followee_id.length==0
             tweet = []
         else
-            tweet = Tweet.where("user_id=any(array"+ followee_id.to_s+")").order("create_time DESC").limit(50)
+            tweet = Tweet.where("user_id=any(array"+ followee_id.to_s.gsub("\"","")+")").order("create_time DESC").limit(50)
         end
 
         user_names = []

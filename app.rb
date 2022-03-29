@@ -22,6 +22,7 @@ require "redis"
 
 configure do
     REDIS = Redis.new(url: "redis://redistogo:0ec33a6d36d9d4e488ed1288812a9cf1@sole.redistogo.com:10137/")
+    # REDIS = Redis.new(url: "redis://redistogo:2eab8a676a981817ebafd929fb5210bd@hammerjaw.redistogo.com:11068/")
 end
 
 
