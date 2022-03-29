@@ -397,6 +397,9 @@ get "/test/stress" do
     [200, "OK"]
 end
 
+get "test/performanceTest"
+end
+
 #### TWEETS ENDPOINTS
 get '/tweets' do
 	@tweet = Tweet.all

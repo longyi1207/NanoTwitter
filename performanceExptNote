@@ -13,14 +13,26 @@ and record the time of three operations here.
 For validity, for each experiment please repeat these process THREE times and record all of them
 
 =========================================================
+(data are running time in second)
 
 Mar28-12PM First Test:
 follow: 0.032 0.006 0.024
 tweet: 0.013 0.008 0.010
 timeline:0.091 0.155 0.087
 
+Marh28-11pm add indexing:
+follow: 0.062 0.042 0.016
+tweet: 0.010 0.011 0.010
+timeline: 0.105 0.102 0.117
 
-April xxx Update xxx:
-following:
-tweeting:
-reading:
+Marh28-11pm add cache:
+follow: 0.062 0.042 0.016
+tweet: 0.010 0.011 0.010
+timeline: 0.105 0.102 0.117
+
+
+
+
+/test/reset/standard?tweets=1&users=1&follows=1
+
+1000user * 5followee/user * 100tweet/followee = 500000
