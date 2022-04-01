@@ -1,5 +1,4 @@
 require "bcrypt"
-require_relative "models/user.rb"
 
 module Authentication
     include BCrypt

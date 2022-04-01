@@ -1,9 +1,7 @@
 require "bcrypt"
-require "logger"
 
 module UserService
     include BCrypt
-    logger = Logger.new($stdout)
 
     # Create user
     def createUser(params = {})
@@ -24,7 +22,7 @@ module UserService
         end
 
         user = User.create(name: params[:username], password: password_hash, create_time:Time.now())
-        logger.info("#{self.class}##{__method__}--> params=#{params} TIME COST: #{Time.now()-start_time} SECONDS")  
+        LOGGER.info("#{self.class}##{__method__}--> params=#{params} TIME COST: #{Time.now()-start_time} SECONDS")  
         return true, user.slice(:id, :name)
     end
 
@@ -36,7 +34,7 @@ module UserService
             UserFollower.create(user_id: userid, follower_id: myid)
             cacheAddFollowee(userid, myid)
         end
-        logger.info("#{self.class}##{__method__}--> myid=#{myid},userid=#{userid} TIME COST: #{Time.now()-start_time} SECONDS") 
+        LOGGER.info("#{self.class}##{__method__}--> myid=#{myid},userid=#{userid} TIME COST: #{Time.now()-start_time} SECONDS") 
         true
     end
 
@@ -44,7 +42,7 @@ module UserService
     def unfollowUser(myid, userid)
         start_time = Time.now()
         UserFollower.delete_by(user_id: userid, follower_id: myid)
-        logger.info("#{self.class}##{__method__}--> myid=#{myid},userid=#{userid} TIME COST: #{Time.now()-start_time} SECONDS") 
+        LOGGER.info("#{self.class}##{__method__}--> myid=#{myid},userid=#{userid} TIME COST: #{Time.now()-start_time} SECONDS") 
         true
     end
 
@@ -53,7 +51,7 @@ module UserService
         start_time = Time.now()
         followingCount = UserFollower.where(follower_id: userid).count
         followerCount = UserFollower.where(user_id: userid).count
-        logger.info("#{self.class}##{__method__}--> userid=#{userid} TIME COST: #{Time.now()-start_time} SECONDS") 
+        LOGGER.info("#{self.class}##{__method__}--> userid=#{userid} TIME COST: #{Time.now()-start_time} SECONDS") 
         return followingCount, followerCount
     end
 
@@ -70,7 +68,7 @@ module UserService
             order by fid asc
             }
         result = ActiveRecord::Base.connection.execute(sql)
-        logger.info("#{self.class}##{__method__}--> userid=#{userid},offset=#{offset},limit=#{limit} TIME COST: #{Time.now()-start_time} SECONDS")
+        LOGGER.info("#{self.class}##{__method__}--> userid=#{userid},offset=#{offset},limit=#{limit} TIME COST: #{Time.now()-start_time} SECONDS")
         result 
     end
 
@@ -85,7 +83,7 @@ module UserService
             order by f.id asc limit #{limit}
             }
         result = ActiveRecord::Base.connection.execute(sql)
-        logger.info("#{self.class}##{__method__}--> userid=#{userid},offset=#{offset},limit=#{limit} TIME COST: #{Time.now()-start_time} SECONDS")
+        LOGGER.info("#{self.class}##{__method__}--> userid=#{userid},offset=#{offset},limit=#{limit} TIME COST: #{Time.now()-start_time} SECONDS")
         result 
     end
 end

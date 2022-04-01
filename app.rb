@@ -29,11 +29,7 @@ configure do
     REDIS = ConnectionPool.new(size: settings.redis_pool_size) do
         Redis.new(url: settings.redis_url)
     end
-end
-
-
-before do
-    @logger = Logger.new($stdout)
+    LOGGER = Logger.new($stdout)
 end
 
 enable :sessions
@@ -59,7 +55,7 @@ end
 
 get '/logout' do
     session.clear
-    @logger.info "Session data: #{session[:user]}"
+    LOGGER.info "Session data: #{session[:user]}"
     redirect '/login'
 end
 
@@ -67,7 +63,7 @@ post '/login' do
     valid, data = authenticate(params)
     if valid 
         session[:user] = data
-        @logger.info "Session data: #{session[:user]}"
+        LOGGER.info "Session data: #{session[:user]}"
         redirect_to_original_request
     else
         @error_message = data
@@ -90,7 +86,7 @@ get '/home' do
     if @recommend_users.length>10
         @recommend_users = @recommend_users[1..10]
     end
-    @logger.info "user #{session[:user]["id"]} request timeline"
+    LOGGER.info "user #{session[:user]["id"]} request timeline"
     erb :user
 end
 
@@ -368,7 +364,7 @@ get "/test/stress" do
         followUser(star, fan)
         # UserFollower.create(user_id:star, follower_id:fan)
     end
-    logger.info("TEST STRESS: userid=#{fan} follows myid=#{star} TIME COST: #{Time.now()-start_time} SECONDS") 
+    LOGGER.info("TEST STRESS: userid=#{fan} follows myid=#{star} TIME COST: #{Time.now()-start_time} SECONDS") 
 
     text_list = []
     id_list = []
@@ -381,7 +377,7 @@ get "/test/stress" do
         text_list.append(text)
         id_list.append(tweet.id)
     end
-    logger.info("TEST STRESS: userid=#{star} creates tweet AVERAGE TIME COST: #{time_sum/n} SECONDS") 
+    LOGGER.info("TEST STRESS: userid=#{star} creates tweet AVERAGE TIME COST: #{time_sum/n} SECONDS") 
 
     # id_list.each do |i|
     #     getTweet(i)
@@ -389,7 +385,7 @@ get "/test/stress" do
 
     start_time = Time.now()
     user_names, tweet = fetchTimeline(fan)
-    logger.info("TEST STRESS: userid=#{fan} fetches timeline from #{n} tweets TIME COST: #{Time.now()-start_time} SECONDS") 
+    LOGGER.info("TEST STRESS: userid=#{fan} fetches timeline from #{n} tweets TIME COST: #{Time.now()-start_time} SECONDS") 
 
     timeline = Set.new
     tweet.each do |t|
@@ -430,7 +426,7 @@ get "/test/performance" do
             followUser(userId, f)
         end
     end
-    logger.info("PERFORMANCE TEST 1: user #{userId} follows #{followees.length} users TIME COST: #{Time.now()-start_time} SECONDS") 
+    LOGGER.info("PERFORMANCE TEST 1: user #{userId} follows #{followees.length} users TIME COST: #{Time.now()-start_time} SECONDS") 
 
     followees = followData.select{|e| e[0]==userId.to_s}.transpose[1].map(&:to_i)
     start_time = Time.now()
@@ -440,7 +436,7 @@ get "/test/performance" do
             followUser(userId, f)
         end
     end
-    logger.info("PERFORMANCE TEST 2: user #{userId} follows #{followees.length} users TIME COST: #{Time.now()-start_time} SECONDS") 
+    LOGGER.info("PERFORMANCE TEST 2: user #{userId} follows #{followees.length} users TIME COST: #{Time.now()-start_time} SECONDS") 
 
 
     tweets = tweetData.select{|e| followees.include?e[0].to_i}
@@ -448,7 +444,7 @@ get "/test/performance" do
     tweets.each do |t|
         doTweet(t[1], t[0].to_i)
     end
-    logger.info("PERFORMANCE TEST 1: user #{userId}'s followees post #{tweets.length} tweets TIME COST: #{Time.now()-start_time} SECONDS") 
+    LOGGER.info("PERFORMANCE TEST 1: user #{userId}'s followees post #{tweets.length} tweets TIME COST: #{Time.now()-start_time} SECONDS") 
 
 
     tweets = tweetData.select{|e| followees.include?e[0].to_i}
@@ -456,16 +452,16 @@ get "/test/performance" do
     tweets.each do |t|
         doTweet(t[1], t[0].to_i)
     end
-    logger.info("PERFORMANCE TEST 2: user #{userId}'s followees post #{tweets.length} tweets TIME COST: #{Time.now()-start_time} SECONDS") 
+    LOGGER.info("PERFORMANCE TEST 2: user #{userId}'s followees post #{tweets.length} tweets TIME COST: #{Time.now()-start_time} SECONDS") 
 
 
     start_time = Time.now()
     user_names, tweet = fetchTimeline(userId)
-    logger.info("PERFORMANCE TEST 1: user #{userId} fetches timeline from #{tweet.length} tweets TIME COST: #{Time.now()-start_time} SECONDS") 
+    LOGGER.info("PERFORMANCE TEST 1: user #{userId} fetches timeline from #{tweet.length} tweets TIME COST: #{Time.now()-start_time} SECONDS") 
 
     start_time = Time.now()
     user_names, tweet = fetchTimeline(userId)
-    logger.info("PERFORMANCE TEST 2: user #{userId} fetches timeline from #{tweet.length} tweets TIME COST: #{Time.now()-start_time} SECONDS") 
+    LOGGER.info("PERFORMANCE TEST 2: user #{userId} fetches timeline from #{tweet.length} tweets TIME COST: #{Time.now()-start_time} SECONDS") 
 
     [200, "OK"]
 end
@@ -487,7 +483,7 @@ end
 
 post '/tweet/new' do
     @tweet = doTweet(params[:text], session[:user]["id"])
-    @logger.info "user #{session[:user]["id"]} post tweet #{@tweet.id}"
+    LOGGER.info "user #{session[:user]["id"]} post tweet #{@tweet.id}"
     redirect "/home"
 end
 
