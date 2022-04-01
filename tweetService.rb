@@ -6,15 +6,15 @@ module TweetService
 
     def fetchTimeline(userid)
         start_time = Time.now()
-        if REDIS.exists("followees:#{userid}") == 1
-            followee_id = REDIS.lrange("followees:#{userid}", 0, -1)
+        if cacheUseridExist?(userid)
+            followee_id = cacheFetchAllFollowees(userid)
             logger.info("fetch followee ids #{followee_id} from redis")
         else
             followee = UserFollower.where("follower_id="+userid.to_s).all
             followee_id = []
             followee.each do |f|
                 followee_id.append(f["user_id"])
-                REDIS.rpush("followees:#{userid}", f["user_id"])
+                cacheAddFollowee(userid, f["user_id"])
             end
             logger.info("Cache followee ids #{followee_id} into redis")
         end

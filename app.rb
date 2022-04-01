@@ -1,6 +1,8 @@
 require 'sinatra'
 require 'sinatra/activerecord'
+require 'sinatra/config_file'
 require 'active_record'
+require 'connection_pool'
 require_relative 'models/tweet.rb'
 require_relative 'models/user.rb'
 require_relative 'models/tag.rb'
@@ -14,15 +16,19 @@ require_relative 'authentication.rb'
 require_relative 'userService.rb'
 require_relative 'testService.rb'
 require_relative 'tweetService.rb'
+require_relative 'redisUtil.rb'
 require 'faker'
 require 'csv'
 require 'json'
 require "logger"
 require "redis"
 
+config_file File.join("config","config.yml")
+
 configure do
-    REDIS = Redis.new(url: "redis://redistogo:0ec33a6d36d9d4e488ed1288812a9cf1@sole.redistogo.com:10137/")
-    # REDIS = Redis.new(url: "redis://redistogo:2eab8a676a981817ebafd929fb5210bd@hammerjaw.redistogo.com:11068/")
+    REDIS = ConnectionPool.new(size: settings.redis_pool_size) do
+        Redis.new(url: settings.redis_url)
+    end
 end
 
 
@@ -36,6 +42,7 @@ include Authentication
 include UserService
 include TestService
 include TweetService
+include RedisUtil
 
 get '/' do
     authenticate!
