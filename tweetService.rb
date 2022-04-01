@@ -2,7 +2,7 @@ module TweetService
 
     def fetchTimeline(userid)
         start_time = Time.now()
-        if cacheUseridExist?(userid)
+        if cacheFolloweeExist?(userid)
             followee_id = cacheFetchAllFollowees(userid)
             LOGGER.info("fetch followee ids #{followee_id} from redis")
         else

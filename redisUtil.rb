@@ -1,6 +1,6 @@
 module RedisUtil
 
-    def cacheUseridExist?(userid)
+    def cacheFolloweeExist?(userid)
         REDIS.with do |conn|
             check = conn.exists("followees:#{userid}")
             if check == 1
