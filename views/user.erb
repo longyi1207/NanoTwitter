@@ -5,10 +5,22 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/css/bootstrap.min.css" integrity="sha384-PsH8R72JQ3SOdhVi3uxftmaW6Vc51MKb0q5P2rRUpPvrszuE4W1povHYgTpBfshb" crossorigin="anonymous">
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+
+    <script>
+      function doFollow(userid) {
+        $.post("/users/doFollow",
+        {
+          userid: userid 
+        },
+        function(data) {
+          window.location.replace("/home");
+        });
+      }
+    </script>
   </head>
   <body style="background-color:black; color:white; font-size:20px">
     <form action="/logout" style="margin-top: 1px; margin-left: 2px; position:absolute; top:0; left:0;"> <input style="font-size:10px;background-color:black" type="submit" value="LogOut"/> </form>
@@ -114,9 +126,7 @@
                 <span class="glyphicon glyphicon-user"></span>
                 <%= u.name %>
                 <br>
-                <form action="/users/doFollow" method="post">
-                <input type="hidden" id="userId" name="userId" value=<%=u.id%> >
-                <button  style="font-size:10px;border-radius:12px; background-color:white; color: black; border: solid; margin-left: auto;
+                <button  onclick="doFollow(<%= u.id%>)" style="font-size:10px;border-radius:12px; background-color:white; color: black; border: solid; margin-left: auto;
                 margin-right: 0;"> Follow </button>
                 </form>
               </div>
@@ -139,10 +149,5 @@
         </div>
       </div>
     </div>
-    
-
-    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.3/umd/popper.min.js" integrity="sha384-vFJXuSJphROIrBnz7yo7oB41mKfc8JzQZiCq4NCceLEaO4IHwicKwpJf9c9IpFgh" crossorigin="anonymous"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/js/bootstrap.min.js" integrity="sha384-alpBpkh1PFOepccYVYDB4do5UnbKysX5WZXm3XxPqe5iKTfUKjNkCk9SaVuEZflJ" crossorigin="anonymous"></script>
   </body>
 </html>

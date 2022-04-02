@@ -30,6 +30,7 @@ NT-0.1 Feb14: create active record scheme, migration (Zhendan), and testing suit
 NT-0.2 Mar2: create frontend UI (Long), deploy to heroku (Zhendan), create routes (Lisandro), authentication (Zhendan)
 NT-1.0 Mar14: implement core function including user following (Zhendan), tweeting (Long), and timeline (Long)
 NT-1.1 Mar16: add test interface (Zhendan, Long)
+NT-1.2 Apr4: migrate follow related operations to redis (Zhendan)
 
 SCREENSHOT:
 ![alt text](https://github.com/longyi1207/NanoTwitter/blob/main/login.jpg?raw=true)
