@@ -33,8 +33,10 @@ module UserService
         check = UserFollower.where(user_id: userid, follower_id: myid).first
         if !check
             UserFollower.create(user_id: userid, follower_id: myid)
-            cacheListRightPush(redisKeyFollowees(myid), userid)
-            cacheListRightPush(redisKeyFollowers(userid), myid)
+            cacheSSetAdd(redisKeyFollowees(myid), userid)
+            if cacheKeyExist?(redisKeyFollowers(userid))
+                cacheSSetAdd(redisKeyFollowers(userid), myid)
+            end
         end
         LOGGER.info("#{self.class}##{__method__}--> myid=#{myid},userid=#{userid} TIME COST: #{Time.now()-start_time} SECONDS") 
         true
@@ -49,8 +51,8 @@ module UserService
         puts check
         if check
             UserFollower.delete_by(user_id: userid, follower_id: myid)
-            cacheListRemove(redisKeyFollowees(myid), userid)
-            cacheListRemove(redisKeyFollowers(userid), myid)
+            cacheSSetRemove(redisKeyFollowees(myid), userid)
+            cacheSSetRemove(redisKeyFollowers(userid), myid)
         end
         LOGGER.info("#{self.class}##{__method__}--> myid=#{myid},userid=#{userid} TIME COST: #{Time.now()-start_time} SECONDS") 
         true
@@ -59,8 +61,8 @@ module UserService
     # Get number of followings and followers
     def getFollowerCount(userid)
         start_time = Time.now()
-        followingCount = cacheListLength(redisKeyFollowees(userid))
-        followerCount = cacheListLength(redisKeyFollowers(userid))
+        followingCount = cacheSSetSize(redisKeyFollowees(userid))
+        followerCount = cacheSSetSize(redisKeyFollowers(userid))
         LOGGER.info("#{self.class}##{__method__}--> userid=#{userid} TIME COST: #{Time.now()-start_time} SECONDS") 
         return followingCount, followerCount
     end
@@ -104,14 +106,14 @@ module UserService
         followee_id = []
         if cacheKeyExist?(redisKeyFollowees(userid))
             if needReturn
-                followee_id = cacheListRange(redisKeyFollowees(userid), 0, -1)
+                followee_id = cacheSSetRange(redisKeyFollowees(userid), 0, -1)
             end
         else
             followee = UserFollower.where("follower_id="+userid.to_s).all
             followee.each do |f|
                 followee_id.append(f["user_id"])
             end
-            cacheListBulkPush(redisKeyFollowees(userid), followee_id)
+            cacheSSetBulkAdd(redisKeyFollowees(userid), followee_id)
         end
         LOGGER.info("#{self.class}##{__method__}--> userid=#{userid},needReturn=#{needReturn} TIME COST: #{Time.now()-start_time} SECONDS")
         if needReturn
@@ -124,14 +126,14 @@ module UserService
         follower_id = []
         if cacheKeyExist?(redisKeyFollowers(userid))
             if needReturn
-                follower_id = cacheListRange(redisKeyFollowers(userid), 0, -1)
+                follower_id = cacheSSetRange(redisKeyFollowers(userid), 0, -1)
             end
         else
             follower = UserFollower.where("user_id="+userid.to_s).all
             follower.each do |f|
                 follower_id.append(f["follower_id"])
             end
-            cacheListBulkPush(redisKeyFollowees(userid), follower_id)
+            cacheSSetBulkAdd(redisKeyFollowers(userid), follower_id)
         end
         LOGGER.info("#{self.class}##{__method__}--> userid=#{userid},needReturn=#{needReturn} TIME COST: #{Time.now()-start_time} SECONDS")
         if needReturn

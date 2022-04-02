@@ -23,6 +23,7 @@ module RedisUtil
         return false
     end
 
+    # list
     def cacheListRange(key, from, to)
         REDIS.with do |conn|
             followee_id = conn.lrange(key, from, to)
@@ -57,6 +58,44 @@ module RedisUtil
     def cacheListLength(key)
         REDIS.with do |conn|
             conn.llen(key)
+        end
+    end
+
+    # sorted set
+    def cacheSSetRange(key, from, to)
+        REDIS.with do |conn|
+            followee_id = conn.zrange(key, from, to)
+            return followee_id
+        end
+        LOGGER.error("#{self.class}##{__method__}--> Redis error")
+        return []
+    end
+
+    def cacheSSetAdd(key, value)
+        REDIS.with do |conn|
+            conn.zadd(key, value.to_i, value)
+        end
+    end
+
+    def cacheSSetBulkAdd(key, list)
+        REDIS.with do |conn|
+            conn.pipelined do |pipeline|
+                list.each do |value|
+                    pipeline.zadd(key, value.to_i, value)
+                end
+            end
+        end
+    end
+
+    def cacheSSetRemove(key, value)
+        REDIS.with do |conn|
+            conn.zrem(key, value)
+        end
+    end
+
+    def cacheSSetSize(key)
+        REDIS.with do |conn|
+            conn.zcard(key)
         end
     end
 end
