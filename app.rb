@@ -161,11 +161,11 @@ get '/users/follow/:flag' do
     @followingData = getFollowing(session[:user][:id], 0, 50)
     @maxFollowersId = 0
     @maxFollowingId = 0
-    if @followersData.ntuples > 0
-        @maxFollowersId = @followersData[@followersData.ntuples-1]["fid"]
+    if @followersData.length > 0
+        @maxFollowersId = @followersData[@followersData.length-1]["fid"]
     end
-    if @followingData.ntuples > 0
-        @maxFollowingId = @followingData[@followingData.ntuples-1]["fid"]
+    if @followingData.length > 0
+        @maxFollowingId = @followingData[@followingData.length-1]["fid"]
     end
     erb :follower
 end
@@ -181,12 +181,12 @@ post "/users/doUnfollow" do
 end
 
 post "/users/getMoreFollowers" do
-    offset = params['offset']
+    offset = params['offset'].to_i + 1
     getFollowers(session[:user][:id], offset, 10).to_json
 end
 
 post "/users/getMoreFollowing" do
-    offset = params['offset']
+    offset = params['offset'].to_i + 1
     getFollowing(session[:user][:id], offset, 10).to_json
 end
 

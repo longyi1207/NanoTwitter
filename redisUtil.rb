@@ -98,4 +98,14 @@ module RedisUtil
             conn.zcard(key)
         end
     end
+
+    def cacheSSetBulkCheck(key, list)
+        REDIS.with do |conn|
+            conn.pipelined do |pipeline|
+                list.each do |value|
+                    pipeline.zrank(key, value)
+                end
+            end
+        end
+    end
 end

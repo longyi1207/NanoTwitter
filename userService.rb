@@ -70,16 +70,26 @@ module UserService
     # Get folowers following to userid
     def getFollowers(userid, offset, limit)
         start_time = Time.now()
-        sql = %{select a.id, name, fid, COALESCE(follower_id, 0) as followed from (
-            select users.*, f.id as fid from 
-            (SELECT follower_id, user_followers.id FROM users
-            INNER JOIN user_followers ON user_followers.user_id = users.id WHERE users.id = #{userid}) as f 
-            inner join users on f.follower_id = users.id 
-            where f.id > #{offset} limit #{limit}) as a
-            left join user_followers on a.id = user_followers.user_id and follower_id = #{userid}
-            order by fid asc
-            }
-        result = ActiveRecord::Base.connection.execute(sql)
+        followerId = cacheSSetRange(redisKeyFollowers(userid), offset, offset+limit-1)
+        result = []
+        if followerId.length > 0
+            followers = User.select(:id, :name).where("id=any(array"+ followerId.to_s.gsub("\"","")+")")
+            checkList = cacheSSetBulkCheck(redisKeyFollowers(userid), followerId)
+            index = offset
+            followers.zip(checkList).each do |f, c|
+                wrapper = {}
+                wrapper["id"] = f.id
+                wrapper["name"] = f.name
+                wrapper["fid"] = index
+                if c
+                    wrapper["followed"] = 1
+                else
+                    wrapper["followed"] = 0
+                end
+                result.append(wrapper)
+                index += 1
+            end
+        end
         LOGGER.info("#{self.class}##{__method__}--> userid=#{userid},offset=#{offset},limit=#{limit} TIME COST: #{Time.now()-start_time} SECONDS")
         result 
     end
@@ -87,14 +97,20 @@ module UserService
     # Get users followed by userid
     def getFollowing(userid, offset, limit)
         start_time = Time.now()
-        sql = %{select users.id, users.name, f.id as fid from 
-            (SELECT user_id, user_followers.id FROM users
-            INNER JOIN user_followers ON user_followers.follower_id = users.id WHERE users.id = #{userid}) as f 
-            inner join users on f.user_id = users.id 
-            where f.id > #{offset}
-            order by f.id asc limit #{limit}
-            }
-        result = ActiveRecord::Base.connection.execute(sql)
+        followingId = cacheSSetRange(redisKeyFollowees(userid), offset, offset+limit-1)
+        result = []
+        if followingId.length > 0
+            followees = User.select(:id, :name).where("id=any(array"+ followingId.to_s.gsub("\"","")+")")
+            index = offset
+            followees.each do |f|
+                wrapper = {}
+                wrapper["id"] = f.id
+                wrapper["name"] = f.name
+                wrapper["fid"] = index
+                result.append(wrapper)
+                index += 1
+            end
+        end
         LOGGER.info("#{self.class}##{__method__}--> userid=#{userid},offset=#{offset},limit=#{limit} TIME COST: #{Time.now()-start_time} SECONDS")
         result 
     end
