@@ -27,12 +27,14 @@ module UserService
     end
 
     # Follow a user
+    # myid follow userid
     def followUser(myid, userid)
         start_time = Time.now()
         check = UserFollower.where(user_id: userid, follower_id: myid).first
         if !check
             UserFollower.create(user_id: userid, follower_id: myid)
-            cacheAddFollowee(userid, myid)
+            cacheListRightPush(redisKeyFollowees(myid), userid)
+            cacheListRightPush(redisKeyFollowers(userid), myid)
         end
         LOGGER.info("#{self.class}##{__method__}--> myid=#{myid},userid=#{userid} TIME COST: #{Time.now()-start_time} SECONDS") 
         true
@@ -41,7 +43,15 @@ module UserService
     # Unfollow a user
     def unfollowUser(myid, userid)
         start_time = Time.now()
-        UserFollower.delete_by(user_id: userid, follower_id: myid)
+        puts myid
+        puts userid
+        check = UserFollower.where(user_id: userid, follower_id: myid).first
+        puts check
+        if check
+            UserFollower.delete_by(user_id: userid, follower_id: myid)
+            cacheListRemove(redisKeyFollowees(myid), userid)
+            cacheListRemove(redisKeyFollowers(userid), myid)
+        end
         LOGGER.info("#{self.class}##{__method__}--> myid=#{myid},userid=#{userid} TIME COST: #{Time.now()-start_time} SECONDS") 
         true
     end
@@ -49,8 +59,8 @@ module UserService
     # Get number of followings and followers
     def getFollowerCount(userid)
         start_time = Time.now()
-        followingCount = UserFollower.where(follower_id: userid).count
-        followerCount = UserFollower.where(user_id: userid).count
+        followingCount = cacheListLength(redisKeyFollowees(userid))
+        followerCount = cacheListLength(redisKeyFollowers(userid))
         LOGGER.info("#{self.class}##{__method__}--> userid=#{userid} TIME COST: #{Time.now()-start_time} SECONDS") 
         return followingCount, followerCount
     end
@@ -85,5 +95,57 @@ module UserService
         result = ActiveRecord::Base.connection.execute(sql)
         LOGGER.info("#{self.class}##{__method__}--> userid=#{userid},offset=#{offset},limit=#{limit} TIME COST: #{Time.now()-start_time} SECONDS")
         result 
+    end
+
+    # Load followee ids into redis
+    # return followee list if needReturn is true
+    def fetchAllFollowee(userid, needReturn)
+        start_time = Time.now()
+        followee_id = []
+        if cacheKeyExist?(redisKeyFollowees(userid))
+            if needReturn
+                followee_id = cacheListRange(redisKeyFollowees(userid), 0, -1)
+            end
+        else
+            followee = UserFollower.where("follower_id="+userid.to_s).all
+            followee.each do |f|
+                followee_id.append(f["user_id"])
+            end
+            cacheListBulkPush(redisKeyFollowees(userid), followee_id)
+        end
+        LOGGER.info("#{self.class}##{__method__}--> userid=#{userid},needReturn=#{needReturn} TIME COST: #{Time.now()-start_time} SECONDS")
+        if needReturn
+            return followee_id
+        end
+    end
+
+    def fetchAllFollower(userid, needReturn)
+        start_time = Time.now()
+        follower_id = []
+        if cacheKeyExist?(redisKeyFollowers(userid))
+            if needReturn
+                follower_id = cacheListRange(redisKeyFollowers(userid), 0, -1)
+            end
+        else
+            follower = UserFollower.where("user_id="+userid.to_s).all
+            follower.each do |f|
+                follower_id.append(f["follower_id"])
+            end
+            cacheListBulkPush(redisKeyFollowees(userid), follower_id)
+        end
+        LOGGER.info("#{self.class}##{__method__}--> userid=#{userid},needReturn=#{needReturn} TIME COST: #{Time.now()-start_time} SECONDS")
+        if needReturn
+            return follower_id
+        end
+    end
+
+    # All jobs need to be done when a user login
+    def doOnLogin(userid)
+        start_time = Time.now()
+        # Load redis keys
+        fetchAllFollowee(userid, false)
+        fetchAllFollower(userid, false)
+
+        LOGGER.info("#{self.class}##{__method__}--> userid=#{userid} TIME COST: #{Time.now()-start_time} SECONDS")
     end
 end

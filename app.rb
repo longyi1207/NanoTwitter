@@ -64,6 +64,7 @@ post '/login' do
     if valid 
         session[:user] = data
         LOGGER.info "Session data: #{session[:user]}"
+        doOnLogin(session[:user]["id"])
         redirect_to_original_request
     else
         @error_message = data
@@ -170,9 +171,8 @@ get '/users/follow/:flag' do
 end
 
 post "/users/doFollow" do
-    userid = params['userId']
+    userid = params['userid']
     followUser(session[:user][:id], userid)
-    redirect "/home"
 end
 
 post "/users/doUnfollow" do

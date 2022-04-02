@@ -2,18 +2,7 @@ module TweetService
 
     def fetchTimeline(userid)
         start_time = Time.now()
-        if cacheFolloweeExist?(userid)
-            followee_id = cacheFetchAllFollowees(userid)
-            LOGGER.info("fetch followee ids #{followee_id} from redis")
-        else
-            followee = UserFollower.where("follower_id="+userid.to_s).all
-            followee_id = []
-            followee.each do |f|
-                followee_id.append(f["user_id"])
-                cacheAddFollowee(userid, f["user_id"])
-            end
-            LOGGER.info("Cache followee ids #{followee_id} into redis")
-        end
+        followee_id = fetchAllFollowee(userid, true)
 
         if followee_id.length==0
             tweet = []
