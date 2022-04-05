@@ -7,6 +7,8 @@ So that we could future compare different optimization approaches.
 For each experiment, please call ROUTES
 /test/reset?user_count=1000
 /test/stress?n=500&star=666&fan=888
+
+/test/performance?userId=666
 and then query the time by searching in PAPERTRAIL by "TEST STRESS:",
 and record the time of three operations here.
 

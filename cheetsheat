@@ -36,6 +36,8 @@ git push heroku main
 heroku open
 heroku logs
 
+herou run bash -r appname
+irb
 
 git ignore modification:
 git update-index --assume-unchanged config/database.yml
