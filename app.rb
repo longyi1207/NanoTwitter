@@ -282,6 +282,7 @@ get '/test/reset' do
     userIds = userParse[0..userN.to_i-1].map{ |e| e[0] }
 
     ## import followings of users
+    LOGGER.info("#{self.class}##{__method__}--> import followings")
     relatedFollows = followParse.select{|e| (userIds.include?e[1]) || (userIds.include?e[0])} 
     followJson = relatedFollows.map{ |e| {user_id: e[0], follower_id: e[1]}}
     followJson.each_slice(1000).to_a.each do |data|
@@ -289,6 +290,7 @@ get '/test/reset' do
     end
 
     ### import more users
+    LOGGER.info("#{self.class}##{__method__}--> import users")
     userIds = relatedFollows.flatten.uniq;
     userJson = userParse.select{|e| (userIds.include?e[0])}.map{ |e| {id: e[0], name: e[1]} }
     userJson.each_slice(1000).to_a.each do |data|
@@ -296,12 +298,14 @@ get '/test/reset' do
     end
     
     ### import tweet by users
+    LOGGER.info("#{self.class}##{__method__}--> import tweets")
     tweetJson = tweetParse.select{|e| (userIds.include?e[0])}.map{ |e| {user_id: e[0], text: e[1], create_time: e[2]} }
     tweetJson.each_slice(1000).to_a.each do |data|
         Tweet.insert_all(data)
     end
 
     ### create test user
+    LOGGER.info("#{self.class}##{__method__}--> create testuser")
     ActiveRecord::Base.connection.reset_pk_sequence!('users')
     User.create(name:"testuser", password:"password")
     status 200
