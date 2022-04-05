@@ -265,11 +265,12 @@ end
 
 
 get '/test/reset' do
+    puts "start"
     LOGGER.info("#{self.class}##{__method__}--> clean db")
     ActiveRecord::Base.connection.execute("TRUNCATE TABLE users RESTART IDENTITY")
     ActiveRecord::Base.connection.execute("TRUNCATE TABLE tweets RESTART IDENTITY")
     ActiveRecord::Base.connection.execute("TRUNCATE TABLE user_followers RESTART IDENTITY")
-
+    
     LOGGER.info("#{self.class}##{__method__}--> load data from csv")
     followData = File.open("./seeds/follows.csv").read
     userData = File.open("./seeds/users.csv").read
