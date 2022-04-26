@@ -55,6 +55,16 @@ get '/loaderio-7945fcb84861825ad8feaf1461ab7335/' do
     File.read(File.join('public', 'loaderio-7945fcb84861825ad8feaf1461ab7335.txt'))
 end
 
+get '/loaderio-0f917e3a98bea3f3da561956945fd2c4/' do
+    File.read(File.join('public', 'loaderio-0f917e3a98bea3f3da561956945fd2c4.txt'))
+end
+
+
+get '/loaderio-6f884bd8b5aca0afbd3e4256b1f949de/' do
+    File.read(File.join('public', 'loaderio-6f884bd8b5aca0afbd3e4256b1f949de.txt'))
+end
+
+
 get '/login' do
     erb :login
 end
@@ -311,6 +321,10 @@ get '/test/reset' do
     tweetJson = tweetParse.select{|e| (userIds.include?e[0])}.map{ |e| {user_id: e[0], text: e[1], create_time: e[2]} }
     tweetJson.each_slice(1000).to_a.each do |data|
         Tweet.insert_all(data)
+    end
+
+    File.open("public/1000tweets.json","w") do |f|
+        f.write(tweetJson.to_json)
     end
 
     ### create test user
