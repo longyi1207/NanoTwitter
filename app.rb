@@ -534,6 +534,7 @@ post '/search' do
         puts @result
         erb :searchResult
     end
+end
 
 #### TAG ENDPOINTS
 get '/tags' do
