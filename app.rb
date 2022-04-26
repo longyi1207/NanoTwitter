@@ -527,6 +527,14 @@ post '/tweet/search' do
     end
 end
 
+post '/search' do
+    if !params[:phrase].blank?
+        @key = params[:phrase]
+        @result = Tweet.where("text like '%"+@key+"%'")
+        puts @result
+        erb :searchResult
+    end
+
 #### TAG ENDPOINTS
 get '/tags' do
 	@tag = Tag.all
