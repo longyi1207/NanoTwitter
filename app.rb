@@ -41,7 +41,13 @@ include TweetService
 include RedisUtil
 
 get '/' do
-    authenticate!
+    if params[:user_id]
+        user = User.find(params[:user_id].to_i)
+        session[:user] = user
+        doOnLogin(session[:user]["id"])
+    else
+        authenticate!
+    end
     redirect "/home"
 end
 
