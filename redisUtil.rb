@@ -8,6 +8,10 @@ module RedisUtil
         return "followers:#{userid}"
     end
 
+    def redisKeySearch(key) 
+        return "search:#{key}"
+    end
+
 
     # wrapper
     def cacheKeyExist?(key)

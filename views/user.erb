@@ -20,6 +20,10 @@
           window.location.replace("/home");
         });
       }
+
+      function like(tweetid){
+        $.get("/tweet/like",{tweetid:tweetid});
+        };
     </script>
   </head>
   <body style="background-color:black; color:white; font-size:20px">
@@ -29,18 +33,6 @@
         <div class="col-2">
           <ul class="nav flex-column">
             <li class="nav-item">
-              <a class="nav-link active" href="#">Home</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="#">Notification</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="#">Message</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="#">Profile</a>
-            </li>
-            <li class="nav-item">
               <a class="nav-link" data-toggle="modal" data-target="#tweetModal" href="#tweetModal">Tweet</a>
             </li>
           </ul>
@@ -48,8 +40,8 @@
 
         <div class="col-8" style="height:100vh; border-left:solid; border-right:solid">
           <div>
-            <form class="form-inline my-2 my-lg-0" action="/tweet/search" method="post">
-                <input name="keyword" type="search" placeholder="Search" style="width:400px; text-align:center; margin:0 auto; color:black">
+            <form class="form-inline my-2 my-lg-0" action="/search" method="get">
+                <input name="phrase" type="search" placeholder="Search" style="width:400px; text-align:center; margin:0 auto; color:black">
             </form>
           </div>
 
@@ -78,22 +70,6 @@
               </li>
           </ul>
 
-          <div class="card shadow-lg bg-dark" style="border-radius:10px; margin-top:20px; margin-bottom:20px;">
-            <div class="card-title">
-              <span class="glyphicon glyphicon-user"></span>
-              Pito
-            </div>
-            <div class="card-body">
-              HARDCODE EXAMPLE: Having an icecream, yipee!
-              <div style="font-size:10px">
-              <a href="#"> <span class="glyphicon glyphicon-comment"></span> </a>
-              1 comment 
-              <a href="#"> <span class="glyphicon glyphicon-heart"></span> </a>
-              10 likes
-              </div>
-            </div> 
-          </div>
-
           <% if @tweet.length==0 %>
             <h1 style="text-align:center"> Follow users to read their posts </h1>
           <% end %>
@@ -107,10 +83,10 @@
             <div class="card-body">
               <%= t.text %>
                 <div style="font-size:10px">
-                  <a href="#"> <span class="glyphicon glyphicon-comment"></span> </a>
-                  <%= t.retweets_counter %> retweets
-                  <a href="#"> <span class="glyphicon glyphicon-heart"></span> </a>
-                  <%= t.likes_counter %> likes
+                  <a href="#0" class="button" onclick="retweet(<%= t.id %>)">  <span class="glyphicon glyphicon-comment"></span> </a>
+                  <% if t.retweets_counter==nil %> 0 <% else %> <%=t.retweets_counter%> <% end %> retweets
+                  <a href="#0" class="button" onclick="like(<%= t.id %>)"> <span class="glyphicon glyphicon-heart"></span> </a>
+                  <% if t.likes_counter==nil %> 0 <% else %> <%=t.likes_counter%> <% end %> likes
                 </div>
             </div> 
           </div>
@@ -124,10 +100,10 @@
             <div class="card shadow-lg bg-dark" style="border-radius:10px; margin-top:20px; margin-bottom:20px;">
               <div class="card-title">
                 <span class="glyphicon glyphicon-user"></span>
-                <%= u.name %>
+                <%= u[0].name %>
                 <br>
-                <button  onclick="doFollow(<%= u.id%>)" style="font-size:10px;border-radius:12px; background-color:white; color: black; border: solid; margin-left: auto;
-                margin-right: 0;"> Follow </button>
+                <button  onclick="doFollow(<%= u[0].id%>)" style="font-size:10px;border-radius:12px; background-color:white; color: black; border: solid; margin-left: auto;
+                margin-right: 0;"> <% if u[1] %> Follow <% else %> Unfollow <% end %> </button>
                 </form>
               </div>
             </div>
@@ -141,7 +117,7 @@
       <div class="modal-dialog" role="document">
         <div class="modal-content">
             <form action="/tweet/new" method="post" style="height:300px; margin:0px; padding:0px; display:inline; border-radius:40px">
-              <textarea name="text" style="background-color:black; color:white; width:100%;height:100%; font-size: medium">
+              <textarea name="text" style="background-color:black; color:white; width:100%;height:100%; font-size: medium" maxlength="280">
               </textarea>
               <button style="font-size:20px;border-radius:12px; background-color:white; color: black; border: solid; position: fixed;
               bottom: 0px;right: 0px; border-top:solid"> Tweet </button>

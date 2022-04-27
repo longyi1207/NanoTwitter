@@ -103,6 +103,13 @@ get '/home' do
     if @recommend_users.length>10
         @recommend_users = @recommend_users[1..10]
     end
+    followees = UserFollower.where("follower_id="+@user["id"].to_s).pluck("user_id")
+    
+    @if_followed=[]
+    @recommend_users.pluck("id").each do |r|
+        @if_followed.append(followees.include? r)
+    end
+    @recommend_users = @recommend_users.zip(@if_followed)
     LOGGER.info "user #{session[:user]["id"]} request timeline"
     erb :user
 end
@@ -498,6 +505,19 @@ get '/tweets' do
 	@tweet = Tweet.all
 end
 
+get '/tweet/like' do
+    puts params[:tweetid]
+    puts "???"
+	tweetId = params[:tweetid]
+    if Tweet.find(tweetId).likes_counter==nil
+        Tweet.find(tweetId).update_attribute(:likes_counter,1);
+    else
+        Tweet.find(tweetId).update_attribute(:likes_counter,Tweet.find(tweetId).likes_counter+1);
+    end
+    
+    redirect "/home"
+end
+
 get '/tweets/count' do
     Tweet.all.count.to_s
 end
@@ -518,29 +538,17 @@ delete '/tweets' do
     Tweet.delete_all
 end
 
-post '/tweet/search' do
-    if !params[:keyword].blank?
-        @key = params[:keyword]
-        @result = Tweet.where("text like '%"+@key+"%'")
-        puts @result
-        erb :searchResult
-    end
-end
-
-post '/search' do
-    if !params[:phrase].blank?
-        @key = params[:phrase]
-        @result = Tweet.where("text like '%"+@key+"%'")
-        puts @result
-        erb :searchResult
-    end
-end
-
 get '/search' do
     if !params[:phrase].blank?
-        @key = params[:phrase]
-        @result = Tweet.where("text like '%"+@key+"%'")
-        puts @result
+        key = params[:phrase]
+
+        if cacheKeyExist?(redisKeySearch(key))
+            tweetIds = cacheSSetRange(redisKeySearch(key), 0, -1)
+        else
+            tweetIds = Tweet.where("text like '%"+key+"%'").limit(50).ids
+            cacheSSetBulkAdd(redisKeySearch(key), tweetIds)
+        end
+        @result = Tweet.find(tweetIds)
         erb :searchResult
     end
 end

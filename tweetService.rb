@@ -24,18 +24,20 @@ module TweetService
     def doTweet(text, userid)
         start_time = Time.now()
         body = text.split()
+        tweet= Tweet.create(text:text, user_id:userid, likes_counter:0, retweets_counter:0, parent_tweet_id:0, original_tweet_id:0, create_time:Time.now())
         body.each do |t|
             if t.length > 1
                 if t[0]=="#"
-                    Tag.create()
-                    TagTweet.create()
+                    t = Tag.create(t[1..-1])
+                    TagTweet.create(tag_id:t.id, tweet_id:tweet.id, create_time:Time.now())
                 elsif t[0]=="@"
-                    Mention.create()
+                    # if 
+                    # Mention.create(user_id=)
                 end
             end
 
         end
-        tweet= Tweet.create(text:text, user_id:userid, likes_counter:0, retweets_counter:0, parent_tweet_id:0, original_tweet_id:0, create_time:Time.now())
+        
         LOGGER.info("#{self.class}##{__method__}--> tweetid=#{tweet.id} TIME COST: #{Time.now()-start_time} SECONDS") 
         return tweet
     end
