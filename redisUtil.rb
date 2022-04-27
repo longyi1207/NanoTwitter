@@ -12,6 +12,14 @@ module RedisUtil
         return "search:#{key}"
     end
 
+    def redisKeyTimeline(userid) 
+        return "timeline:#{userid}"
+    end
+
+    def redisKeyUsernames(userid)
+        return "timeline_usernames:#{userid}"
+    end
+
 
     # wrapper
     def cacheKeyExist?(key)

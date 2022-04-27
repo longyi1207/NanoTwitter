@@ -506,15 +506,13 @@ get '/tweets' do
 end
 
 get '/tweet/like' do
-    puts params[:tweetid]
-    puts "???"
 	tweetId = params[:tweetid]
     if Tweet.find(tweetId).likes_counter==nil
         Tweet.find(tweetId).update_attribute(:likes_counter,1);
     else
         Tweet.find(tweetId).update_attribute(:likes_counter,Tweet.find(tweetId).likes_counter+1);
     end
-    
+
     redirect "/home"
 end
 

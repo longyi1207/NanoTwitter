@@ -60,10 +60,10 @@ module UserService
 
     # Get number of followings and followers
     def getFollowerCount(userid)
-        start_time = Time.now()
+        # start_time = Time.now()
         followingCount = cacheSSetSize(redisKeyFollowees(userid))
         followerCount = cacheSSetSize(redisKeyFollowers(userid))
-        LOGGER.info("#{self.class}##{__method__}--> userid=#{userid} TIME COST: #{Time.now()-start_time} SECONDS") 
+        # LOGGER.info("#{self.class}##{__method__}--> userid=#{userid} TIME COST: #{Time.now()-start_time} SECONDS") 
         return followingCount, followerCount
     end
 
@@ -118,7 +118,7 @@ module UserService
     # Load followee ids into redis
     # return followee list if needReturn is true
     def fetchAllFollowee(userid, needReturn)
-        start_time = Time.now()
+        # start_time = Time.now()
         followee_id = []
         if cacheKeyExist?(redisKeyFollowees(userid))
             if needReturn
@@ -131,7 +131,7 @@ module UserService
             end
             cacheSSetBulkAdd(redisKeyFollowees(userid), followee_id)
         end
-        LOGGER.info("#{self.class}##{__method__}--> userid=#{userid},needReturn=#{needReturn} TIME COST: #{Time.now()-start_time} SECONDS")
+        # LOGGER.info("#{self.class}##{__method__}--> userid=#{userid},needReturn=#{needReturn} TIME COST: #{Time.now()-start_time} SECONDS")
         if needReturn
             return followee_id
         end
