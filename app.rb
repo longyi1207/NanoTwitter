@@ -97,19 +97,20 @@ get '/home' do
     end
     @followingCount, @followerCount = getFollowerCount(@user["id"])
 
-    @user_names, @tweet = fetchTimeline(@user["id"])
+    @tweet = fetchTimeline(@user["id"], 0, 50)
 
-    @recommend_users = User.all
-    if @recommend_users.length>10
-        @recommend_users = @recommend_users[1..10]
-    end
-    followees = UserFollower.where("follower_id="+@user["id"].to_s).pluck("user_id")
+    # @recommend_users = User.all
+    # if @recommend_users.length>10
+    #     @recommend_users = @recommend_users[1..10]
+    # end
+    # followees = UserFollower.where("follower_id="+@user["id"].to_s).pluck("user_id")
     
-    @if_followed=[]
-    @recommend_users.pluck("id").each do |r|
-        @if_followed.append(followees.include? r)
-    end
-    @recommend_users = @recommend_users.zip(@if_followed)
+    # @if_followed=[]
+    # @recommend_users.pluck("id").each do |r|
+    #     @if_followed.append(followees.include? r)
+    # end
+    # @recommend_users = @recommend_users.zip(@if_followed)
+    @recommend_users = []
     LOGGER.info "user #{session[:user]["id"]} request timeline"
     erb :user
 end

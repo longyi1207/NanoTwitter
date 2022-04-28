@@ -1,33 +1,15 @@
 module TweetService
 
-    def fetchTimeline(userid)
-        # start_time = Time.now()
-
-        if cacheKeyExist?(redisKeyTimeline(userId))
-            tweetIds = cacheSSetRange(redisKeyTimeline(userId), 0, -1)
-            tweet = Tweet.find(tweetIds)
-            user_names = cacheSSetRange(redisKeyUsernames(userId), 0, -1)
-        else
-            followee_id = fetchAllFollowee(userid, true)
-
-            if followee_id.length==0
-                tweet = []
-            else
-                tweet = Tweet.where("user_id=any(array"+ followee_id.to_s.gsub("\"","")+")").order("create_time DESC").limit(50)
-                cacheSSetBulkAdd(redisKeyTimeline(userid), tweet.ids)
-            end
-
-            user_names = []
-            if tweet.length>0
-                tweet.each do |t|
-                    user_names.append(User.find(t["user_id"]).name)
-                end
-            end
-            cacheSSetBulkAdd(redisKeyUsernames(userid), user_names)
+    def fetchTimeline(userid, offset, limit)
+        start_time = Time.now()
+        tweet = []
+        if cacheKeyExist?(redisKeyTimeline(userid))
+            tweetIds = cacheSSetRange(redisKeyTimeline(userid), offset, offset+limit-1)
+            tweet = Tweet.joins(:user).select("tweets.*, users.name").where("tweets.id=any(array"+ tweetIds.to_s.gsub("\"","")+")").order("tweets.create_time DESC") 
         end
-        # LOGGER.info("#{self.class}##{__method__}--> userid=#{userid} TIME COST: #{Time.now()-start_time} SECONDS")
+        LOGGER.info("#{self.class}##{__method__}--> userid=#{userid} TIME COST: #{Time.now()-start_time} SECONDS")
 
-        return user_names, tweet
+        return tweet
     end
 
     # body = "hi asd #emem @ads #aa dasda @"

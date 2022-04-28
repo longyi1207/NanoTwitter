@@ -93,7 +93,11 @@ module RedisUtil
         REDIS.with do |conn|
             conn.pipelined do |pipeline|
                 list.each do |value|
-                    pipeline.zadd(key, value.to_i, value)
+                    if value.is_a?(Hash)
+                        pipeline.zadd(key, value['rank'], value['member'])
+                    else
+                        pipeline.zadd(key, value.to_i, value)
+                    end
                 end
             end
         end

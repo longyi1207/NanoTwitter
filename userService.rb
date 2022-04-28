@@ -157,12 +157,33 @@ module UserService
         end
     end
 
+    def warmTimelineCache(userid, followee_id, limit)
+        start_time = Time.now()
+        if cacheKeyExist?(redisKeyTimeline(userid))
+            return
+        end
+        user_list = [userid]
+        if followee_id.length > 0
+            user_list += followee_id
+        end
+        cache_list = []
+        tweet = Tweet.where("user_id=any(array"+ user_list.to_s.gsub("\"","")+")").order("create_time DESC").limit(limit)
+        tweet.each do |t|
+            kv = {'rank'=>-t['create_time'].to_i, 'member'=>t['id']}
+            cache_list.append(kv)
+        end
+        puts cache_list
+        cacheSSetBulkAdd(redisKeyTimeline(userid), cache_list)
+        LOGGER.info("#{self.class}##{__method__}--> userid=#{userid},followee_id=#{followee_id},limit=#{limit} TIME COST: #{Time.now()-start_time} SECONDS")
+    end
+
     # All jobs need to be done when a user login
     def doOnLogin(userid)
         start_time = Time.now()
         # Load redis keys
-        fetchAllFollowee(userid, false)
+        followee_id = fetchAllFollowee(userid, true)
         fetchAllFollower(userid, false)
+        warmTimelineCache(userid, followee_id, 100)
 
         LOGGER.info("#{self.class}##{__method__}--> userid=#{userid} TIME COST: #{Time.now()-start_time} SECONDS")
     end

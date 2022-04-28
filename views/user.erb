@@ -74,11 +74,11 @@
             <h1 style="text-align:center"> Follow users to read their posts </h1>
           <% end %>
 
-          <% @tweet.each_with_index do |t,i| %>
+          <% @tweet.each do |t| %>
           <div class="card shadow-lg bg-dark" style="border-radius:10px; margin-top:20px; margin-bottom:20px;">
             <div class="card-title">
               <span class="glyphicon glyphicon-user"></span>
-              <%= @user_names[i] %>
+              <%= t.name %>
             </div>
             <div class="card-body">
               <%= t.text %>
