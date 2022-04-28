@@ -64,6 +64,10 @@ get '/loaderio-6f884bd8b5aca0afbd3e4256b1f949de/' do
     File.read(File.join('public', 'loaderio-6f884bd8b5aca0afbd3e4256b1f949de.txt'))
 end
 
+get '/loaderio-7753d5d52a3724a582f1b48352372369/' do
+    File.read(File.join('public', 'loaderio-7753d5d52a3724a582f1b48352372369.txt'))
+end
+
 
 get '/login' do
     erb :login
