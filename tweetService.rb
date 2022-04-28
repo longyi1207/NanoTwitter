@@ -29,9 +29,30 @@ module TweetService
             end
 
         end
-        
+        fanout(tweet, userid)
         LOGGER.info("#{self.class}##{__method__}--> tweetid=#{tweet.id} TIME COST: #{Time.now()-start_time} SECONDS") 
         return tweet
+    end
+
+    def fanout(tweet, userid)
+        start_time = Time.now()
+        user_list = [userid]
+        follower_id = fetchAllFollower(userid, true)
+        if follower_id.length > 0
+            user_list += follower_id
+        end
+        fanout_list = []
+        user_list.each do |f|
+            wrapper = {}
+            if cacheKeyExist?(redisKeyTimeline(f))
+                wrapper['key'] = redisKeyTimeline(f)
+                wrapper['rank'] = -tweet.create_time.to_i
+                wrapper['member'] = tweet.id
+                fanout_list.append(wrapper)
+            end
+        end
+        cacheSSetBulkAddGeneral(fanout_list)
+        LOGGER.info("#{self.class}##{__method__}--> tweetid=#{tweet.id} TIME COST: #{Time.now()-start_time} SECONDS") 
     end
 
     def getTweet(tweetid)

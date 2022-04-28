@@ -347,14 +347,14 @@ get '/test/reset' do
 end
 
 get "/test/tweet" do
-    if params[:user_id].to_i <= 0 || params[:tweet_count].to_i <= 0
+    if params[:user_id].to_i <= 0 || params[:count].to_i <= 0
         return 400, "Params invalid!"
     end
     user = User.where(id: params[:user_id]).first
     if user == nil
         [400, "User does not exist!"]
     else
-        1.upto(params[:tweet_count].to_i) do |i|
+        1.upto(params[:count].to_i) do |i|
             Tweet.create(text:Faker::Name.name+" "+Faker::Verb.past+" "+Faker::Hobby.activity,
                 user_id:params[:user_id], likes_counter:0, retweets_counter:0, create_time:Time.now())
         end

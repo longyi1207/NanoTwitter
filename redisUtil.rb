@@ -103,6 +103,16 @@ module RedisUtil
         end
     end
 
+    def cacheSSetBulkAddGeneral(list)
+        REDIS.with do |conn|
+            conn.pipelined do |pipeline|
+                list.each do |value|
+                    pipeline.zadd(value['key'], value['rank'], value['member'])
+                end
+            end
+        end
+    end
+
     def cacheSSetRemove(key, value)
         REDIS.with do |conn|
             conn.zrem(key, value)
