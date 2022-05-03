@@ -22,14 +22,16 @@ require 'csv'
 require 'json'
 require "logger"
 require "redis"
+require "faraday"
 
 config_file File.join("config","config.yml")
 
 configure do
-    REDIS = ConnectionPool.new(size: settings.redis_pool_size) do
+    REDIS = ConnectionPool.new(size: settings.redis_pool_size["main_app"]) do
         Redis.new(url: settings.redis_url)
     end
     LOGGER = Logger.new($stdout)
+    TWEETAPP = Faraday.new(settings.tweet_app_url)
 end
 
 enable :sessions
@@ -532,8 +534,16 @@ post '/tweet/randNew' do
 end
 
 post '/tweet/new' do
-    @tweet = doTweet(params[:text], session[:user]["id"])
-    LOGGER.info "user #{session[:user]["id"]} post tweet #{@tweet.id}"
+    # @tweet = doTweet(params[:text], session[:user]["id"])
+    response = TWEETAPP.get("/api/tweet/new") do |req|
+        req.params = {text: params[:text], userid: session[:user]["id"]}
+    end
+    if response.status == 200
+        LOGGER.info "User #{session[:user]["id"]} tweet #{response.body}"
+    else
+        LOGGER.error "User #{session[:user]["id"]} tweet #{response.body}"
+    end
+    # LOGGER.info "user #{session[:user]["id"]} post tweet #{@tweet.id}"
     redirect "/home"
 end
 

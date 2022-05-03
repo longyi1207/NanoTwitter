@@ -19,3 +19,5 @@ gem "faker"
 gem "bcrypt"
 gem "redis"
 gem "connection_pool"
+gem 'thread'
+gem 'faraday'

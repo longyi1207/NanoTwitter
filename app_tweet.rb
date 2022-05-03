@@ -22,14 +22,16 @@ require 'csv'
 require 'json'
 require "logger"
 require "redis"
+require 'thread/pool'
 
 config_file File.join("config","config.yml")
 
 configure do
-    REDIS = ConnectionPool.new(size: settings.redis_pool_size) do
+    REDIS = ConnectionPool.new(size: settings.redis_pool_size["tweet_app"]) do
         Redis.new(url: settings.redis_url)
     end
     LOGGER = Logger.new($stdout)
+    THREADPOOL = Thread.pool(4)
 end
 
 enable :sessions
@@ -40,6 +42,16 @@ include TestService
 include TweetService
 include RedisUtil
 
-get '/' do
-    "Hello world!"
+get '/api/tweet/new' do
+    text = params[:text]
+    userid = params[:userid]
+    if !text || !userid || text.empty? || userid.empty?
+        return [400, "Invalid parameters!"]
+    else
+        THREADPOOL.process {
+            puts "begin?"
+            doTweet(text, userid)
+        }
+        return [200, "Success"]
+    end
 end
