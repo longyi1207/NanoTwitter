@@ -105,19 +105,19 @@ get '/home' do
 
     @tweet = fetchTimeline(@user["id"], 0, 50)
 
-    # @recommend_users = User.all
-    # if @recommend_users.length>10
-    #     @recommend_users = @recommend_users[1..10]
-    # end
-    # followees = UserFollower.where("follower_id="+@user["id"].to_s).pluck("user_id")
+    @recommend_users = User.all
+    if @recommend_users.length>10
+        @recommend_users = @recommend_users[1..10]
+    end
+    followees = UserFollower.where("follower_id="+@user["id"].to_s).pluck("user_id")
     
-    # @if_followed=[]
-    # @recommend_users.pluck("id").each do |r|
-    #     @if_followed.append(followees.include? r)
-    # end
-    # @recommend_users = @recommend_users.zip(@if_followed)
-    # LOGGER.info "user #{session[:user]["id"]} request timeline"
-    @recommend_users =[]
+    @if_followed=[]
+    @recommend_users.pluck("id").each do |r|
+        @if_followed.append(followees.include? r)
+    end
+    @recommend_users = @recommend_users.zip(@if_followed)
+    # @recommend_users = []
+    LOGGER.info "user #{session[:user]["id"]} request timeline"
     erb :user
 end
 
@@ -260,9 +260,7 @@ get '/test/reset/standard' do
     ActiveRecord::Base.connection.execute("TRUNCATE TABLE tag_tweets RESTART IDENTITY")
     ActiveRecord::Base.connection.execute("TRUNCATE TABLE likes RESTART IDENTITY")
     ActiveRecord::Base.connection.execute("TRUNCATE TABLE mentions RESTART IDENTITY")
-    ActiveRecord::Base.connection.execute("TRUNCATE TABLE tweet_replies RESTART IDENTITY")
-    
-    cacheFlushAll
+    ActiveRecord::Base.connection.execute("TRUNCATE TABLE tweet_replies RESTART IDENTITY")   
 
     followData = File.open("./seeds/follows.csv").read
     userData = File.open("./seeds/users.csv").read
@@ -302,8 +300,6 @@ get '/test/reset' do
     ActiveRecord::Base.connection.execute("TRUNCATE TABLE users RESTART IDENTITY")
     ActiveRecord::Base.connection.execute("TRUNCATE TABLE tweets RESTART IDENTITY")
     ActiveRecord::Base.connection.execute("TRUNCATE TABLE user_followers RESTART IDENTITY")
-
-    cacheFlushAll
     
     LOGGER.info("#{self.class}##{__method__}--> load data from csv")
     followData = File.open("./seeds/follows.csv").read
@@ -361,11 +357,8 @@ get "/test/tweet" do
         [400, "User does not exist!"]
     else
         1.upto(params[:count].to_i) do |i|
-            # Tweet.create(text:Faker::Name.name+" "+Faker::Verb.past+" "+Faker::Hobby.activity,
-            #     user_id:params[:user_id], likes_counter:0, retweets_counter:0, create_time:Time.now())
-            response = TWEETAPP.get("/api/tweet/new") do |req|
-                req.params = {text: Faker::Name.name+" "+Faker::Verb.past+" "+Faker::Hobby.activity, userid: params[:user_id]}
-            end
+            Tweet.create(text:Faker::Name.name+" "+Faker::Verb.past+" "+Faker::Hobby.activity,
+                user_id:params[:user_id], likes_counter:0, retweets_counter:0, create_time:Time.now())
         end
         [200, "Success"]
     end
@@ -453,9 +446,6 @@ get "/test/performance" do
     ActiveRecord::Base.connection.execute("TRUNCATE TABLE users RESTART IDENTITY")
     ActiveRecord::Base.connection.execute("TRUNCATE TABLE tweets RESTART IDENTITY")
     ActiveRecord::Base.connection.execute("TRUNCATE TABLE user_followers RESTART IDENTITY")
-
-    cacheFlushAll
-    
     userId = params[:userId].to_i
 
     followData = CSV.parse(File.open("./seeds/follows.csv").read)
