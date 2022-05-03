@@ -259,7 +259,9 @@ get '/test/reset/standard' do
     ActiveRecord::Base.connection.execute("TRUNCATE TABLE tag_tweets RESTART IDENTITY")
     ActiveRecord::Base.connection.execute("TRUNCATE TABLE likes RESTART IDENTITY")
     ActiveRecord::Base.connection.execute("TRUNCATE TABLE mentions RESTART IDENTITY")
-    ActiveRecord::Base.connection.execute("TRUNCATE TABLE tweet_replies RESTART IDENTITY")   
+    ActiveRecord::Base.connection.execute("TRUNCATE TABLE tweet_replies RESTART IDENTITY")
+    
+    cacheFlushAll
 
     followData = File.open("./seeds/follows.csv").read
     userData = File.open("./seeds/users.csv").read
@@ -299,6 +301,8 @@ get '/test/reset' do
     ActiveRecord::Base.connection.execute("TRUNCATE TABLE users RESTART IDENTITY")
     ActiveRecord::Base.connection.execute("TRUNCATE TABLE tweets RESTART IDENTITY")
     ActiveRecord::Base.connection.execute("TRUNCATE TABLE user_followers RESTART IDENTITY")
+
+    cacheFlushAll
     
     LOGGER.info("#{self.class}##{__method__}--> load data from csv")
     followData = File.open("./seeds/follows.csv").read
@@ -445,6 +449,9 @@ get "/test/performance" do
     ActiveRecord::Base.connection.execute("TRUNCATE TABLE users RESTART IDENTITY")
     ActiveRecord::Base.connection.execute("TRUNCATE TABLE tweets RESTART IDENTITY")
     ActiveRecord::Base.connection.execute("TRUNCATE TABLE user_followers RESTART IDENTITY")
+
+    cacheFlushAll
+    
     userId = params[:userId].to_i
 
     followData = CSV.parse(File.open("./seeds/follows.csv").read)

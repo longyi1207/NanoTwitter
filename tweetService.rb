@@ -24,7 +24,7 @@ module TweetService
             tweet_list = Tweet.where("create_time > ?", last_time).where(user_id: userid).order("create_time DESC").limit(limit)
             # put all tweets into cache
             cache_list = []
-            tweet.each do |t|
+            tweet_list.each do |t|
                 kv = {'rank'=>-t['create_time'].to_i, 'member'=>t['id']}
                 cache_list.append(kv)
             end
@@ -43,6 +43,22 @@ module TweetService
             end
             cacheSSetBulkAdd(redisKeyTimeline(myid), cache_list)
         end
+    end
+
+    def unfollowTimeline(myid, userid, limit)
+        cacheKeyDelete(redisKeyTimeline(myid))
+        followee_id = fetchAllFollowee(myid, true)
+        user_list = [myid]
+        if followee_id.length > 0
+            user_list += followee_id
+        end
+        cache_list = []
+        tweet = Tweet.where("user_id=any(array"+ user_list.to_s.gsub("\"","")+")").order("create_time DESC").limit(limit)
+        tweet.each do |t|
+            kv = {'rank'=>-t['create_time'].to_i, 'member'=>t['id']}
+            cache_list.append(kv)
+        end
+        cacheSSetBulkAdd(redisKeyTimeline(myid), cache_list)
     end
 
     # body = "hi asd #emem @ads #aa dasda @"

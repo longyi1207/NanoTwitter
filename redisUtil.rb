@@ -26,6 +26,12 @@ module RedisUtil
 
 
     # wrapper
+    def cacheFlushAll()
+        REDIS.with do |conn|
+            conn.flushall
+        end
+    end
+
     def cacheKeyExist?(key)
         REDIS.with do |conn|
             check = conn.exists(key)
@@ -37,6 +43,12 @@ module RedisUtil
         end
         LOGGER.error("#{self.class}##{__method__}--> Redis error")
         return false
+    end
+
+    def cacheKeyDelete(key)
+        REDIS.with do |conn|
+            conn.del(key)
+        end
     end
 
     # list

@@ -55,6 +55,8 @@ module UserService
             UserFollower.delete_by(user_id: userid, follower_id: myid)
             cacheSSetRemove(redisKeyFollowees(myid), userid)
             cacheSSetRemove(redisKeyFollowers(userid), myid)
+
+            unfollowTimeline(myid, userid, 1000)
         end
         LOGGER.info("#{self.class}##{__method__}--> myid=#{myid},userid=#{userid} TIME COST: #{Time.now()-start_time} SECONDS") 
         true
