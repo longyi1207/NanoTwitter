@@ -553,15 +553,42 @@ end
 
 get '/search' do
     if !params[:phrase].blank?
-        key = params[:phrase]
-
-        if cacheKeyExist?(redisKeySearch(key))
-            tweetIds = cacheSSetRange(redisKeySearch(key), 0, -1)
+        @key = params[:phrase]
+        if !params[:paged].blank?
+            if session[:toId]!=0
+                session[:toId] = session[:toId]+50
+            else
+                session[:toId] = 100
+            end
+            tweets = Tweet.where("text like '%"+@key+"%'").limit(session[:toId])[session[:toId]-50..session[:toId]]
+            userIds = tweets.pluck("user_id")
+            @users = []
+            userIds.each do |id|
+                @users << User.find(id).name
+            end
+            tweetIds = tweets.pluck("id")
         else
-            tweetIds = Tweet.where("text like '%"+key+"%'").limit(50).ids
-            cacheSSetBulkAdd(redisKeySearch(key), tweetIds)
+            session[:toId] = 0
+            if cacheKeyExist?(redisKeySearch(@key))
+                tweetIds = cacheSSetRange(redisKeySearch(@key), 0, -1)
+                @users = cacheSSetRange(redisKeySearchUsers(@key), 0, -1)
+            else
+                tweets = Tweet.where("text like '%"+@key+"%'").limit(50)
+                userIds = tweets.pluck("user_id")
+                @users = []
+                userIds.each do |id|
+                    @users << User.find(id).name
+                end
+                cacheSSetBulkAdd(redisKeySearch(@key), tweets.ids)
+                cacheSSetBulkAdd(redisKeySearchUsers(@key), @users)
+            end
         end
-        @result = Tweet.find(tweetIds)
+        if !tweetIds
+            @result = []
+        else
+            @result = Tweet.find(tweetIds)
+        end
+        
         erb :searchResult
     end
 end

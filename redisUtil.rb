@@ -12,6 +12,10 @@ module RedisUtil
         return "search:#{key}"
     end
 
+    def redisKeySearchUsers(key) 
+        return "searchUsers:#{key}"
+    end
+
     def redisKeyTimeline(userid) 
         return "timeline:#{userid}"
     end
