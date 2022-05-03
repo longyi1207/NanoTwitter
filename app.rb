@@ -360,8 +360,11 @@ get "/test/tweet" do
         [400, "User does not exist!"]
     else
         1.upto(params[:count].to_i) do |i|
-            Tweet.create(text:Faker::Name.name+" "+Faker::Verb.past+" "+Faker::Hobby.activity,
-                user_id:params[:user_id], likes_counter:0, retweets_counter:0, create_time:Time.now())
+            # Tweet.create(text:Faker::Name.name+" "+Faker::Verb.past+" "+Faker::Hobby.activity,
+            #     user_id:params[:user_id], likes_counter:0, retweets_counter:0, create_time:Time.now())
+            response = TWEETAPP.get("/api/tweet/new") do |req|
+                req.params = {text: Faker::Name.name+" "+Faker::Verb.past+" "+Faker::Hobby.activity, userid: params[:user_id]}
+            end
         end
         [200, "Success"]
     end
