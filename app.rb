@@ -358,16 +358,21 @@ get "/test/tweet" do
     else
         start_time = Time.now()
         1.upto(params[:count].to_i) do |i|
-        #     Tweet.create(text:Faker::Name.name+" "+Faker::Verb.past+" "+Faker::Hobby.activity,
-        #         user_id:params[:user_id], likes_counter:0, retweets_counter:0, create_time:Time.now())
-        # end
-            response = TWEETAPP.get("/api/tweet/new") do |req|
-                req.params = {text: Faker::Name.name+" "+Faker::Verb.past+" "+Faker::Hobby.activity, userid: params[:user_id]}
-            end
+            #     Tweet.create(text:Faker::Name.name+" "+Faker::Verb.past+" "+Faker::Hobby.activity,
+            #         user_id:params[:user_id], likes_counter:0, retweets_counter:0, create_time:Time.now())
+            # end
+
+
+            doTweet(Faker::Name.name+" "+Faker::Verb.past+" "+Faker::Hobby.activity, params[:user_id])
+            # response = TWEETAPP.get("/api/tweet/new") do |req|
+            #     req.params = {text: Faker::Name.name+" "+Faker::Verb.past+" "+Faker::Hobby.activity, userid: params[:user_id]}
+            # end
         end
-        puts "TEST POST #{params[:count]} TWEET: #{Time.now()-start_time} SECONDS"
+        LOGGER.info("TEST POST #{params[:count]} TWEET: #{Time.now()-start_time} SECONDS")
         [200, "Success"]
     end
+
+       
 end
 
 get "/test/status" do
