@@ -12,6 +12,39 @@ module TweetService
         return tweet
     end
 
+    # modify timeline when follow a user
+    def followTimeline(myid, userid, limit)
+        # check timeline cache
+        if cacheKeyExist?(redisKeyTimeline(myid))
+            # get the last Tweet timestamp
+            last_timestamp = cacheSSetRange(redisKeyTimeline(myid), -1, -1, :withscores => true)[0][1]
+            # convert timestamp to time
+            last_time = Time.at(-last_timestamp).utc
+            # get all Tweets from userid, create_time > last_time, limit 1000
+            tweet_list = Tweet.where("create_time > ?", last_time).where(user_id: userid).order("create_time DESC").limit(limit)
+            # put all tweets into cache
+            cache_list = []
+            tweet.each do |t|
+                kv = {'rank'=>-t['create_time'].to_i, 'member'=>t['id']}
+                cache_list.append(kv)
+            end
+            if !cache_list.empty?
+                cacheSSetBulkAdd(redisKeyTimeline(myid), cache_list)
+                # keep limit entries in cache
+                cacheSSetRemRangeByRank(redisKeyTimeline(myid), limit, -1)
+            end
+        else
+            # just add all Tweets
+            cache_list = []
+            tweet = Tweet.where(user_id: userid).order("create_time DESC").limit(limit)
+            tweet.each do |t|
+                kv = {'rank'=>-t['create_time'].to_i, 'member'=>t['id']}
+                cache_list.append(kv)
+            end
+            cacheSSetBulkAdd(redisKeyTimeline(myid), cache_list)
+        end
+    end
+
     # body = "hi asd #emem @ads #aa dasda @"
     def doTweet(text, userid)
         start_time = Time.now()

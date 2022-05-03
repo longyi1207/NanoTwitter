@@ -78,9 +78,9 @@ module RedisUtil
     end
 
     # sorted set
-    def cacheSSetRange(key, from, to)
+    def cacheSSetRange(key, from, to, withscores: false)
         REDIS.with do |conn|
-            followee_id = conn.zrange(key, from, to)
+            followee_id = conn.zrange(key, from, to, :with_scores => withscores)
             return followee_id
         end
         LOGGER.error("#{self.class}##{__method__}--> Redis error")
@@ -136,6 +136,19 @@ module RedisUtil
                     pipeline.zrank(key, value)
                 end
             end
+        end
+    end
+
+    def cacheSSetScore(key, value)
+        REDIS.with do |conn|
+            conn.zscore(key, value)
+        end
+    end
+
+    # 0 index
+    def cacheSSetRemRangeByRank(key, start, stop)
+        REDIS.with do |conn|
+            conn.zremrangebyrank(key, start, stop)
         end
     end
 end

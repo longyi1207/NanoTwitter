@@ -37,6 +37,8 @@ module UserService
             if cacheKeyExist?(redisKeyFollowers(userid))
                 cacheSSetAdd(redisKeyFollowers(userid), myid)
             end
+            # add tweets to timeline
+            followTimeline(myid, userid, 1000)
         end
         LOGGER.info("#{self.class}##{__method__}--> myid=#{myid},userid=#{userid} TIME COST: #{Time.now()-start_time} SECONDS") 
         true
@@ -172,7 +174,6 @@ module UserService
             kv = {'rank'=>-t['create_time'].to_i, 'member'=>t['id']}
             cache_list.append(kv)
         end
-        puts cache_list
         cacheSSetBulkAdd(redisKeyTimeline(userid), cache_list)
         LOGGER.info("#{self.class}##{__method__}--> userid=#{userid},followee_id=#{followee_id},limit=#{limit} TIME COST: #{Time.now()-start_time} SECONDS")
     end
@@ -183,7 +184,7 @@ module UserService
         # Load redis keys
         followee_id = fetchAllFollowee(userid, true)
         fetchAllFollower(userid, false)
-        warmTimelineCache(userid, followee_id, 100)
+        warmTimelineCache(userid, followee_id, 1000)
 
         LOGGER.info("#{self.class}##{__method__}--> userid=#{userid} TIME COST: #{Time.now()-start_time} SECONDS")
     end

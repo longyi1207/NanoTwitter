@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2022_03_29_023906) do
+ActiveRecord::Schema[7.0].define(version: 2022_05_03_051430) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -46,7 +46,6 @@ ActiveRecord::Schema[7.0].define(version: 2022_03_29_023906) do
   end
 
   create_table "tweet_replies", force: :cascade do |t|
-    t.string "text"
     t.integer "tweet_id"
     t.integer "user_id"
     t.integer "reply_id"
@@ -62,6 +61,7 @@ ActiveRecord::Schema[7.0].define(version: 2022_03_29_023906) do
     t.integer "retweets_counter"
     t.integer "parent_tweet_id"
     t.integer "original_tweet_id"
+    t.index ["create_time"], name: "index_tweets_on_create_time"
     t.index ["user_id"], name: "index_tweets_on_user_id"
   end
 
