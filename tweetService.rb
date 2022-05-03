@@ -14,7 +14,6 @@ module TweetService
 
     # body = "hi asd #emem @ads #aa dasda @"
     def doTweet(text, userid)
-        puts "start"
         start_time = Time.now()
         body = text.split()
         tweet= Tweet.create(text:text, user_id:userid, likes_counter:0, retweets_counter:0, parent_tweet_id:0, original_tweet_id:0, create_time:Time.now())

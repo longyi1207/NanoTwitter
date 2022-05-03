@@ -49,7 +49,6 @@ get '/api/tweet/new' do
         return [400, "Invalid parameters!"]
     else
         THREADPOOL.process {
-            puts "begin?"
             doTweet(text, userid)
         }
         return [200, "Success"]
