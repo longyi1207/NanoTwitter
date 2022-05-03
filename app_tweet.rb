@@ -48,10 +48,10 @@ get '/api/tweet/new' do
     if !text || !userid || text.empty? || userid.empty?
         return [400, "Invalid parameters!"]
     else
-        THREADPOOL.process {
-            puts "begin?"
-            doTweet(text, userid)
-        }
+        # THREADPOOL.process {
+        puts "begin?"
+        doTweet(text, userid)
+        # }
         return [200, "Success"]
     end
 end
