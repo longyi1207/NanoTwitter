@@ -1,11 +1,14 @@
 module TweetService
 
     def fetchTimeline(userid, offset, limit)
+        # including offset
         start_time = Time.now()
         tweet = []
         if cacheKeyExist?(redisKeyTimeline(userid))
             tweetIds = cacheSSetRange(redisKeyTimeline(userid), offset, offset+limit-1)
-            tweet = Tweet.joins(:user).select("tweets.*, users.name").where("tweets.id=any(array"+ tweetIds.to_s.gsub("\"","")+")").order("tweets.create_time DESC") 
+            if !tweetIds.empty?
+                tweet = Tweet.joins(:user).select("tweets.*, users.name").where("tweets.id=any(array"+ tweetIds.to_s.gsub("\"","")+")").order("tweets.create_time DESC")
+            end 
         end
         LOGGER.info("#{self.class}##{__method__}--> userid=#{userid} TIME COST: #{Time.now()-start_time} SECONDS")
 

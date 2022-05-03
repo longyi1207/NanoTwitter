@@ -116,6 +116,7 @@ get '/home' do
         @if_followed.append(followees.include? r)
     end
     @recommend_users = @recommend_users.zip(@if_followed)
+    print(@user)
     # @recommend_users = []
     LOGGER.info "user #{session[:user]["id"]} request timeline"
     erb :user
@@ -550,6 +551,11 @@ post '/tweet/new' do
     end
     # LOGGER.info "user #{session[:user]["id"]} post tweet #{@tweet.id}"
     redirect "/home"
+end
+
+post "/tweet/getMoreTimeline" do
+    offset = params['offset'].to_i
+    fetchTimeline(session[:user][:id], offset, 10).to_json
 end
 
 delete '/tweets' do

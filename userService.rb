@@ -23,7 +23,7 @@ module UserService
 
         user = User.create(name: params[:username], password: password_hash, create_time:Time.now())
         LOGGER.info("#{self.class}##{__method__}--> params=#{params} TIME COST: #{Time.now()-start_time} SECONDS")  
-        return true, user.slice(:id, :name)
+        return true, user.slice(:id, :name, :create_time)
     end
 
     # Follow a user

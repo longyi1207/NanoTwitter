@@ -11,6 +11,54 @@
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
 
     <script>
+      var timeout
+      $(window).scroll(function() {
+          clearTimeout(timeout); 
+          timeout = setTimeout(() => {
+          // if($(window).scrollTop() == $(document).height() - $(window).height()) {
+            if ((window.innerHeight + window.pageYOffset) >= document.body.offsetHeight) {
+              totalNum = $('#totalNum').val()
+              $.post("/tweet/getMoreTimeline",
+              {
+                offset: totalNum
+              },
+              function(data) {
+                data = $.parseJSON(data);
+                if (data.length > 0) {
+                  $('#totalNum').val(data.length+parseInt(totalNum));
+                  $.each(data, function(i, item) {
+                    html = $('<div class="card shadow-lg bg-dark" style="border-radius:10px; margin-top:20px; margin-bottom:20px;">');
+                    title = $('<div class="card-title">')
+                        .append('<span class="glyphicon glyphicon-user"></span>')
+                        .append(item["name"])
+                        .append('&emsp;')
+                        .append('<span style="font-size:15px">'+String(item["create_time"]).slice(0,-5).replace('T', ' ')+'</span>');
+                    body = $('<div class="card-body">');
+                    footer = $('<div style="font-size:10px">')
+                        .append('<a href="#0" class="button" onclick="retweet('+item['id']+')">  <span class="glyphicon glyphicon-comment"></span> </a>');
+                    if (item["retweets_counter"] == null) {
+                      footer.append('0');
+                    } else {
+                      footer.append(item["retweets_counter"] + 'retweets');
+                    }
+                    footer.append('<a href="#0" class="button" onclick="like('+item['id']+')"> <span class="glyphicon glyphicon-heart"></span> </a>');
+                    if (item["likes_counter"] == null) {
+                      footer.append('0');
+                    } else {
+                      footer.append(item["likes_counter"] + 'likes');
+                    }
+                    body.append(item['text']).append(footer);
+                    html.append(title, body);
+                        
+                    $('#timelineContent').append(html)
+
+                  });
+                }
+              });
+            }
+          }, 50);
+      });
+      
       function doFollow(userid) {
         $.post("/users/doFollow",
         {
@@ -38,7 +86,7 @@
           </ul>
         </div>
 
-        <div class="col-8" style="height:100vh; border-left:solid; border-right:solid">
+        <div class="col-8" style="border-left:solid; border-right:solid">
           <div>
             <form class="form-inline my-2 my-lg-0" action="/search" method="get">
                 <input name="phrase" type="search" placeholder="Search" style="width:400px; text-align:center; margin:0 auto; color:black">
@@ -49,49 +97,50 @@
             <span class="glyphicon glyphicon-user" style="font-size:100px"></span>
             <h3> <%= @user['name'] %> </h3>
             <p style="font-size:15px">
-            cosi 105 Professor
-            create at march 2
+            create at <%= @user['create_time'].to_s[0..-5]%>
             <br>
             <%= @followingCount %> <a href="/users/follow/false"> following</a>, <%= @followerCount %> <a href="/users/follow/true"> followers</a>
-            <button style="font-size:10px;border-radius:12px; background-color:blue; color: white; border: solid; margin-left: auto;
-              margin-right: 0;"> Follow </button>
+            <input id="totalNum" type="hidden" value="<%= @tweet.length()%>">
+            <%# <button style="font-size:10px;border-radius:12px; background-color:blue; color: white; border: solid; margin-left: auto;
+              margin-right: 0;"> Follow </button> %>
             </p>
           </div>
 
-          <ul class="nav justify-content-center" style="margin-top:50px; border-bottom:solid">
-              <li class="nav-item">
-              <a class="nav-link active" href="#">Timeline</a>
+          <ul class="nav nav-tabs justify-content-center" style="margin-top:50px; border-bottom:solid">
+              <li id="timelineTab" class="active" >
+                <a id="timelineTab" href="#timelineContent" data-toggle="tab">Timeline</a>
               </li>
-              <li class="nav-item">
-                <a class="nav-link" href="#">Tweets and Replies</a>
+              <li id="replies">
+                <a id="timelineTab" href="#">Tweets and Replies</a>
               </li>
-              <li class="nav-item">
-                <a class="nav-link" href="#">Likes</a>
+              <li id="likes">
+                <a id="timelineTab" href="#">Likes</a>
               </li>
           </ul>
 
           <% if @tweet.length==0 %>
-            <h1 style="text-align:center"> Follow users to read their posts </h1>
+            <h1 style="text-align:center" id="warning"> Follow users to read their posts </h1>
           <% end %>
 
-          <% @tweet.each do |t| %>
-          <div class="card shadow-lg bg-dark" style="border-radius:10px; margin-top:20px; margin-bottom:20px;">
-            <div class="card-title">
-              <span class="glyphicon glyphicon-user"></span>
-              <%= t.name %>
-            </div>
-            <div class="card-body">
-              <%= t.text %>
-                <div style="font-size:10px">
-                  <a href="#0" class="button" onclick="retweet(<%= t.id %>)">  <span class="glyphicon glyphicon-comment"></span> </a>
-                  <% if t.retweets_counter==nil %> 0 <% else %> <%=t.retweets_counter%> <% end %> retweets
-                  <a href="#0" class="button" onclick="like(<%= t.id %>)"> <span class="glyphicon glyphicon-heart"></span> </a>
-                  <% if t.likes_counter==nil %> 0 <% else %> <%=t.likes_counter%> <% end %> likes
+          <div class="tab-pane active" id="timelineContent">
+            <% @tweet.each do |t| %>
+              <div class="card shadow-lg bg-dark" style="border-radius:10px; margin-top:20px; margin-bottom:20px;">
+                <div class="card-title">
+                  <span class="glyphicon glyphicon-user"></span>
+                  <%= t.name %>&emsp;<span style="font-size:15px"><%= t.create_time.to_s[0..-5]%></span>
                 </div>
-            </div> 
+                <div class="card-body">
+                  <%= t.text %>
+                    <div style="font-size:10px">
+                      <a href="#0" class="button" onclick="retweet(<%= t.id %>)">  <span class="glyphicon glyphicon-comment"></span> </a>
+                      <% if t.retweets_counter==nil %> 0 <% else %> <%=t.retweets_counter%> <% end %> retweets
+                      <a href="#0" class="button" onclick="like(<%= t.id %>)"> <span class="glyphicon glyphicon-heart"></span> </a>
+                      <% if t.likes_counter==nil %> 0 <% else %> <%=t.likes_counter%> <% end %> likes
+                    </div>
+                </div> 
+              </div>
+            <% end %>
           </div>
-          <% end %>
-
         </div>
       
         <div class="col-2">

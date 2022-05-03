@@ -20,7 +20,7 @@ module Authentication
         if user == nil || Password.new(user.password) != params[:password] 
             return false, "Wrong username or password!"
         else
-            return true, user.slice(:id, :name)
+            return true, user.slice(:id, :name, :create_time)
         end
     end
 
