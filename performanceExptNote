@@ -31,3 +31,7 @@ Marh28-11pm add cache:
 follow: 0.062 0.042 0.016
 tweet: 0.010 0.011 0.010
 timeline: 0.105 0.102 0.117
+
+follow: 0.004 0.002 0.002 
+tweet: 0.06 0.06 0.08
+timeline:  0.02 0.019 0.017

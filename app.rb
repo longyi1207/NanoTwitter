@@ -356,10 +356,16 @@ get "/test/tweet" do
     if user == nil
         [400, "User does not exist!"]
     else
+        start_time = Time.now()
         1.upto(params[:count].to_i) do |i|
-            Tweet.create(text:Faker::Name.name+" "+Faker::Verb.past+" "+Faker::Hobby.activity,
-                user_id:params[:user_id], likes_counter:0, retweets_counter:0, create_time:Time.now())
+        #     Tweet.create(text:Faker::Name.name+" "+Faker::Verb.past+" "+Faker::Hobby.activity,
+        #         user_id:params[:user_id], likes_counter:0, retweets_counter:0, create_time:Time.now())
+        # end
+            response = TWEETAPP.get("/api/tweet/new") do |req|
+                req.params = {text: Faker::Name.name+" "+Faker::Verb.past+" "+Faker::Hobby.activity, userid: params[:user_id]}
+            end
         end
+        puts "TEST POST #{params[:count]} TWEET: #{Time.now()-start_time} SECONDS"
         [200, "Success"]
     end
 end
@@ -406,7 +412,7 @@ get "/test/stress" do
         # UserFollower.create(user_id:star, follower_id:fan)
     end
     LOGGER.info("TEST STRESS: userid=#{fan} follows myid=#{star} TIME COST: #{Time.now()-start_time} SECONDS") 
-
+    puts "TEST STRESS: userid=#{fan} follows myid=#{star} TIME COST: #{Time.now()-start_time} SECONDS"
     text_list = []
     id_list = []
     time_sum = 0
@@ -419,26 +425,20 @@ get "/test/stress" do
         id_list.append(tweet.id)
     end
     LOGGER.info("TEST STRESS: userid=#{star} creates tweet AVERAGE TIME COST: #{time_sum/n} SECONDS") 
+    
 
-    # id_list.each do |i|
-    #     getTweet(i)
-    # end
 
     start_time = Time.now()
-    user_names, tweet = fetchTimeline(fan)
+    user_names, tweet = fetchTimeline(fan, 0, 50)
     LOGGER.info("TEST STRESS: userid=#{fan} fetches timeline from #{n} tweets TIME COST: #{Time.now()-start_time} SECONDS") 
-
+    
     timeline = Set.new
     tweet.each do |t|
         timeline << t.id
     end
 
-    # will only return 50 tweets, so this code would be problematic
-    # id_list.each do |i|
-    #     if !timeline.include?(i)
-    #         return [400, "Timeline test failed!"]
-    #     end
-    # end
+    puts "TEST STRESS: userid=#{star} creates tweet AVERAGE TIME COST: #{time_sum/n} SECONDS"
+    puts "TEST STRESS: userid=#{fan} fetches timeline from #{n} tweets TIME COST: #{Time.now()-start_time} SECONDS"
     [200, "OK"]
 end
 

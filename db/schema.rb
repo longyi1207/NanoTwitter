@@ -46,6 +46,7 @@ ActiveRecord::Schema[7.0].define(version: 2022_05_03_051430) do
   end
 
   create_table "tweet_replies", force: :cascade do |t|
+    t.string "text"
     t.integer "tweet_id"
     t.integer "user_id"
     t.integer "reply_id"
