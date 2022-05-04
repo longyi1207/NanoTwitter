@@ -22,9 +22,11 @@ run test:
 ruby test/relation_test.rb      
 
 heroku:
+heroku pg:psql
+create extension pg_stat_statements;
+
 git push -f
 heroku git:remote -a cosi105nanotwitter
-git remote -v
 
 heroku login
 heroku git:clone -a cosi105nanotwitter 
@@ -35,8 +37,8 @@ git push heroku main
 
 heroku open
 heroku logs
-
-herou run bash -r appname
+--app cosi105nanotwitter
+heroku run bash -r appname
 irb
 
 git ignore modification:

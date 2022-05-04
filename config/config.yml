@@ -1,12 +1,15 @@
 test:
   redis_url: redis://redistogo:2eab8a676a981817ebafd929fb5210bd@hammerjaw.redistogo.com:11068/
   tweet_app_url: http://localhost:8080
+  search_app_url: http://localhost:8080
   redis_pool_size: {main_app: 7, tweet_app: 3}
 development:
   redis_url: redis://redistogo:2eab8a676a981817ebafd929fb5210bd@hammerjaw.redistogo.com:11068/
   tweet_app_url: http://localhost:8080
+  search_app_url: http://localhost:8080
   redis_pool_size: {main_app: 7, tweet_app: 3}
 production:
   redis_url: redis://redistogo:0ec33a6d36d9d4e488ed1288812a9cf1@sole.redistogo.com:10137/
   tweet_app_url: https://app-tweet.herokuapp.com/
+  search_app_url: https://app-search2.herokuapp.com/
   redis_pool_size: {main_app: 7, tweet_app: 3}

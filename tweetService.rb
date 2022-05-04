@@ -132,6 +132,44 @@ module TweetService
         end
         LOGGER.info("#{self.class}##{__method__}--> myid=#{myid},userid=#{userid},tweetid=#{tweetid} TIME COST: #{Time.now()-start_time} SECONDS")
         return counter
+
+    def doSearch(key, paged)
+        @key=key
+        if !paged.blank?
+            if session[:toId]!=0
+                session[:toId] = session[:toId]+50
+            else
+                session[:toId] = 100
+            end
+            tweets = Tweet.where("text like '%"+@key+"%'").limit(session[:toId])[session[:toId]-50..session[:toId]]
+            userIds = tweets.pluck("user_id")
+            @users = []
+            userIds.each do |id|
+                @users << User.find(id).name
+            end
+            tweetIds = tweets.pluck("id")
+        else
+            session[:toId] = 0
+            if cacheKeyExist?(redisKeySearch(@key))
+                tweetIds = cacheSSetRange(redisKeySearch(@key), 0, -1)
+                @users = cacheSSetRange(redisKeySearchUsers(@key), 0, -1)
+            else
+                tweets = Tweet.where("text like '%"+@key+"%'").limit(50)
+                userIds = tweets.pluck("user_id")
+                @users = []
+                userIds.each do |id|
+                    @users << User.find(id).name
+                end
+                cacheSSetBulkAdd(redisKeySearch(@key), tweets.ids)
+                cacheSSetBulkAdd(redisKeySearchUsers(@key), @users)
+            end
+        end
+        if !tweetIds
+            @result = []
+        else
+            @result = Tweet.find(tweetIds)
+        end
+        return 
     end
 
     def doRetweet(myid, userid, tweetid)

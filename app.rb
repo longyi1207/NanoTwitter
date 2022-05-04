@@ -32,6 +32,7 @@ configure do
     end
     LOGGER = Logger.new($stdout)
     TWEETAPP = Faraday.new(settings.tweet_app_url)
+    SEARCHAPP = Faraday.new(settings.search_app_url)
 end
 
 enable :sessions
@@ -218,7 +219,6 @@ end
 
 #### TEST ENDPOINTS
 
-### I don't know how to parse local json file
 get '/test/readCsv' do
 
     followData = File.open("./seeds/follows.csv").read
@@ -241,8 +241,6 @@ get '/test/readCsv' do
     File.open("follow.json","w") do |f|
         f.write(followJson)
     end
-
-    # File.exist?("tweets.json")
 end
 
 
@@ -353,15 +351,10 @@ get "/test/tweet" do
     else
         start_time = Time.now()
         1.upto(params[:count].to_i) do |i|
-            #     Tweet.create(text:Faker::Name.name+" "+Faker::Verb.past+" "+Faker::Hobby.activity,
-            #         user_id:params[:user_id], likes_counter:0, retweets_counter:0, create_time:Time.now())
-            # end
-
-
-            doTweet(Faker::Name.name+" "+Faker::Verb.past+" "+Faker::Hobby.activity, params[:user_id])
-            # response = TWEETAPP.get("/api/tweet/new") do |req|
-            #     req.params = {text: Faker::Name.name+" "+Faker::Verb.past+" "+Faker::Hobby.activity, userid: params[:user_id]}
-            # end
+            # doTweet(Faker::Name.name+" "+Faker::Verb.past+" "+Faker::Hobby.activity, params[:user_id])
+            response = TWEETAPP.get("/api/tweet/new") do |req|
+                req.params = {text: Faker::Name.name+" "+Faker::Verb.past+" "+Faker::Hobby.activity, userid: params[:user_id]}
+            end
         end
         LOGGER.info("TEST POST #{params[:count]} TWEET: #{Time.now()-start_time} SECONDS")
         [200, "Success"]
@@ -553,46 +546,54 @@ delete '/tweets' do
     Tweet.delete_all
 end
 
-get '/search' do
-    if !params[:phrase].blank?
-        @key = params[:phrase]
-        if !params[:paged].blank?
-            if session[:toId]!=0
-                session[:toId] = session[:toId]+50
-            else
-                session[:toId] = 100
-            end
-            tweets = Tweet.where("text like '%"+@key+"%'").limit(session[:toId])[session[:toId]-50..session[:toId]]
-            userIds = tweets.pluck("user_id")
-            @users = []
-            userIds.each do |id|
-                @users << User.find(id).name
-            end
-            tweetIds = tweets.pluck("id")
-        else
-            session[:toId] = 0
-            if cacheKeyExist?(redisKeySearch(@key))
-                tweetIds = cacheSSetRange(redisKeySearch(@key), 0, -1)
-                @users = cacheSSetRange(redisKeySearchUsers(@key), 0, -1)
-            else
-                tweets = Tweet.where("text like '%"+@key+"%'").limit(50)
-                userIds = tweets.pluck("user_id")
-                @users = []
-                userIds.each do |id|
-                    @users << User.find(id).name
-                end
-                cacheSSetBulkAdd(redisKeySearch(@key), tweets.ids)
-                cacheSSetBulkAdd(redisKeySearchUsers(@key), @users)
-            end
-        end
-        if !tweetIds
-            @result = []
-        else
-            @result = Tweet.find(tweetIds)
-        end
+# get '/search' do
+#     if !params[:phrase].blank?
+#         @key = params[:phrase]
+#         if !params[:paged].blank?
+#             if session[:toId]!=0
+#                 session[:toId] = session[:toId]+50
+#             else
+#                 session[:toId] = 100
+#             end
+#             tweets = Tweet.where("text like '%"+@key+"%'").limit(session[:toId])[session[:toId]-50..session[:toId]]
+#             userIds = tweets.pluck("user_id")
+#             @users = []
+#             userIds.each do |id|
+#                 @users << User.find(id).name
+#             end
+#             tweetIds = tweets.pluck("id")
+#         else
+#             session[:toId] = 0
+#             if cacheKeyExist?(redisKeySearch(@key))
+#                 tweetIds = cacheSSetRange(redisKeySearch(@key), 0, -1)
+#                 @users = cacheSSetRange(redisKeySearchUsers(@key), 0, -1)
+#             else
+#                 tweets = Tweet.where("text like '%"+@key+"%'").limit(50)
+#                 userIds = tweets.pluck("user_id")
+#                 @users = []
+#                 userIds.each do |id|
+#                     @users << User.find(id).name
+#                 end
+#                 cacheSSetBulkAdd(redisKeySearch(@key), tweets.ids)
+#                 cacheSSetBulkAdd(redisKeySearchUsers(@key), @users)
+#             end
+#         end
+#         if !tweetIds
+#             @result = []
+#         else
+#             @result = Tweet.find(tweetIds)
+#         end
         
-        erb :searchResult
+#         erb :searchResult
+#     end
+# end
+
+get '/search' do
+    response = SEARCHAPP.get("/api/search") do |req|
+        req.params = {phrase: params[:phrase], paged: params[:paged]}
     end
+    puts @result
+    erb :searchResult  
 end
 
 #### TAG ENDPOINTS
