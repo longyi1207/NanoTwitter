@@ -592,7 +592,7 @@ get '/search' do
     response = SEARCHAPP.get("/api/search") do |req|
         req.params = {phrase: params[:phrase], paged: params[:paged]}
     end
-    # erb :searchResult  
+    erb :searchResult  
 end
 
 #### TAG ENDPOINTS
