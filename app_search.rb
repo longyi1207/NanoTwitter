@@ -53,7 +53,7 @@ get '/api/search' do
            LOGGER.info(result)
            LOGGER.info(users)
            LOGGER.info(key)
-           return result
+           return result, users, key
         }
         return [200, "Success"]
     end
