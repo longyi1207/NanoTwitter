@@ -133,4 +133,31 @@ module TweetService
         LOGGER.info("#{self.class}##{__method__}--> myid=#{myid},userid=#{userid},tweetid=#{tweetid} TIME COST: #{Time.now()-start_time} SECONDS")
         return counter
     end
+
+    def doRetweet(myid, userid, tweetid)
+        start_time = Time.now()
+        counter = -1
+        if myid.to_s != userid.to_s
+            check = Retweet.where(user_id: myid, tweet_id: tweetid).first
+            if !check
+                tweet = Tweet.find(tweetid)
+                #send tweet
+                response = TWEETAPP.get("/api/tweet/new") do |req|
+                    req.params = {text: tweet.text, userid: myid}
+                end
+                if response.status == 200
+                    Retweet.create(user_id: myid, tweet_id: tweetid, tweet_user_id: userid, create_time: Time.now)
+                    counter = tweet.retweets_counter
+                    if counter == nil
+                        counter = 1
+                    else
+                        counter += 1
+                    end
+                    tweet.update_attribute(:retweets_counter,counter);
+                end
+            end
+        end
+        LOGGER.info("#{self.class}##{__method__}--> myid=#{myid},userid=#{userid},tweetid=#{tweetid} TIME COST: #{Time.now()-start_time} SECONDS")
+        return counter
+    end
 end

@@ -516,6 +516,10 @@ post '/tweet/like' do
     doLike(session[:user][:id], params[:userid], params[:tweetid]).to_s
 end
 
+post '/tweet/retweet' do
+    doRetweet(session[:user][:id], params[:userid], params[:tweetid]).to_s
+end
+
 get '/tweets/count' do
     Tweet.all.count.to_s
 end

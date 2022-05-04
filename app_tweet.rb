@@ -42,6 +42,10 @@ include TestService
 include TweetService
 include RedisUtil
 
+get '/' do
+    "Ready to go!"
+end
+
 get '/api/tweet/new' do
     text = params[:text]
     userid = params[:userid]

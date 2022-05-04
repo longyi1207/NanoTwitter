@@ -35,12 +35,13 @@
                         .append('<span style="font-size:15px">'+String(item["create_time"]).slice(0,-5).replace('T', ' ')+'</span>');
                     body = $('<div class="card-body">');
                     footer = $('<div style="font-size:10px">')
-                        .append('<a href="#0" class="button" onclick="retweet('+item['id']+')">  <span class="glyphicon glyphicon-comment"></span> </a>');
+                        .append('<a href="#0" class="button" onclick="retweet('+item['user_id']+","+item['id']+')">  <span class="glyphicon glyphicon-comment"></span> </a>');
                     if (item["retweets_counter"] == null) {
-                      footer.append('0');
+                      footer.append('<span id="retweet'+item['id']+'"> 0 </span>');
                     } else {
-                      footer.append(item["retweets_counter"] + 'retweets');
+                      footer.append('<span id="retweet'+item['id']+'"> '+item["retweets_counter"]+' </span>');
                     }
+                    footer.append('retweets')
                     footer.append('<a href="#0" class="button" onclick="like('+item['user_id']+","+item['id']+')"> <span class="glyphicon glyphicon-heart"></span> </a>');
                     if (item["likes_counter"] == null) {
                       footer.append('<span id="like'+item['id']+'"> 0 </span>');
@@ -79,6 +80,19 @@
         function(data) {
           if (data != "-1") {
             $('#like'+tweetid).html(data)
+          }
+        });
+      }
+
+      function retweet(userid, tweetid){
+        $.post("/tweet/retweet",
+        {
+          userid: userid,
+          tweetid: tweetid 
+        },
+        function(data) {
+          if (data != "-1") {
+            $('#retweet'+tweetid).html(data)
           }
         });
       }
@@ -142,8 +156,8 @@
                 <div class="card-body">
                   <%= t.text %>
                     <div style="font-size:10px">
-                      <a href="#0" class="button" onclick="retweet(<%= t.id %>)">  <span class="glyphicon glyphicon-comment"></span> </a>
-                      <% if t.retweets_counter==nil %> 0 <% else %> <%=t.retweets_counter%> <% end %> retweets
+                      <a href="#0" class="button" onclick="retweet(<%= t.user_id %>, <%= t.id %>)">  <span class="glyphicon glyphicon-comment"></span> </a>
+                      <span id="retweet<%= t.id %>"><% if t.retweets_counter==nil %> 0 <% else %> <%=t.retweets_counter%> <% end %></span> retweets
                       <a href="#0" class="button" onclick="like(<%= t.user_id %>, <%= t.id %>)"> <span class="glyphicon glyphicon-heart"></span> </a>
                       <span id="like<%= t.id %>"><% if t.likes_counter==nil %> 0 <% else %> <%=t.likes_counter%> <% end %></span> likes
                     </div>
