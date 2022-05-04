@@ -53,9 +53,9 @@ get '/api/search' do
            result = results[0]
            users = results[1]
            key = results[2]
-           LOGGER.info(result)
-           LOGGER.info(users)
-           LOGGER.info(key)
+        #    LOGGER.info(result)
+        #    LOGGER.info(users)
+        #    LOGGER.info(key)
            return result, users, key
         }
         # return [200, "Success"]

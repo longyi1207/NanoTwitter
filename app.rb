@@ -593,7 +593,8 @@ get '/search' do
         req.params = {phrase: params[:phrase], paged: params[:paged]}
     end
     LOGGER.info(response)
-    LOGGER.info(response[:result])
+    LOGGER.info(response.body)
+    LOGGER.info(response.body[0])
     LOGGER.info("?????")
     # erb :searchResult  
 end
