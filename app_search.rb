@@ -52,6 +52,8 @@ get '/api/search' do
            result= doSearch(phrase, paged)
         }
         LOGGER.info(result)
+        puts result
+        puts "??????"
         return result
     end
 end
