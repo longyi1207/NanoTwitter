@@ -50,10 +50,10 @@ get '/api/search' do
     else
         THREADPOOL.process {
            result= doSearch(phrase, paged)
+           LOGGER.info(result)
+           puts result
+           puts "??????"
+           return result
         }
-        LOGGER.info(result)
-        puts result
-        puts "??????"
-        return result
     end
 end
