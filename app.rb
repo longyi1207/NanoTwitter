@@ -338,8 +338,8 @@ get '/test/reset' do
 
     ### create test user
     LOGGER.info("#{self.class}##{__method__}--> create testuser")
-    ActiveRecord::Base.connection.reset_pk_sequence!('users')
-    User.create(name:"testuser", password:"password")
+    # ActiveRecord::Base.connection.reset_pk_sequence!('users')
+    User.create(name:"testuser", password:Password.create("password"), create_time: Time.now)
     status 200
 end
 
