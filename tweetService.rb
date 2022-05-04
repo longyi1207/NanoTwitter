@@ -113,4 +113,24 @@ module TweetService
         LOGGER.info("#{self.class}##{__method__}--> tweetid=#{tweetid} TIME COST: #{Time.now()-start_time} SECONDS") 
         return tweet
     end
+
+    def doLike(myid, userid, tweetid) 
+        start_time = Time.now()
+        check = Like.where(user_id: myid, tweet_id: tweetid).first
+        counter = -1
+        if !check
+            # insert new like record
+            Like.create(user_id: myid, tweet_id: tweetid, tweet_user_id: userid, create_time: Time.now)
+            # update like counter
+            counter = Tweet.find(tweetid).likes_counter
+            if counter == nil
+                counter = 1
+            else
+                counter += 1
+            end
+            Tweet.find(tweetid).update_attribute(:likes_counter,counter);
+        end
+        LOGGER.info("#{self.class}##{__method__}--> myid=#{myid},userid=#{userid},tweetid=#{tweetid} TIME COST: #{Time.now()-start_time} SECONDS")
+        return counter
+    end
 end

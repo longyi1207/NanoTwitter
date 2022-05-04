@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2022_05_04_181016) do
+ActiveRecord::Schema[7.0].define(version: 2022_05_04_202650) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -19,6 +19,7 @@ ActiveRecord::Schema[7.0].define(version: 2022_05_04_181016) do
     t.integer "tweet_id"
     t.integer "tweet_user_id"
     t.datetime "create_time"
+    t.index ["user_id", "tweet_id"], name: "index_likes_on_user_id_and_tweet_id"
   end
 
   create_table "mentions", force: :cascade do |t|
@@ -69,6 +70,7 @@ ActiveRecord::Schema[7.0].define(version: 2022_05_04_181016) do
     t.integer "user_id"
     t.integer "follower_id"
     t.index ["follower_id"], name: "index_user_followers_on_follower_id"
+    t.index ["user_id", "follower_id"], name: "index_user_followers_on_user_id_and_follower_id"
     t.index ["user_id"], name: "index_user_followers_on_user_id"
   end
 

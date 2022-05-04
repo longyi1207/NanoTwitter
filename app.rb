@@ -512,15 +512,8 @@ get '/tweets' do
 	@tweet = Tweet.all
 end
 
-get '/tweet/like' do
-	tweetId = params[:tweetid]
-    if Tweet.find(tweetId).likes_counter==nil
-        Tweet.find(tweetId).update_attribute(:likes_counter,1);
-    else
-        Tweet.find(tweetId).update_attribute(:likes_counter,Tweet.find(tweetId).likes_counter+1);
-    end
-
-    redirect "/home"
+post '/tweet/like' do
+    doLike(session[:user][:id], params[:userid], params[:tweetid]).to_s
 end
 
 get '/tweets/count' do

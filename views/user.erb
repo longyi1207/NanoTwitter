@@ -41,12 +41,13 @@
                     } else {
                       footer.append(item["retweets_counter"] + 'retweets');
                     }
-                    footer.append('<a href="#0" class="button" onclick="like('+item['id']+')"> <span class="glyphicon glyphicon-heart"></span> </a>');
+                    footer.append('<a href="#0" class="button" onclick="like('+item['user_id']+","+item['id']+')"> <span class="glyphicon glyphicon-heart"></span> </a>');
                     if (item["likes_counter"] == null) {
-                      footer.append('0');
+                      footer.append('<span id="like'+item['id']+'"> 0 </span>');
                     } else {
-                      footer.append(item["likes_counter"] + 'likes');
+                      footer.append('<span id="like'+item['id']+'"> '+item["likes_counter"]+' </span>');
                     }
+                    footer.append('likes')
                     body.append(item['text']).append(footer);
                     html.append(title, body);
                         
@@ -69,9 +70,19 @@
         });
       }
 
-      function like(tweetid){
-        $.get("/tweet/like",{tweetid:tweetid});
-        };
+      function like(userid, tweetid){
+        $.post("/tweet/like",
+        {
+          userid: userid,
+          tweetid: tweetid 
+        },
+        function(data) {
+          alert(data)
+          if (data != "-1") {
+            $('#like'+tweetid).html(data)
+          }
+        });
+      }
     </script>
   </head>
   <body style="background-color:black; color:white; font-size:20px">
@@ -134,8 +145,8 @@
                     <div style="font-size:10px">
                       <a href="#0" class="button" onclick="retweet(<%= t.id %>)">  <span class="glyphicon glyphicon-comment"></span> </a>
                       <% if t.retweets_counter==nil %> 0 <% else %> <%=t.retweets_counter%> <% end %> retweets
-                      <a href="#0" class="button" onclick="like(<%= t.id %>)"> <span class="glyphicon glyphicon-heart"></span> </a>
-                      <% if t.likes_counter==nil %> 0 <% else %> <%=t.likes_counter%> <% end %> likes
+                      <a href="#0" class="button" onclick="like(<%= t.user_id %>, <%= t.id %>)"> <span class="glyphicon glyphicon-heart"></span> </a>
+                      <span id="like<%= t.id %>"><% if t.likes_counter==nil %> 0 <% else %> <%=t.likes_counter%> <% end %></span> likes
                     </div>
                 </div> 
               </div>
