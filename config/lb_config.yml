@@ -1,0 +1,12 @@
+test:
+  web_urls:
+    - http://localhost:4567
+    - http://localhost:4568
+development:
+  web_urls:
+    - http://localhost:4567
+    - http://localhost:4568
+production:
+  web_urls:
+    - https://nanotwitter-web1.herokuapp.com
+    - https://nanotwitter-web2.herokuapp.com
