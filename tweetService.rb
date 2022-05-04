@@ -132,6 +132,7 @@ module TweetService
         end
         LOGGER.info("#{self.class}##{__method__}--> myid=#{myid},userid=#{userid},tweetid=#{tweetid} TIME COST: #{Time.now()-start_time} SECONDS")
         return counter
+    end
 
     def doSearch(key, paged)
         @key=key
@@ -169,7 +170,7 @@ module TweetService
         else
             @result = Tweet.find(tweetIds)
         end
-        return 
+        return @result
     end
 
     def doRetweet(myid, userid, tweetid)
