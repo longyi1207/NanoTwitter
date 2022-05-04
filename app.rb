@@ -593,7 +593,9 @@ get '/search' do
         req.params = {phrase: params[:phrase], paged: params[:paged]}
     end
     LOGGER.info(response)
-    erb :searchResult  
+    LOGGER.info(response[:result])
+    LOGGER.info("?????")
+    # erb :searchResult  
 end
 
 #### TAG ENDPOINTS
