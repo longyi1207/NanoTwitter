@@ -136,13 +136,8 @@ module TweetService
 
     def doSearch(phrase, paged)
         @key=phrase
-        LOGGER.info(@key)
-        LOGGER.info(paged)
-        LOGGER.info(session[:toId])
-        if !paged.blank?
-            LOGGER.info(111111)
+        if paged!=nil
             if session[:toId]!=0
-                LOGGER.info(222222)
                 session[:toId] = session[:toId]+50
             else
                 session[:toId] = 100
@@ -155,7 +150,6 @@ module TweetService
             end
             tweetIds = tweets.pluck("id")
         else
-            LOGGER.info(333333)
             session[:toId] = 0
             if cacheKeyExist?(redisKeySearch(@key))
                 tweetIds = cacheSSetRange(redisKeySearch(@key), 0, -1)
@@ -172,13 +166,12 @@ module TweetService
             end
         end
         if !tweetIds
-            LOGGER.info(444444)
             @result = []
         else
             @result = Tweet.find(tweetIds)
         end
         LOGGER.info(@result)
-        return @result
+        return @result, @users, @key
     end
 
     def doRetweet(myid, userid, tweetid)

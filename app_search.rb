@@ -49,11 +49,12 @@ get '/api/search' do
         return [400, "Invalid parameters!"]
     else
         THREADPOOL.process {
-           result= doSearch(phrase, paged)
+           result, users, key = doSearch(phrase, paged)
            LOGGER.info(result)
-           puts result
-           puts "??????"
+           LOGGER.info(users)
+           LOGGER.info(key)
            return result
         }
+        return [200, "Success"]
     end
 end
