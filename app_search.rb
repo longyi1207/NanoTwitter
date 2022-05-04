@@ -53,12 +53,10 @@ get '/api/search' do
            @result = results[0]
            @users = results[1]
            @key = results[2]
-        #    LOGGER.info(result)
-        #    LOGGER.info(users)
-        #    LOGGER.info(key)
-            erb :searchResult  
+           erb :searchResult  
         #    return result, users, key
         }
         # return [200, "Success"]
+        erb :searchResult  
     end
 end
