@@ -134,8 +134,11 @@ module TweetService
         return counter
     end
 
-    def doSearch(key, paged)
-        @key=key
+    def doSearch(phrase, paged)
+        @key=phrase
+        LOGGER.info(@key)
+        LOGGER.info(paged)
+        LOGGER.info(session[:toId])
         if !paged.blank?
             if session[:toId]!=0
                 session[:toId] = session[:toId]+50
@@ -170,6 +173,7 @@ module TweetService
         else
             @result = Tweet.find(tweetIds)
         end
+        LOGGER.info(@result)
         return @result
     end
 
