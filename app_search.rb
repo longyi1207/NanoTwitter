@@ -27,7 +27,7 @@ require 'thread/pool'
 config_file File.join("config","config.yml")
 
 configure do
-    REDIS = ConnectionPool.new(size: settings.redis_pool_size["tweet_app"]) do
+    REDIS = ConnectionPool.new(size: settings.redis_pool_size["search_app"]) do
         Redis.new(url: settings.redis_url)
     end
     LOGGER = Logger.new($stdout)
@@ -49,7 +49,9 @@ get '/api/search' do
         return [400, "Invalid parameters!"]
     else
         THREADPOOL.process {
-            return doSearch(phrase, paged)
+           result= doSearch(phrase, paged)
         }
+        LOGGER.info(result)
+        return result
     end
 end
