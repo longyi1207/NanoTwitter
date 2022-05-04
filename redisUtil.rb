@@ -20,10 +20,9 @@ module RedisUtil
         return "timeline:#{userid}"
     end
 
-    def redisKeyUsernames(userid)
-        return "timeline_usernames:#{userid}"
+    def redisKeyRecommendUsers(userid)
+        return "recommendUsers:#{userid}"
     end
-
 
     # wrapper
     def cacheFlushAll()
@@ -161,6 +160,35 @@ module RedisUtil
     def cacheSSetRemRangeByRank(key, start, stop)
         REDIS.with do |conn|
             conn.zremrangebyrank(key, start, stop)
+        end
+    end
+
+    #set
+    def cacheSetSize(key)
+        REDIS.with do |conn|
+            conn.scard(key)
+        end
+    end
+
+    def cacheSetBulkAdd(key, list)
+        REDIS.with do |conn|
+            conn.pipelined do |pipeline|
+                list.each do |value|
+                    pipeline.sadd(key, value)
+                end
+            end
+        end
+    end
+
+    def cacheSetRandMember(key, limit)
+        REDIS.with do |conn|
+            conn.srandmember(key, limit)
+        end
+    end
+
+    def cacheSetRem(key, member)
+        REDIS.with do |conn|
+            conn.srem(key, member)
         end
     end
 end

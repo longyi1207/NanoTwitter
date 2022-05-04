@@ -149,11 +149,10 @@
             <div class="card shadow-lg bg-dark" style="border-radius:10px; margin-top:20px; margin-bottom:20px;">
               <div class="card-title">
                 <span class="glyphicon glyphicon-user"></span>
-                <%= u[0].name %>
+                <%= JSON.parse(u)['name'] %>
                 <br>
-                <button  onclick="doFollow(<%= u[0].id%>)" style="font-size:10px;border-radius:12px; background-color:white; color: black; border: solid; margin-left: auto;
-                margin-right: 0;"> <% if u[1] %> Follow <% else %> Unfollow <% end %> </button>
-                </form>
+                <button  onclick="doFollow(<%= JSON.parse(u)['id']%>)" style="font-size:10px;border-radius:12px; background-color:white; color: black; border: solid; margin-left: auto;
+                margin-right: 0;">  Follow 
               </div>
             </div>
           <% end %>

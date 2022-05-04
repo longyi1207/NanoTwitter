@@ -39,6 +39,9 @@ module UserService
             end
             # add tweets to timeline
             followTimeline(myid, userid, 1000)
+            # remove from recommend list
+            user = User.where(id: userid).first
+            cacheSetRem(redisKeyRecommendUsers(myid), {'id'=>user['id'], 'name'=>user['name']}.to_json)
         end
         LOGGER.info("#{self.class}##{__method__}--> myid=#{myid},userid=#{userid} TIME COST: #{Time.now()-start_time} SECONDS") 
         true
@@ -161,6 +164,28 @@ module UserService
         end
     end
 
+    def fetchRecommendUsers(userid, num, limit)
+        start_time = Time.now()
+        cacheSize = cacheSetSize(redisKeyRecommendUsers(userid))
+        if cacheSize < 10
+            followee_id = fetchAllFollowee(userid, true)
+            excludeList = [userid]
+            if followee_id.length > 0
+                excludeList += followee_id
+            end
+            newDataSize = limit - 10
+            cache_list = []
+            recommendUsers = User.where.not(id: excludeList).order("create_time DESC").limit(newDataSize)
+            recommendUsers.each do |t|
+                cache_list.append({'id'=>t['id'], 'name'=>t['name']}.to_json)
+            end
+            cacheSetBulkAdd(redisKeyRecommendUsers(userid), cache_list)
+        end
+        result = cacheSetRandMember(redisKeyRecommendUsers(userid), num)
+        LOGGER.info("#{self.class}##{__method__}--> userid=#{userid},limit=#{limit} TIME COST: #{Time.now()-start_time} SECONDS")
+        return result
+    end
+
     def warmTimelineCache(userid, followee_id, limit)
         start_time = Time.now()
         if cacheKeyExist?(redisKeyTimeline(userid))
@@ -180,6 +205,25 @@ module UserService
         LOGGER.info("#{self.class}##{__method__}--> userid=#{userid},followee_id=#{followee_id},limit=#{limit} TIME COST: #{Time.now()-start_time} SECONDS")
     end
 
+    def warmRecommendUserCache(userid, followee_id, limit)
+        start_time = Time.now()
+        cacheSize = cacheSetSize(redisKeyRecommendUsers(userid))
+        if cacheSize < 10
+            excludeList = [userid]
+            if followee_id.length > 0
+                excludeList += followee_id
+            end
+            newDataSize = limit - 10
+            cache_list = []
+            recommendUsers = User.where.not(id: excludeList).order("create_time DESC").limit(newDataSize)
+            recommendUsers.each do |t|
+                cache_list.append({'id'=>t['id'], 'name'=>t['name']}.to_json)
+            end
+            cacheSetBulkAdd(redisKeyRecommendUsers(userid), cache_list)
+        end
+        LOGGER.info("#{self.class}##{__method__}--> userid=#{userid},limit=#{limit} TIME COST: #{Time.now()-start_time} SECONDS")
+    end
+
     # All jobs need to be done when a user login
     def doOnLogin(userid)
         start_time = Time.now()
@@ -187,6 +231,7 @@ module UserService
         followee_id = fetchAllFollowee(userid, true)
         fetchAllFollower(userid, false)
         warmTimelineCache(userid, followee_id, 1000)
+        warmRecommendUserCache(userid, followee_id, 100)
 
         LOGGER.info("#{self.class}##{__method__}--> userid=#{userid} TIME COST: #{Time.now()-start_time} SECONDS")
     end

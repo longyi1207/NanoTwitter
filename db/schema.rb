@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2022_05_03_051430) do
+ActiveRecord::Schema[7.0].define(version: 2022_05_04_181016) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -46,7 +46,6 @@ ActiveRecord::Schema[7.0].define(version: 2022_05_03_051430) do
   end
 
   create_table "tweet_replies", force: :cascade do |t|
-    t.string "text"
     t.integer "tweet_id"
     t.integer "user_id"
     t.integer "reply_id"
@@ -77,6 +76,7 @@ ActiveRecord::Schema[7.0].define(version: 2022_05_03_051430) do
     t.string "name"
     t.string "password"
     t.datetime "create_time"
+    t.index ["create_time"], name: "index_users_on_create_time"
     t.index ["name"], name: "index_users_on_name"
   end
 
