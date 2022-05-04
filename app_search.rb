@@ -50,13 +50,14 @@ get '/api/search' do
     else
         THREADPOOL.process {
            results = doSearch(phrase, paged)
-           result = results[0]
-           users = results[1]
-           key = results[2]
+           @result = results[0]
+           @users = results[1]
+           @key = results[2]
         #    LOGGER.info(result)
         #    LOGGER.info(users)
         #    LOGGER.info(key)
-           return result, users, key
+            erb :searchResult  
+        #    return result, users, key
         }
         # return [200, "Success"]
     end
