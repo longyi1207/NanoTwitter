@@ -170,7 +170,7 @@ module TweetService
         else
             @result = Tweet.find(tweetIds)
         end
-        LOGGER.info(@result)
+        # LOGGER.info(@result)
         return @result, @users, @key
     end
 
