@@ -61,24 +61,40 @@ Indexed both foreign keys in the table (follower_id, user_id). Composite index o
 Indexed name and create_time to allow for faster searches on usernames and ordering by creation time. 
 
 ### Caching:
+Caching is the most important stratergy we use to scale our application. We gain a huge performance boost when we first migrated our application from database only to cache on top of database design. The result of performance tests will be discussed later. We use cache for all frequent operations such as generating timeline, fetching followers and followees, searching, as well as generating a list of users one might like. By using cache, database usage is cut down to a minimal level. 90% of table joins are replaced by quries on one table. Caches are warmed up right after the login event. The following are the details of how caching is used:
 
+#### Timeline cache
+Timeline consists of the most recent Tweets posted by the user and all users he/she is following. For every user, the latest 1000 Tweet ids on the timeline are cached. We use sorted sets to hold Tweet ids so they are sorted in time order. 
+
+#### Followers/Followees cache
+There are a lot places we need to get all the followers and followees of a user besides diplaying followers/followees list. For example, when fetching timeline, we need the list followees in order to find all Tweets they posted. So for every user, we use two sorted sets to keep track of both the followers and followees. With the help of these caches, we can get rid of table joins when quring database.
+
+#### Recommended users cache
+There is a list of users in the you might like section on the homepage. The recommended users are worth caching because the you might like list is displayed every time a user accesses homepage. We are caching both the user id and name of at most 100 recommendations for every user. If the cache size is smaller than 10, we will refill the cache upto 100. Now, database is not envolved when we generate the you might like list. 
+
+#### Search cache
+<!--- TODO --->
 
 ### Testing:
 Prior to testing our application we first needed to establish a testing framework that would offer us a way to set up, execute, and then reset our tests. Moreover, we required the use of logging so that we could more precisely identify issues in our code and report the results of our tests. For our testing framework our group created routes such as those shown below (Not every test route is included):
 
 /test/reset
+
 /test/stress
+
 /test/performance
+
 /test/status
 
 Using the stress test as an example of how our testing framework was designed, these tests work by first defining the parameters for the test and then storing the current time as a variable (start_time/time_sum) which is then used to calculate the time it took for the operation that is being examined. In the case of the stress test, we were interested in the speed of following, tweeting, and fetching the user’s timeline. A code snippet of our stress test will be used to assist explanation:
     
+``` ruby
 get "/test/stress" do
     n = params[:n].to_i
     star = params[:star].to_i
     fan = params[:fan].to_i
  
-// CODE SNIPPET. THIS ISN’T THE ENTIRE TEST \\
+# CODE SNIPPET. THIS ISN’T THE ENTIRE TEST
  
     text_list = []
     id_list = []
@@ -95,12 +111,14 @@ get "/test/stress" do
  
     [200, "OK"]
 end
-
+``` 
 In order to test tweeting, we defined a variable time_sum which will store the total amount of time it took to perform n (parameter) tweets for user star (user_id passed as parameter). For each tweet, fake data using the Faker gem is created and then the time taken to create the tweet is calculated and added to time_sum. Once completed, the Logger gem is used to report the results of the test which we then reviewed via Papertrail.
 
 ### Results of Scaling:
-### Conclusion:
+<!--- TODO --->
 
+### Conclusion:
+<!--- TODO --->
 
 ## How to Run and Other Notes:
 * ### Ruby version
