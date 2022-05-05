@@ -21,11 +21,12 @@
         var users = [];
         var channel = pusher.subscribe('my-channel');
         channel.bind('my-event', function (data) {
-          texts.push(JSON.stringify(data.text));
-          likes.push(JSON.stringify(data.like));
-          users.push(JSON.stringify(data.user));
-          retweets.push(JSON.stringify(data.retweet));
-          times.push(JSON.stringify(data.time));
+          # texts.push(JSON.stringify(data.text));
+          # likes.push(JSON.stringify(data.like));
+          # users.push(JSON.stringify(data.user));
+          # retweets.push(JSON.stringify(data.retweet));
+          # times.push(JSON.stringify(data.time));
+          alert(JSON.stringify(data.user));
 
           var html = =$('<div id="'+ JSON.stringify(data.user)+'"></div>');
 
