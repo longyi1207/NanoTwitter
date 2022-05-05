@@ -62,7 +62,15 @@ get '/api/search' do
         return [400, "Invalid parameters!"]
     else
         THREADPOOL.process {
-            data = doSearch(phrase, paged)
+            if paged!=nil
+                if session[:toId]!=nil && session[:toId]!=0
+                    session[:toId] = session[:toId]+50
+                else
+                    session[:toId] = 100
+                end
+            else
+                session[:toId] = 0
+            data = doSearch(phrase, paged, session[:toId])
             texts = data[0]
             likes = data[1]
             retweets = data[2]

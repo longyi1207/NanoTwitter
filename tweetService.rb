@@ -1,5 +1,4 @@
 module TweetService
-
     def fetchTimeline(userid, offset, limit)
         # including offset
         start_time = Time.now()
@@ -134,18 +133,12 @@ module TweetService
         return counter
     end
 
-    def doSearch(phrase, paged)
+    def doSearch(phrase, paged, toId)
         @key=phrase
-        LOGGER.info paged
-        LOGGER.info session[:toId]
+        LOGGER.info toId
         LOGGER.info "!!!!!"
         if paged!=nil
-            if session[:toId]!=nil && session[:toId]!=0
-                session[:toId] = session[:toId]+50
-            else
-                session[:toId] = 100
-            end
-            tweets = Tweet.where("text like '%"+@key+"%'").limit(session[:toId])[session[:toId]-50..session[:toId]]
+            tweets = Tweet.where("text like '%"+@key+"%'").limit(toId)[toId-50..toId]
             userIds = tweets.pluck("user_id")
             @users = []
             userIds.each do |id|
@@ -153,7 +146,6 @@ module TweetService
             end
             tweetIds = tweets.pluck("id")
         else
-            session[:toId] = 0
             if cacheKeyExist?(redisKeySearch(@key))
                 tweetIds = cacheListRange(redisKeySearch(@key), 0, -1)
                 @users = cacheListRange(redisKeySearchUsers(@key), 0, -1)
