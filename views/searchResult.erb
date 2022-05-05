@@ -14,9 +14,11 @@
           cluster: 'us2'
         });
 
+        var result = [];
+        var users = [];
         var channel = pusher.subscribe('my-channel');
         channel.bind('my-event', function (data) {
-          alert("pusher");
+          alert("hi");
         });
     </script>
 

@@ -62,14 +62,17 @@ get '/api/search' do
         return [400, "Invalid parameters!"]
     else
         THREADPOOL.process {
-            results = doSearch(phrase, paged)
-            LOGGER.info "search results #{results[0]}"
-            @pusher.trigger('my-channel', 'my-event', {
-                message: 'hello world',
-                result: results[0],
-                users: results[1],
-                key: results[2]
-            })
+            data = doSearch(phrase, paged)
+            results = data[0]
+            users = data[1]
+            LOGGER.info "search results #{results}"
+            LOGGER.info "search users #{users}"
+            results.each_with_index do |result, index|
+                @pusher.trigger('my-channel', 'my-event', {
+                    result: result[index],
+                    users: users[index]
+                })
+            end
         }
         
         return [200, "Success"]

@@ -594,7 +594,7 @@ get '/search' do
     end
     @result = []
     @users = []
-    @key = ""
+    @key = params[:phrase]
     erb :searchResult  
 end
 

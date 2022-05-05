@@ -170,8 +170,7 @@ module TweetService
         else
             @result = Tweet.find(tweetIds)
         end
-        # LOGGER.info(@result)
-        return @result, @users, @key
+        return @result, @users
     end
 
     def doRetweet(myid, userid, tweetid)
