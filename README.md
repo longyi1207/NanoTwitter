@@ -2,10 +2,10 @@
 By: Long Yi, Zhendan Xu, Lisandro Mayancela
 
 ## Intro:
-    For our group project, we were asked to demonstrate our understanding of scalability (specifically scaling out) by first implementing a basic version of Twitter (NanoTwitter/NT), using Sinatra and Postgresql, which contains some of the main features of Twitter proper (Tweets, Replies, Hashtags, Searching, etc.). Once completed, we deployed our NT to Heroku and began testing the performance of the app using Loader.io and test routes in order to identify which areas of our Twitter failed under increased load so that we could begin to implement various scaling practices discussed in class. This report will briefly outline our implementation of NanoTwitter before going in depth into defining the scalability techniques utilized, how they were implemented in our project, and what impact they had on our project’s performance. Finally, our group will reflect upon our project and offer key takeaways as well as a discussion of what we could’ve achieved given more time.
+For our group project, we were asked to demonstrate our understanding of scalability (specifically scaling out) by first implementing a basic version of Twitter (NanoTwitter/NT), using Sinatra and Postgresql, which contains some of the main features of Twitter proper (Tweets, Replies, Hashtags, Searching, etc.). Once completed, we deployed our NT to Heroku and began testing the performance of the app using Loader.io and test routes in order to identify which areas of our Twitter failed under increased load so that we could begin to implement various scaling practices discussed in class. This report will briefly outline our implementation of NanoTwitter before going in depth into defining the scalability techniques utilized, how they were implemented in our project, and what impact they had on our project’s performance. Finally, our group will reflect upon our project and offer key takeaways as well as a discussion of what we could’ve achieved given more time.
 
 ## NanoTwitter Implementation & Architecture:
-    When designing the initial schema for our NanoTwitter we wanted to support the following basic functionality and queries (This isn’t a comprehensive list but it contains the essential functionality):
+When designing the initial schema for our NanoTwitter we wanted to support the following basic functionality and queries (This isn’t a comprehensive list but it contains the essential functionality):
 
 ### *Users
 Can post and reply to other tweets (“Return all of the tweets for a given user”/”Return all of this user’s replies”)
@@ -31,33 +31,34 @@ Once we had established the schema, our group split up the work of implementing 
 
 ## NanoTwitter Scaling:
 ### Service Oriented Architecture
-    Our application is seperated into four types of services: load balancer, webb app, Tweet service and search service. All services are talking to the same Postgres database and Redis cache. Below is the architecture of our application.
+Our application is seperated into four types of services: load balancer, webb app, Tweet service and search service. All services are talking to the same Postgres database and Redis cache. Below is the architecture of our application.
 ![alt text](public\service.png)
 
 #### Load balancer
-    Our load balancer is a simple Sinatra app that dispatches the incoming requests to web apps using round-robin stratergy. The load balancer only dispatches get requests so that it can prevent users from accessing the web app illegaly using post requests.
+Our load balancer is a simple Sinatra app that dispatches the incoming requests to web apps using round-robin stratergy. The load balancer only dispatches get requests so that it can prevent users from accessing the web app illegaly using post requests.
 
 #### Web app
-    This is the main service that has most of the NanoTwitter functionalities. In fact, it is very similar to the monolith version but without send Tweet and search functions. By adding more instances of this service, the system can scale out easily.
+This is the main service that has most of the NanoTwitter functionalities. In fact, it is very similar to the monolith version but without send Tweet and search functions. By adding more instances of this service, the system can scale out easily.
 
 #### Tweet service
-    The Tweet service is responsible for handling new Tweets. It not only creates new Tweets but also does all the necessary work when a new Tweet is created such as dealing with tags and fanout. The jobs are handled asynchronously using threads.
+The Tweet service is responsible for handling new Tweets. It not only creates new Tweets but also does all the necessary work when a new Tweet is created such as dealing with tags and fanout. The jobs are handled asynchronously using threads.
 
 #### Search service
 <!--- TODO --->
 
 ### Indexing:
-    Indexing was the first avenue through which we tackled scaling our NanoTwitter as we had quickly realized that one of the most time consuming operations our app would need to perform was creating the timeline for a given user (list of tweets from users they are following and tweets that mention this user sorted by time). Without indexing, searches on a field such as the creation date would need to be linear, requiring the app to wait for the database to check, at worst, N records where N is the total number of records. For the tradeoff of requiring more disk space, we could instead index some of these fields so that their values can point to their corresponding entry, which is then sorted so that a faster search algorithm can be utilized. Thus, given how often we expect users to request their timeline (since it’s the first page the user sees after registering/logging-in), it was decided to add an index to the creation_date field of the Tweets table so that tweets can quickly be searched by that date. Furthermore, additional indices were added to the user_id foreign key of the Tweet table (tweet owner) as well as both foreign keys of the User_followers table. This was done in order to ensure that for any given user we would be able to not only quickly retrieve the user ids of their followers and followees, but also quickly retrieve the tweets which belong to any given user id. Finally, considering that users are searched via their usernames, we wanted to speed up the process in which a username can be used to retrieve its corresponding user_id. 
+Indexing was the first avenue through which we tackled scaling our NanoTwitter as we had quickly realized that one of the most time consuming operations our app would need to perform was creating the timeline for a given user (list of tweets from users they are following and tweets that mention this user sorted by time). Without indexing, searches on a field such as the creation date would need to be linear, requiring the app to wait for the database to check, at worst, N records where N is the total number of records. For the tradeoff of requiring more disk space, we could instead index some of these fields so that their values can point to their corresponding entry, which is then sorted so that a faster search algorithm can be utilized. Thus, given how often we expect users to request their timeline (since it’s the first page the user sees after registering/logging-in), it was decided to add an index to the creation_date field of the Tweets table so that tweets can quickly be searched by that date. Furthermore, additional indices were added to the user_id foreign key of the Tweet table (tweet owner) as well as both foreign keys of the User_followers table. This was done in order to ensure that for any given user we would be able to not only quickly retrieve the user ids of their followers and followees, but also quickly retrieve the tweets which belong to any given user id. Finally, considering that users are searched via their usernames, we wanted to speed up the process in which a username can be used to retrieve its corresponding user_id. 
+
 With all of this combined, our hope was that the use of these indices would provide a significant boost to how quickly timelines are created (For searches and home pages) and the following are some important changes we made to our schema:
 
 #### Tweets
-    Added Index to user_id foreign key and create_time to speed up searching for tweets from a specific user and searching for tweets by when they were posted respectively
+Added Index to user_id foreign key and create_time to speed up searching for tweets from a specific user and searching for tweets by when they were posted respectively
 
 #### User_followers
-    Indexed both foreign keys in the table (follower_id, user_id). Composite index of follower_id and user_id to make queries for particular following relation even faster.
+Indexed both foreign keys in the table (follower_id, user_id). Composite index of follower_id and user_id to make queries for particular following relation even faster.
 
 #### Users
-    Indexed name and create_time to allow for faster searches on usernames and ordering by creation time. 
+Indexed name and create_time to allow for faster searches on usernames and ordering by creation time. 
 
 ### Caching:
 
@@ -70,7 +71,7 @@ Prior to testing our application we first needed to establish a testing framewor
 /test/performance
 /test/status
 
-    Using the stress test as an example of how our testing framework was designed, these tests work by first defining the parameters for the test and then storing the current time as a variable (start_time/time_sum) which is then used to calculate the time it took for the operation that is being examined. In the case of the stress test, we were interested in the speed of following, tweeting, and fetching the user’s timeline. A code snippet of our stress test will be used to assist explanation:
+Using the stress test as an example of how our testing framework was designed, these tests work by first defining the parameters for the test and then storing the current time as a variable (start_time/time_sum) which is then used to calculate the time it took for the operation that is being examined. In the case of the stress test, we were interested in the speed of following, tweeting, and fetching the user’s timeline. A code snippet of our stress test will be used to assist explanation:
     
 get "/test/stress" do
     n = params[:n].to_i
@@ -95,10 +96,10 @@ get "/test/stress" do
     [200, "OK"]
 end
 
-    In order to test tweeting, we defined a variable time_sum which will store the total amount of time it took to perform n (parameter) tweets for user star (user_id passed as parameter). For each tweet, fake data using the Faker gem is created and then the time taken to create the tweet is calculated and added to time_sum. Once completed, the Logger gem is used to report the results of the test which we then reviewed via Papertrail.
+In order to test tweeting, we defined a variable time_sum which will store the total amount of time it took to perform n (parameter) tweets for user star (user_id passed as parameter). For each tweet, fake data using the Faker gem is created and then the time taken to create the tweet is calculated and added to time_sum. Once completed, the Logger gem is used to report the results of the test which we then reviewed via Papertrail.
 
-Results of Scaling:
-Conclusion:
+### Results of Scaling:
+### Conclusion:
 
 
 How to Run and Other Notes:
@@ -107,7 +108,7 @@ How to Run and Other Notes:
 "3.0.3"
 
 * System dependencies
- "thin", "puma", "reel", "http", "webrick", "rake", "sinatra", "activerecord", "sinatra-activerecord", "pg", "rack-test", "faker", "bcrypt"
+"thin", "puma", "reel", "http", "webrick", "rake", "sinatra", "activerecord", "sinatra-activerecord", "pg", "rack-test", "faker", "bcrypt", "redis", "connection_pool", "thread", "faraday", "pusher"
 
 * Database creation
 in postgres: create database nt_project_dev
