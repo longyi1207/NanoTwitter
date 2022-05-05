@@ -36,7 +36,7 @@ configure do
 end
 
 before do
-    pusher = Pusher::Client.new(
+    @pusher = Pusher::Client.new(
         app_id: '1405458',
         key: 'f75186482c65c79ac41f',
         secret: '78c3e997b214b452f30c',
@@ -58,16 +58,13 @@ include RedisUtil
 get '/api/search' do
     phrase = params[:phrase]
     paged = params[:paged]
-    pusher.trigger('my-channel', 'my-event', {
-        message: 'hii'
-    })
     if !phrase
         return [400, "Invalid parameters!"]
     else
         THREADPOOL.process {
             results = doSearch(phrase, paged)
             LOGGER.info "search results #{results[0]}"
-            pusher.trigger('my-channel', 'my-event', {
+            @pusher.trigger('my-channel', 'my-event', {
                 message: 'hello world',
                 result: results[0],
                 users: results[1],
