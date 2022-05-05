@@ -21,3 +21,4 @@ gem "redis"
 gem "connection_pool"
 gem 'thread'
 gem 'faraday'
+gem 'pusher'
