@@ -137,13 +137,12 @@ module TweetService
     def doSearch(phrase, paged)
         @key=phrase
         LOGGER.info paged
+        LOGGER.info session[:toId]
+        LOGGER.info "!!!!!"
         if paged!=nil
-            LOGGER.info "111111111"
             if session[:toId]!=0
-                LOGGER.info "22222222222"
                 session[:toId] = session[:toId]+50
             else
-                LOGGER.info "33333333333"
                 session[:toId] = 100
             end
             tweets = Tweet.where("text like '%"+@key+"%'").limit(session[:toId])[session[:toId]-50..session[:toId]]
@@ -153,9 +152,7 @@ module TweetService
                 @users << User.find(id).name
             end
             tweetIds = tweets.pluck("id")
-            LOGGER.info tweetIds
         else
-            LOGGER.info "44444"
             session[:toId] = 0
             if cacheKeyExist?(redisKeySearch(@key))
                 tweetIds = cacheListRange(redisKeySearch(@key), 0, -1)
