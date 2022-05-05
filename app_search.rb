@@ -58,6 +58,9 @@ include RedisUtil
 get '/api/search' do
     phrase = params[:phrase]
     paged = params[:paged]
+    pusher.trigger('my-channel', 'my-event', {
+        message: 'hii'
+    })
     if !phrase
         return [400, "Invalid parameters!"]
     else
