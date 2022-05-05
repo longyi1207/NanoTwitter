@@ -65,9 +65,6 @@ get '/api/search' do
             results = doSearch(phrase, paged)
             LOGGER.info "search results #{results[0]}"
             @pusher.trigger('my-channel', 'my-event', {
-                message: 'hello world'
-            })
-            @pusher.trigger('my-channel', 'my-event', {
                 message: 'hello world',
                 result: results[0],
                 users: results[1],
