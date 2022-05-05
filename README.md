@@ -7,18 +7,18 @@ For our group project, we were asked to demonstrate our understanding of scalabi
 ## NanoTwitter Implementation & Architecture:
 When designing the initial schema for our NanoTwitter we wanted to support the following basic functionality and queries (This isn’t a comprehensive list but it contains the essential functionality):
 
-### *Users
-Can post and reply to other tweets (“Return all of the tweets for a given user”/”Return all of this user’s replies”)
-Can follow other users (“How many users are following a given user?”/”Who is this user following?”)
-Can register/login/logout
+### Users
+- Can post and reply to other tweets (“Return all of the tweets for a given user”/”Return all of this user’s replies”)
+- Can follow other users (“How many users are following a given user?”/”Who is this user following?”)
+- Can register/login/logout
 
-### *Tweets
-Can contain a hashtag and a mention which can then be used for searching (“What are the tweets that contain a given hashtag/mention?”)
-Can be replied to with another tweet (“What are the replies to this tweet?”/”Which tweet is this in response to?”)
-Can be retweeted (“Which/How many users have retweeted this tweet?”)
+### Tweets
+- Can contain a hashtag and a mention which can then be used for searching (“What are the tweets that contain a given hashtag/mention?”)
+- Can be replied to with another tweet (“What are the replies to this tweet?”/”Which tweet is this in response to?”)
+- Can be retweeted (“Which/How many users have retweeted this tweet?”)
 
-### *Searching
-Can accept queries containing any number of keywords/hashtags/mentions and will return a “Timeline” of the most relevant tweets.
+### Searching
+- Can accept queries containing any number of keywords/hashtags/mentions and will return a “Timeline” of the most relevant tweets.
 
 In order to achieve this, our group opted to have a schema consisting of 9 tables which can be observed below:
 
@@ -118,22 +118,22 @@ In order to test tweeting, we defined a variable time_sum which will store the t
 Below are the results of both scalability runoffs
 
 Scalability Runoff 1: Client Load up to 1000
-    Average response time (ms): 9906
-    Timeouts: 185
-    Completed?: no
-    Timeout at?: under 500 users
+   - Average response time (ms): 9906
+   - Timeouts: 185
+   - Completed?: no
+   - Timeout at?: under 500 users
 
 Scalability Runoff 2: Client Load up to 3000
-    Test 1: 2000 Clients
-        Average response time (ms): 6463
-        Timeouts: 0
-        Completed?: yes
-        Timeout at?: N/A
-    Test 2: 3000 Clients
-        Average response time (ms): 8686
-        Timeouts: 1385
-        Completed?: yes
-        Timeout at?: 2700+ users
+    - Test 1: 2000 Clients
+        - Average response time (ms): 6463
+        - Timeouts: 0
+        - Completed?: yes
+        - Timeout at?: N/A
+    - Test 2: 3000 Clients
+        - Average response time (ms): 8686
+        - Timeouts: 1385
+        - Completed?: yes
+        - Timeout at?: 2700+ users
 
 As can be observed from the scalability runoff, our app saw a massive jump in performance between the first and second rounds, going from a 10 second response during a load of under 500 users to being able to handle 2000 clients with under 6.5 second response times and zero timeouts. While the reason was partly due to our cache being warmed up from the first runoff's timelines and searches, the pulling out of our tweeting functionality into its own service coupled with fixes to homepage caching and fanning out new tweets to follower's timelines brought significant improvements to the performance of NanoTwitter as exemplified by not only the second runoff, but the following stress tests that were performed after further optimization as well:
 
