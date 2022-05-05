@@ -70,6 +70,7 @@ get '/api/search' do
                 end
             else
                 session[:toId] = 0
+            end
             data = doSearch(phrase, paged, session[:toId])
             texts = data[0]
             likes = data[1]
