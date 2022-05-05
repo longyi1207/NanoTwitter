@@ -143,14 +143,14 @@ As can be observed from the scalability runoff, our app saw a massive jump in pe
 (Tests were performed three times to account for any variations between tests)
 
 Mar28:
-follow: 0.032 0.006 0.024
-tweet: 0.013 0.008 0.010
-timeline:0.091 0.155 0.087
+- follow: 0.032 0.006 0.024
+- tweet: 0.013 0.008 0.010
+- timeline:0.091 0.155 0.087
 
 May3:
-follow: 0.004 0.002 0.002
-tweet: 0.06 0.06 0.08
-timeline: 0.02 0.019 0.017
+- follow: 0.004 0.002 0.002
+- tweet: 0.06 0.06 0.08
+- timeline: 0.02 0.019 0.017
 
 For follow and timeline we notice the largest decrease in response time which is consistent with our caching for both of these features. However, we don't have much improvement on tweeting, which is natural since there's essential nothing to cache so we couldn't really improve this.
 
