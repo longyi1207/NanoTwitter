@@ -1,35 +1,36 @@
 # NanoTwitter Technical Report
 By: Long Yi, Zhendan Xu, Lisandro Mayancela
 
-Intro:
+## Intro:
     For our group project, we were asked to demonstrate our understanding of scalability (specifically scaling out) by first implementing a basic version of Twitter (NanoTwitter/NT), using Sinatra and Postgresql, which contains some of the main features of Twitter proper (Tweets, Replies, Hashtags, Searching, etc.). Once completed, we deployed our NT to Heroku and began testing the performance of the app using Loader.io and test routes in order to identify which areas of our Twitter failed under increased load so that we could begin to implement various scaling practices discussed in class. This report will briefly outline our implementation of NanoTwitter before going in depth into defining the scalability techniques utilized, how they were implemented in our project, and what impact they had on our project’s performance. Finally, our group will reflect upon our project and offer key takeaways as well as a discussion of what we could’ve achieved given more time.
 
-NanoTwitter Implementation & Architecture:
+## NanoTwitter Implementation & Architecture:
     When designing the initial schema for our NanoTwitter we wanted to support the following basic functionality and queries (This isn’t a comprehensive list but it contains the essential functionality):
 
-*Users
+### *Users
 Can post and reply to other tweets (“Return all of the tweets for a given user”/”Return all of this user’s replies”)
 Can follow other users (“How many users are following a given user?”/”Who is this user following?”)
 Can register/login/logout
 
-*Tweets
+### *Tweets
 Can contain a hashtag and a mention which can then be used for searching (“What are the tweets that contain a given hashtag/mention?”)
 Can be replied to with another tweet (“What are the replies to this tweet?”/”Which tweet is this in response to?”)
 Can be retweeted (“Which/How many users have retweeted this tweet?”)
 
-*Searching
+### *Searching
 Can accept queries containing any number of keywords/hashtags/mentions and will return a “Timeline” of the most relevant tweets.
 
 In order to achieve this, our group opted to have a schema consisting of 9 tables which can be observed below:
 
-![alt text](https://i.gyazo.com/8eee96afa5ee44893c104e93479e19d5.png)
+![alt text](public/database.png)
 
 Once we had established the schema, our group split up the work of implementing the initial version as we created a UI, added model/integration tests, defined routes, included authentication using sessions, and finally deployed our first implementation of NanoTwitter to Heroku at the following link: https://cosi105nanotwitter.herokuapp.com (Below are screenshots of our UI). 
 
-![alt text](https://github.com/longyi1207/NanoTwitter/blob/main/login.jpg?raw=true)
-![alt text](https://github.com/longyi1207/NanoTwitter/blob/main/user.jpg?raw=true)
+![alt text](public/login.jpg)
+![alt text](public/user.png)
 
-NanoTwitter Scaling:
+## NanoTwitter Scaling:
+
 Testing:
 Prior to testing our application we first needed to establish a testing framework that would offer us a way to set up, execute, and then reset our tests. Moreover, we required the use of logging so that we could more precisely identify issues in our code and report the results of our tests. For our testing framework our group created routes such as those shown below (Not every test route is included):
 
