@@ -63,15 +63,24 @@ get '/api/search' do
     else
         THREADPOOL.process {
             data = doSearch(phrase, paged)
-            results = data[0]
-            users = data[1]
-            LOGGER.info "search results #{results}"
+            texts = data[0]
+            likes = data[1]
+            retweets = data[2]
+            times = data[3]
+            users = data[4]
+            LOGGER.info "search results #{texts}"
             LOGGER.info "search users #{users}"
-            results.each_with_index do |result, index|
+            texts.each_with_index do |texts, index|
                 @pusher.trigger('my-channel', 'my-event', {
-                    result: result[index],
-                    users: users[index]
+                    text: texts[index],
                 })
+                # @pusher.trigger('my-channel', 'my-event', {
+                #     text: texts[index],
+                #     like: likes[index],
+                #     retweet: retweets[index],
+                #     time: times[index],
+                #     user: users[index]
+                # })
             end
         }
         

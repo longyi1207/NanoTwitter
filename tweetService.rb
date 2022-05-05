@@ -161,7 +161,8 @@ module TweetService
                 userIds.each do |id|
                     @users << User.find(id).name
                 end
-                cacheSSetBulkAdd(redisKeySearch(@key), tweets.ids)
+                tweetIds = tweets.ids
+                cacheSSetBulkAdd(redisKeySearch(@key), tweetIds)
                 cacheSSetBulkAdd(redisKeySearchUsers(@key), @users)
             end
         end
@@ -170,7 +171,8 @@ module TweetService
         else
             @result = Tweet.find(tweetIds)
         end
-        return @result, @users
+        LOGGER.info(@users)
+        return tweets.pluck("text"), tweets.pluck("likes_counter"), tweets.pluck("retweets_counter"), tweets.pluck("create_time"), @users
     end
 
     def doRetweet(myid, userid, tweetid)
