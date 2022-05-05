@@ -167,7 +167,7 @@ module TweetService
                 cacheSSetBulkAdd(redisKeySearchUsers(@key), @users)
             end
         end
-        LOGGER.info(@users)
+        # LOGGER.info(@users)
         return tweets.pluck("text"), tweets.pluck("likes_counter"), tweets.pluck("retweets_counter"), tweets.pluck("create_time"), @users
     end
 
