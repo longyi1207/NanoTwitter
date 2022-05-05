@@ -31,7 +31,7 @@ Once we had established the schema, our group split up the work of implementing 
 
 ## NanoTwitter Scaling:
 ### Service Oriented Architecture
-Our application is seperated into four types of services: load balancer, webb app, Tweet service and search service. All services are talking to the same Postgres database and Redis cache. Below is the architecture of our application.
+Our application is seperated into four types of services: load balancer, web app, Tweet service and search service. All services are talking to the same Postgres database and Redis cache. Below is the architecture of our application.
 ![alt text](public/service.png)
 
 #### Load balancer
@@ -44,7 +44,7 @@ This is the main service that has most of the NanoTwitter functionalities. In fa
 The Tweet service is responsible for handling new Tweets. It not only creates new Tweets but also does all the necessary work when a new Tweet is created such as dealing with tags and fanout. The jobs are handled asynchronously using threads.
 
 #### Search service
-<!--- TODO --->
+This service is in charge of handling search requests with a given keyword and page. In the case that the user is only looking for the top 50 results of the search keyword, an additional thread is invoked which will asynchronously query either the cache or database (explained later) for the first 50 tweet results which is then provided to the frontend via the pusher gem. If the user were to go to the next page of results, the paged parameter would inform the service so that it returns tweet results 50 - 100 and so on.
 
 ### Indexing:
 Indexing was the first avenue through which we tackled scaling our NanoTwitter as we had quickly realized that one of the most time consuming operations our app would need to perform was creating the timeline for a given user (list of tweets from users they are following and tweets that mention this user sorted by time). Without indexing, searches on a field such as the creation date would need to be linear, requiring the app to wait for the database to check, at worst, N records where N is the total number of records. For the tradeoff of requiring more disk space, we could instead index some of these fields so that their values can point to their corresponding entry, which is then sorted so that a faster search algorithm can be utilized. Thus, given how often we expect users to request their timeline (since it’s the first page the user sees after registering/logging-in), it was decided to add an index to the creation_date field of the Tweets table so that tweets can quickly be searched by that date. Furthermore, additional indices were added to the user_id foreign key of the Tweet table (tweet owner) as well as both foreign keys of the User_followers table. This was done in order to ensure that for any given user we would be able to not only quickly retrieve the user ids of their followers and followees, but also quickly retrieve the tweets which belong to any given user id. Finally, considering that users are searched via their usernames, we wanted to speed up the process in which a username can be used to retrieve its corresponding user_id. 
@@ -73,7 +73,7 @@ There are a lot places we need to get all the followers and followees of a user 
 There is a list of users in the you might like section on the homepage. The recommended users are worth caching because the 'you might like list' is displayed every time a user accesses homepage. We are caching both the user id and name of at most 100 recommendations for every user. If the cache size is smaller than 10, we will refill the cache upto 100. As a result, the database is no longer involved when we generate the you might like list. 
 
 #### Search cache
-<!--- TODO --->
+Similarly to the timeline cache, we wanted to reduce the amount of work our database performs when searching for any given keyword. As such, our search cache will store the first 50 tweets that are the search result for the given keyword so that future searches on that keyword won't need to query the database unless the user requests to see more results from that query (the next 50 tweets by going to the next page).
 
 ### Testing:
 Prior to testing our application we first needed to establish a testing framework that would offer us a way to set up, execute, and then reset our tests. Moreover, we required the use of logging so that we could more precisely identify issues in our code and report the results of our tests. For our testing framework our group created routes such as those shown below (Not every test route is included):
