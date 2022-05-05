@@ -32,7 +32,7 @@ Once we had established the schema, our group split up the work of implementing 
 ## NanoTwitter Scaling:
 ### Service Oriented Architecture
 Our application is seperated into four types of services: load balancer, webb app, Tweet service and search service. All services are talking to the same Postgres database and Redis cache. Below is the architecture of our application.
-![alt text](public\service.png)
+![alt text](public/service.png)
 
 #### Load balancer
 Our load balancer is a simple Sinatra app that dispatches the incoming requests to web apps using round-robin stratergy. The load balancer only dispatches get requests so that it can prevent users from accessing the web app illegaly using post requests.
@@ -102,39 +102,51 @@ In order to test tweeting, we defined a variable time_sum which will store the t
 ### Conclusion:
 
 
-How to Run and Other Notes:
-# NanoTwitter 1.0
-* Ruby version
-"3.0.3"
+## How to Run and Other Notes:
+* ### Ruby version
+    "3.0.3"
 
-* System dependencies
-"thin", "puma", "reel", "http", "webrick", "rake", "sinatra", "activerecord", "sinatra-activerecord", "pg", "rack-test", "faker", "bcrypt", "redis", "connection_pool", "thread", "faraday", "pusher"
+* ### System dependencies
+    "thin", "puma", "reel", "http", "webrick", "rake", "sinatra", "activerecord", "sinatra-activerecord", "pg", "rack-test", "faker", "bcrypt", "redis", "connection_pool", "thread", "faraday", "pusher"
 
-* Database creation
-in postgres: create database nt_project_dev
-in terminal: rake db:migrate
+* ### Database creation
+    rake db:create
 
-* How to run the app
-in terminal: ruby app.rb
+    rake db:migrate
 
-* generate random data
-calling the route: localhost:5467/generateRandomData
-generates 50 random users and 200 random tweets etc. for testing 
+* ### How to run the app
+    load banlancer: ruby app_lb.rb
 
-* How to run the test suite
-in terminal: ruby test/test.rb
+    web app: ruby app.rb
 
-* Services (job queues, cache servers, search engines, etc.)
-redis, snowflake?
+    tweet service: ruby tweet.rb        
 
-* Deployment
-https://cosi105nanotwitter.herokuapp.com/home
+* ### generate random data
+    calling the route: localhost:5467/generateRandomData
+    generates 50 random users and 200 random tweets etc. for testing 
 
-* Change History
-NT-0.1 Feb14: create active record scheme, migration (Zhendan), and testing suite (Long)
-NT-0.2 Mar2: create frontend UI (Long), deploy to heroku (Zhendan), create routes (Lisandro), authentication (Zhendan)
-NT-1.0 Mar14: implement core function including user following (Zhendan), tweeting (Long), and timeline (Long)
-NT-1.1 Mar16: add test interface (Zhendan, Long)
-NT-1.2 Apr4: migrate follow related operations to redis (Zhendan)
+* ### Deployment
+    https://cosi105nanotwitter.herokuapp.com/home
+
+* ### Change History
+    NT-0.1 Feb14: create active record scheme, migration (Zhendan), and testing suite (Long)
+
+    NT-0.2 Mar2: create frontend UI (Long), deploy to heroku (Zhendan), create routes (Lisandro), authentication (Zhendan)
+
+    NT-1.0 Mar14: implement core function including user following (Zhendan), tweeting (Long), and timeline (Long)
+
+    NT-1.1 Mar16: add test interface (Zhendan, Long)
+
+    NT-1.2 Apr4: migrate follow related operations to redis (Zhendan)
+
+    NT-1.3 Apr28: home page caching (Long), Tweet fanout (Zhendan)
+
+    NT-2.0 May2: switch to service oriented architecture (Zhendan), improve search performance (Long)
+
+    NT-2.1 May3: add load balencer (Zhendan), improve home page performance (Zhendan)
+
+    NT-2.2 May4: reommend users (Zhendan)
+
+
 
   
