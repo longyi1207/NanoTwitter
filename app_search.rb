@@ -22,6 +22,7 @@ require 'csv'
 require 'json'
 require "logger"
 require "redis"
+require "pusher"
 
 config_file File.join("config","config.yml")
 
@@ -41,7 +42,7 @@ include TweetService
 include RedisUtil
 
 
-require 'pusher'
+
 
 before do
     pusher = Pusher::Client.new(
