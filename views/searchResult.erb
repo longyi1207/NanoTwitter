@@ -10,15 +10,14 @@
     <script src="https://js.pusher.com/7.0/pusher.min.js"></script>
     <script>
         Pusher.logToConsole = true;
-
         var pusher = new Pusher('f75186482c65c79ac41f', {
           cluster: 'us2'
         });
 
         var channel = pusher.subscribe('my-channel');
         channel.bind('my-event', function (data) {
-          alert(JSON.stringify(data.message));
-          console.log(JSON.stringify(data));
+          alert("!!!");
+          alert(JSON.stringify(data));
         });
     </script>
 

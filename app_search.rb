@@ -35,17 +35,6 @@ configure do
     THREADPOOL = Thread.pool(4)
 end
 
-enable :sessions
-
-include Authentication
-include UserService
-include TestService
-include TweetService
-include RedisUtil
-
-
-
-
 before do
     pusher = Pusher::Client.new(
         app_id: '1405458',
@@ -56,10 +45,22 @@ before do
     )
 end
 
+enable :sessions
+
+include Authentication
+include UserService
+include TestService
+include TweetService
+include RedisUtil
+
+
 
 get '/api/search' do
     phrase = params[:phrase]
     paged = params[:paged]
+    pusher.trigger('my-channel', 'my-event', {
+        message: 'hii'
+    })
     if !phrase
         return [400, "Invalid parameters!"]
     else
