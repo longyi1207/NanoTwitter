@@ -120,3 +120,20 @@ $('<div id="'+ JSON.stringify(data.user)+'"></div>');
           # users.push(JSON.stringify(data.user));
           # retweets.push(JSON.stringify(data.retweet));
           # times.push(JSON.stringify(data.time));
+
+
+          style="border-radius:10px; margin-top:20px; margin-bottom:20px"
+
+
+                  
+              <div class="card-body">'+
+              JSON.stringify(data.text)+
+                '<div style="font-size:10px">
+                <a href="#"> <span class="glyphicon glyphicon-comment"></span> </a>'
+                +JSON.stringify(data.retweet)+' rewteets
+                <a href="#"> <span class="glyphicon glyphicon-heart"></span> </a>'
+                +JSON.stringify(data.like)+' likes'
+                +JSON.stringify(data.time)+'
+                </div>
+              </div> 
+            </div>');
