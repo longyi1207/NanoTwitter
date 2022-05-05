@@ -589,6 +589,7 @@ end
 # end
 
 get '/search' do
+    authenticate!
     response = SEARCHAPP.get("/api/search") do |req|
         req.params = {phrase: params[:phrase], paged: params[:paged]}
     end
