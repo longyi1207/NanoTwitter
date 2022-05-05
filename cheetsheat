@@ -64,3 +64,24 @@ ALTER SEQUENCE user_followers_id_seq RESTART WITH 1;
 
 redis:
 redis = Redis.new()
+
+
+
+        # <% texts.each.with_index do |t,i| %>
+        #   <div class="card shadow-lg bg-dark" style="border-radius:10px; margin-top:20px; margin-bottom:20px;">
+        #     <div class="card-title">
+        #       <span class="glyphicon glyphicon-user"></span>
+        #       <%=  users[i]%>
+        #     </div>
+        #     <div class="card-body">
+        #     <%= t %>
+        #       <div style="font-size:10px">
+        #       <a href="#"> <span class="glyphicon glyphicon-comment"></span> </a>
+        #       <%= retweets[i]%> rewteets
+        #       <a href="#"> <span class="glyphicon glyphicon-heart"></span> </a>
+        #       <%= likes[i]%> likes
+        #       <%= times[i]%>
+        #       </div>
+        #     </div> 
+        #   </div>
+        # <% end %>

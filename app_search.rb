@@ -71,9 +71,6 @@ get '/api/search' do
             LOGGER.info "search texts #{texts}"
             LOGGER.info "search users #{users}"
             texts.each_with_index do |text, index|
-                # @pusher.trigger('my-channel', 'my-event', {
-                #     text: texts[index],
-                # })
                 @pusher.trigger('my-channel', 'my-event', {
                     text: texts[index],
                     like: likes[index],
