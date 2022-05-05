@@ -40,14 +40,36 @@ include TestService
 include TweetService
 include RedisUtil
 
+
+require 'pusher'
+
+before do
+    pusher = Pusher::Client.new(
+    app_id: '1405458',
+    key: 'f75186482c65c79ac41f',
+    secret: '78c3e997b214b452f30c',
+    cluster: 'us2',
+    encrypted: true
+    )
+end
+
+
 get '/api/search' do
     phrase = params[:phrase]
     paged = params[:paged]
     if !phrase
         return [400, "Invalid parameters!"]
     else
-        content_type :json
-        results = doSearch(phrase, paged)
-        JSON({result: results[0], users:results[1], key:results[2]})
+        THREADPOOL.process {
+            results = doSearch(phrase, paged)
+            pusher.trigger('my-channel', 'my-event', {
+                message: 'hello world',
+                result: results[0],
+                users: results[1],
+                key: result[2]
+            }
+        })    
+        return [200, "Success"]
     end
+
 end

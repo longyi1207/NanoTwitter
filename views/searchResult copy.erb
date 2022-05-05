@@ -6,23 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/css/bootstrap.min.css" integrity="sha384-PsH8R72JQ3SOdhVi3uxftmaW6Vc51MKb0q5P2rRUpPvrszuE4W1povHYgTpBfshb" crossorigin="anonymous">
-  
-    <script src="https://js.pusher.com/7.0/pusher.min.js"></script>
-    <script>
-        var pusher = new Pusher('f75186482c65c79ac41f', {
-          cluster: 'us2'
-        });
-
-        var channel = pusher.subscribe('my-channel');
-        channel.bind('my-event', function (data) {
-          console.log(JSON.stringify(data.message));
-          @result = JSON.stringify(data.result);
-          @users = JSON.stringify(data.users);
-          @key = JSON.stringify(data.key);
-        });
-      </script>
-
-    </head>
+  </head>
   <form action="/home" style="margin-top: 1px; margin-left: 2px; position:absolute; top:0; left:0;"> <input style="font-size:10px;background-color:white" type="submit" value="back"/> </form>
   <form action="/search" style="margin-top: 1px; margin-right: 2px; position:absolute; top:0; right:0;"> <input name="phrase" hidden="true" value=<%=@key%> > <input  style="font-size:10px;background-color:white" type="submit" name="paged" value="next 50 results"/> </form>
   <body  style="background-color:black; color:white; font-size:20px">
