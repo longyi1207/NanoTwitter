@@ -136,6 +136,7 @@ module TweetService
 
     def doSearch(phrase, paged)
         @key=phrase
+        LOGGER.info paged
         if paged!=nil
             LOGGER.info "111111111"
             if session[:toId]!=0
@@ -154,6 +155,7 @@ module TweetService
             tweetIds = tweets.pluck("id")
             LOGGER.info tweetIds
         else
+            LOGGER.info "44444"
             session[:toId] = 0
             if cacheKeyExist?(redisKeySearch(@key))
                 tweetIds = cacheListRange(redisKeySearch(@key), 0, -1)
