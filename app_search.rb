@@ -48,6 +48,6 @@ get '/api/search' do
     else
         content_type :json
         results = doSearch(phrase, paged)
-        json({result: results[0], users:results[1], key:results[2]})
+        JSON({result: results[0], users:results[1], key:results[2]})
     end
 end

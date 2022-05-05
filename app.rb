@@ -594,11 +594,9 @@ get '/search' do
         req.headers = {'Content-Type' => 'application/json'}
     end
     results = JSON.parse(response.body, symbolize_names: true)
-    LOGGER.info results
-    LOGGER.info "????????"
-    @result = results[0]
-    @users = results[1]
-    @key = results[2]
+    @result = results[:result]
+    @users = results[:users]
+    @key = results[:key]
     erb :searchResult  
 end
 
