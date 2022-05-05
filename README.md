@@ -124,12 +124,14 @@ Scalability Runoff 1: Client Load up to 1000
    - Timeout at?: under 500 users
 
 Scalability Runoff 2: Client Load up to 3000
-    - Test 1: 2000 Clients
+
+    Test 1: 2000 Clients
         - Average response time (ms): 6463
         - Timeouts: 0
         - Completed?: yes
         - Timeout at?: N/A
-    - Test 2: 3000 Clients
+        
+    Test 2: 3000 Clients
         - Average response time (ms): 8686
         - Timeouts: 1385
         - Completed?: yes
