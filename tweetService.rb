@@ -152,8 +152,8 @@ module TweetService
         else
             session[:toId] = 0
             if cacheKeyExist?(redisKeySearch(@key))
-                tweetIds = cacheSSetRange(redisKeySearch(@key), 0, -1)
-                @users = cacheSSetRange(redisKeySearchUsers(@key), 0, -1)
+                tweetIds = cacheListRange(redisKeySearch(@key), 0, -1)
+                @users = cacheListRange(redisKeySearchUsers(@key), 0, -1)
                 tweets = Tweet.find(tweetIds)
             else
                 tweets = Tweet.where("text like '%"+@key+"%'").limit(50)
@@ -163,8 +163,8 @@ module TweetService
                     @users << User.find(id).name
                 end
                 tweetIds = tweets.ids
-                cacheSSetBulkAdd(redisKeySearch(@key), tweetIds)
-                cacheSSetBulkAdd(redisKeySearchUsers(@key), @users)
+                cacheListBulkPush(redisKeySearch(@key), tweetIds)
+                cacheListBulkPush(redisKeySearchUsers(@key), @users)
             end
         end
         # LOGGER.info(@users)
