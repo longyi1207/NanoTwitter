@@ -140,7 +140,7 @@ module TweetService
         LOGGER.info session[:toId]
         LOGGER.info "!!!!!"
         if paged!=nil
-            if session[:toId]!=nil session[:toId]!=0
+            if session[:toId]!=nil && session[:toId]!=0
                 session[:toId] = session[:toId]+50
             else
                 session[:toId] = 100
