@@ -22,7 +22,6 @@ require 'csv'
 require 'json'
 require "logger"
 require "redis"
-require 'thread/pool'
 
 config_file File.join("config","config.yml")
 
@@ -31,7 +30,6 @@ configure do
         Redis.new(url: settings.redis_url)
     end
     LOGGER = Logger.new($stdout)
-    THREADPOOL = Thread.pool(4)
 end
 
 enable :sessions
@@ -48,15 +46,8 @@ get '/api/search' do
     if !phrase
         return [400, "Invalid parameters!"]
     else
-        THREADPOOL.process {
-           results = doSearch(phrase, paged)
-           @result = results[0]
-           @users = results[1]
-           @key = results[2]
-           erb :searchResult  
-        #    return result, users, key
-        }
-        # return [200, "Success"]
-        erb :searchResult  
+        content_type :json
+        results = doSearch(phrase, paged)
+        json({result: results[0], users:results[1], key:results[2]})
     end
 end

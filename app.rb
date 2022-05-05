@@ -591,7 +591,14 @@ end
 get '/search' do
     response = SEARCHAPP.get("/api/search") do |req|
         req.params = {phrase: params[:phrase], paged: params[:paged]}
+        req.headers = {'Content-Type' => 'application/json'}
     end
+    results = JSON.parse(response.body, symbolize_names: true)
+    LOGGER.info results
+    LOGGER.info "????????"
+    @result = results[0]
+    @users = results[1]
+    @key = results[2]
     erb :searchResult  
 end
 
