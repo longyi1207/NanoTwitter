@@ -62,13 +62,15 @@ get '/api/search' do
     else
         THREADPOOL.process {
             results = doSearch(phrase, paged)
+            LOGGER.info "search results #{results[0]}"
             pusher.trigger('my-channel', 'my-event', {
                 message: 'hello world',
                 result: results[0],
                 users: results[1],
                 key: result[2]
-            }
-        })    
+            })
+        }
+        
         return [200, "Success"]
     end
 
