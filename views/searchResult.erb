@@ -21,8 +21,11 @@
         var users = [];
         var channel = pusher.subscribe('my-channel');
         channel.bind('my-event', function (data) {
-          alert("hi");
           texts.push(JSON.stringify(data.text));
+          likes.push(JSON.stringify(data.like));
+          users.push(JSON.stringify(data.user));
+          retweets.push(JSON.stringify(data.retweet));
+          times.push(JSON.stringify(data.time));
         });
     </script>
 
@@ -37,20 +40,20 @@
       </div>
 
       <div class="col-8" style="height:100vh">
-        <% @result.each.with_index do |t,i| %>
+        <% texts.each.with_index do |t,i| %>
           <div class="card shadow-lg bg-dark" style="border-radius:10px; margin-top:20px; margin-bottom:20px;">
             <div class="card-title">
               <span class="glyphicon glyphicon-user"></span>
-              <%=  @users[i]%>
+              <%=  users[i]%>
             </div>
             <div class="card-body">
-            <%= t.text %>
+            <%= t %>
               <div style="font-size:10px">
               <a href="#"> <span class="glyphicon glyphicon-comment"></span> </a>
-              <%= t.retweets_counter%> rewteets
+              <%= retweets[i]%> rewteets
               <a href="#"> <span class="glyphicon glyphicon-heart"></span> </a>
-              <%= t.likes_counter%> likes
-              <%= t.create_time %>
+              <%= likes[i]%> likes
+              <%= times[i]%>
               </div>
             </div> 
           </div>
