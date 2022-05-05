@@ -17,9 +17,8 @@
 
         var channel = pusher.subscribe('my-channel');
         channel.bind('my-event', function (data) {
-          console.log("????")
-          console.log(data)
-          console.log(JSON.stringify(data.message));
+          alert(JSON.stringify(data.message));
+          console.log(JSON.stringify(data));
           @result = JSON.stringify(data.result);
           @users = JSON.stringify(data.users);
           @key = JSON.stringify(data.key);

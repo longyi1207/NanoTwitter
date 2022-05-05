@@ -48,11 +48,11 @@ include RedisUtil
 
 before do
     pusher = Pusher::Client.new(
-    app_id: '1405458',
-    key: 'f75186482c65c79ac41f',
-    secret: '78c3e997b214b452f30c',
-    cluster: 'us2',
-    encrypted: true
+        app_id: '1405458',
+        key: 'f75186482c65c79ac41f',
+        secret: '78c3e997b214b452f30c',
+        cluster: 'us2',
+        encrypted: true
     )
 end
 
