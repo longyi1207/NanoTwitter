@@ -61,16 +61,16 @@ get '/api/search' do
     if !phrase
         return [400, "Invalid parameters!"]
     else
-        THREADPOOL.process {
-            if paged!=nil
-                if session[:toId]!=nil && session[:toId]!=0
-                    session[:toId] = session[:toId]+50
-                else
-                    session[:toId] = 100
-                end
+        if paged!=nil
+            if session[:toId]!=nil && session[:toId]!=0
+                session[:toId] = session[:toId]+50
             else
-                session[:toId] = 0
+                session[:toId] = 100
             end
+        else
+            session[:toId] = 0
+        end
+        THREADPOOL.process {
             data = doSearch(phrase, paged, session[:toId])
             texts = data[0]
             likes = data[1]
