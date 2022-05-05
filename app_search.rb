@@ -23,6 +23,7 @@ require 'json'
 require "logger"
 require "redis"
 require "pusher"
+require 'thread/pool'
 
 config_file File.join("config","config.yml")
 
@@ -31,6 +32,7 @@ configure do
         Redis.new(url: settings.redis_url)
     end
     LOGGER = Logger.new($stdout)
+    THREADPOOL = Thread.pool(4)
 end
 
 enable :sessions
