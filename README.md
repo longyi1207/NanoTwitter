@@ -2,7 +2,7 @@
 By: Long Yi, Zhendan Xu, Lisandro Mayancela
 
 ## Intro:
-For our group project, we were asked to demonstrate our understanding of scalability (specifically scaling out) by first implementing a basic version of Twitter (NanoTwitter/NT), using Sinatra and Postgresql, which contains some of the main features of Twitter proper (Tweets, Replies, Hashtags, Searching, etc.). Once completed, we deployed our NT to Heroku and began testing the performance of the app using Loader.io and test routes in order to identify which areas of our Twitter failed under increased load so that we could begin to implement various scaling practices discussed in class. This report will briefly outline our implementation of NanoTwitter before going in depth into defining the scalability techniques utilized, how they were implemented in our project, and what impact they had on our project’s performance. Finally, our group will reflect upon our project and offer key takeaways as well as a discussion of what we could’ve achieved given more time.
+For our group project, we were asked to demonstrate our understanding of scalability (specifically scaling out) by first implementing a basic version of Twitter (NanoTwitter/NT), using Sinatra and Postgresql, which contains some of the main features of Twitter proper (Tweets, Replies, Hashtags, Searching, etc.). Once completed, we deployed our NT to Heroku and began testing the performance of the app using Loader.io and test routes in order to identify which areas of our Twitter failed under increased load so that we could begin to implement various scaling practices discussed in class. This report will briefly outline our implementation of NanoTwitter before going in depth into defining the scalability techniques utilized, how they were implemented in our project, and what impact they had on our project’s performance. Finally, our group will reflect upon our project and offer key takeaways.
 
 ## NanoTwitter Implementation & Architecture:
 When designing the initial schema for our NanoTwitter we wanted to support the following basic functionality and queries (This isn’t a comprehensive list but it contains the essential functionality):
@@ -67,10 +67,10 @@ Caching is the most important stratergy we use to scale our application. We gain
 Timeline consists of the most recent Tweets posted by the user and all users he/she is following. For every user, the latest 1000 Tweet ids on the timeline are cached. We use sorted sets to hold Tweet ids so they are sorted in time order. 
 
 #### Followers/Followees cache
-There are a lot places we need to get all the followers and followees of a user besides diplaying followers/followees list. For example, when fetching timeline, we need the list followees in order to find all Tweets they posted. So for every user, we use two sorted sets to keep track of both the followers and followees. With the help of these caches, we can get rid of table joins when quring database.
+There are a lot places we need to get all the followers and followees of a user besides diplaying followers/followees list. For example, when fetching timeline, we need the list followees in order to find all Tweets they posted. So for every user, we use two sorted sets to keep track of both the followers and followees. With the help of these caches, we can get rid of table joins when querying the database.
 
 #### Recommended users cache
-There is a list of users in the you might like section on the homepage. The recommended users are worth caching because the you might like list is displayed every time a user accesses homepage. We are caching both the user id and name of at most 100 recommendations for every user. If the cache size is smaller than 10, we will refill the cache upto 100. Now, database is not envolved when we generate the you might like list. 
+There is a list of users in the you might like section on the homepage. The recommended users are worth caching because the 'you might like list' is displayed every time a user accesses homepage. We are caching both the user id and name of at most 100 recommendations for every user. If the cache size is smaller than 10, we will refill the cache upto 100. As a result, the database is no longer involved when we generate the you might like list. 
 
 #### Search cache
 <!--- TODO --->
@@ -114,11 +114,46 @@ end
 ``` 
 In order to test tweeting, we defined a variable time_sum which will store the total amount of time it took to perform n (parameter) tweets for user star (user_id passed as parameter). For each tweet, fake data using the Faker gem is created and then the time taken to create the tweet is calculated and added to time_sum. Once completed, the Logger gem is used to report the results of the test which we then reviewed via Papertrail.
 
-### Results of Scaling:
-<!--- TODO --->
+### Results of Scaling/Conclusion:
+Below are the results of both scalability runoffs
 
-### Conclusion:
-<!--- TODO --->
+Scalability Runoff 1: Client Load up to 1000
+    Average response time (ms): 9906
+    Timeouts: 185
+    Completed?: no
+    Timeout at?: under 500 users
+
+Scalability Runoff 2: Client Load up to 3000
+    Test 1: 2000 Clients
+        Average response time (ms): 6463
+        Timeouts: 0
+        Completed?: yes
+        Timeout at?: N/A
+    Test 2: 3000 Clients
+        Average response time (ms): 8686
+        Timeouts: 1385
+        Completed?: yes
+        Timeout at?: 2700+ users
+
+As can be observed from the scalability runoff, our app saw a massive jump in performance between the first and second rounds, going from a 10 second response during a load of under 500 users to being able to handle 2000 clients with under 6.5 second response times and zero timeouts. While the reason was partly due to our cache being warmed up from the first runoff's timelines and searches, the pulling out of our tweeting functionality into its own service coupled with fixes to homepage caching and fanning out new tweets to follower's timelines brought significant improvements to the performance of NanoTwitter as exemplified by not only the second runoff, but the following stress tests that were performed after further optimization as well:
+
+(Times are in seconds)
+(Tests were performed three times to account for any variations between tests)
+
+Mar28:
+follow: 0.032 0.006 0.024
+tweet: 0.013 0.008 0.010
+timeline:0.091 0.155 0.087
+
+May3:
+follow: 0.004 0.002 0.002
+tweet: 0.06 0.06 0.08
+timeline: 0.02 0.019 0.017
+
+For follow and timeline we notice the largest decrease in response time which is consistent with our caching for both of these features. However, we don't have much improvement on tweeting, which is natural since there's essential nothing to cache so we couldn't really improve this.
+
+Overall we are incredibly pleased with not only the number of scalability practices our team was able to implement, but the vast improvements to performance that we observed as a result of their implementation. This project, and the course as a whole, has given us new perspective on how to approach building apps at an architectural level and we can say with confidence that the strategies employed for NanoTwitter are tools that will be employed often throughout the rest of our careers in tech. 
+
 
 ## How to Run and Other Notes:
 * ### Ruby version
@@ -133,7 +168,7 @@ In order to test tweeting, we defined a variable time_sum which will store the t
     rake db:migrate
 
 * ### How to run the app
-    load banlancer: ruby app_lb.rb
+    load balancer: ruby app_lb.rb
 
     web app: ruby app.rb
 
