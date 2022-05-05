@@ -102,3 +102,17 @@ redis = Redis.new()
                 </div>
               </div> 
             </div>');
+
+
+                    var texts = [];
+        var likes = [];
+        var retweets = []; 
+        var times = []; 
+        var users = [];
+
+
+                  # texts.push(JSON.stringify(data.text));
+          # likes.push(JSON.stringify(data.like));
+          # users.push(JSON.stringify(data.user));
+          # retweets.push(JSON.stringify(data.retweet));
+          # times.push(JSON.stringify(data.time));
