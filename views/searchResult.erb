@@ -14,11 +14,14 @@
           cluster: 'us2'
         });
 
-        var result = [];
+        var texts = [];
+        var likes = [];
+        var retweets = [] 
         var users = [];
         var channel = pusher.subscribe('my-channel');
         channel.bind('my-event', function (data) {
           alert("hi");
+          texts.push("hi")
         });
     </script>
 
