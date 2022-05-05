@@ -156,8 +156,9 @@ For follow and timeline we notice the largest decrease in response time which is
 
 Overall we are incredibly pleased with not only the number of scalability practices our team was able to implement, but the vast improvements to performance that we observed as a result of their implementation. This project, and the course as a whole, has given us new perspective on how to approach building apps at an architectural level and we can say with confidence that the strategies employed for NanoTwitter are tools that will be employed often throughout the rest of our careers in tech. 
 
+-----------------------------------------------------------------------------------------------------------------------------------------------------
 
-## How to Run and Other Notes:
+## How to Run and Other Notes (README):
 * ### Ruby version
     "3.0.3"
 
