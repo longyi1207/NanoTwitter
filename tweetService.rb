@@ -154,6 +154,7 @@ module TweetService
             if cacheKeyExist?(redisKeySearch(@key))
                 tweetIds = cacheSSetRange(redisKeySearch(@key), 0, -1)
                 @users = cacheSSetRange(redisKeySearchUsers(@key), 0, -1)
+                tweets = Tweet.find(tweetIds)
             else
                 tweets = Tweet.where("text like '%"+@key+"%'").limit(50)
                 userIds = tweets.pluck("user_id")
@@ -165,11 +166,6 @@ module TweetService
                 cacheSSetBulkAdd(redisKeySearch(@key), tweetIds)
                 cacheSSetBulkAdd(redisKeySearchUsers(@key), @users)
             end
-        end
-        if !tweetIds
-            @result = []
-        else
-            @result = Tweet.find(tweetIds)
         end
         LOGGER.info(@users)
         return tweets.pluck("text"), tweets.pluck("likes_counter"), tweets.pluck("retweets_counter"), tweets.pluck("create_time"), @users
