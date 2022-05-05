@@ -19,11 +19,8 @@
         channel.bind('my-event', function (data) {
           alert(JSON.stringify(data.message));
           console.log(JSON.stringify(data));
-          @result = JSON.stringify(data.result);
-          @users = JSON.stringify(data.users);
-          @key = JSON.stringify(data.key);
         });
-      </script>
+    </script>
 
     </head>
   <form action="/home" style="margin-top: 1px; margin-left: 2px; position:absolute; top:0; left:0;"> <input style="font-size:10px;background-color:white" type="submit" value="back"/> </form>
