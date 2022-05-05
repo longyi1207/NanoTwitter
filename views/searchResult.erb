@@ -16,12 +16,13 @@
 
         var texts = [];
         var likes = [];
-        var retweets = [] 
+        var retweets = []; 
+        var times = []; 
         var users = [];
         var channel = pusher.subscribe('my-channel');
         channel.bind('my-event', function (data) {
           alert("hi");
-          texts.push(JSON.stringify(data.text))
+          texts.push(JSON.stringify(data.text));
         });
     </script>
 

@@ -68,7 +68,7 @@ get '/api/search' do
             retweets = data[2]
             times = data[3]
             users = data[4]
-            LOGGER.info "search results #{texts}"
+            LOGGER.info "search texts #{texts}"
             LOGGER.info "search users #{users}"
             texts.each_with_index do |texts, index|
                 @pusher.trigger('my-channel', 'my-event', {
